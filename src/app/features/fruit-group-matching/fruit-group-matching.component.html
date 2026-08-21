@@ -1,0 +1,75 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Gruplara ayrılmış meyveleri eşleştirin.'"
+      [icons]="'🍉🍎🍇🍓'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="matching-container">
+        
+        <!-- Top Row (Left Items) -->
+        <div class="row top-row">
+          @for (box of leftBoxes; track box.id) {
+            <div class="fruit-box"
+                 [class.selected]="selectedLeftId === box.id"
+                 [class.matched]="box.assignedPairId !== null"
+                 [class.locked]="isCompleted"
+                 (click)="selectLeft(box.id)">
+              <div class="fruit-grid">
+                @for (fruit of box.fruits; track $index) {
+                  <span class="fruit-emoji">{{ fruit }}</span>
+                }
+              </div>
+              @if (box.assignedPairId !== null) {
+                <div class="match-badge" [style.background]="badgeColor(leftBadgeNumber(box))">{{ leftBadgeNumber(box) }}</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="horizontal-divider"></div>
+
+        <!-- Bottom Row (Right Items) -->
+        <div class="row bottom-row">
+          @for (box of rightBoxes; track box.id) {
+            <div class="fruit-box"
+                 [class.selected]="selectedRightId === box.id"
+                 [class.matched]="box.assignedPairId !== null"
+                 [class.locked]="isCompleted"
+                 (click)="selectRight(box.id)">
+              <div class="fruit-grid">
+                @for (fruit of box.fruits; track $index) {
+                  <span class="fruit-emoji">{{ fruit }}</span>
+                }
+              </div>
+              @if (box.assignedPairId !== null) {
+                <div class="match-badge" [style.background]="badgeColor(rightBadgeNumber(box)!)">{{ rightBadgeNumber(box) }}</div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

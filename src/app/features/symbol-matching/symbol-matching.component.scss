@@ -1,0 +1,145 @@
+// ============================================================
+// Symbol Matching – Bileşen Stilleri
+// 3D daireler + long shadow + orbital dizilim
+// Layout kuralları: styles.scss | Değişkenler: styles/_design-tokens.scss
+// ============================================================
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+
+@keyframes popIn {
+    0% {
+        transform: scale(.8);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes selectedPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, .6), 0 8px 24px rgba(0, 0, 0, .18);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(255, 255, 255, .15), 0 8px 24px rgba(0, 0, 0, .18);
+    }
+}
+
+// Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Orbital Kanvas ────────────────────────────────────────
+// Absolute pozisyonlu daireler 540px kanvasta konumlanıyor.
+// Mobilde her şeyi scale() ile küçültüyoruz.
+.orbit-canvas {
+    position: relative;
+    width: 540px;
+    height: 540px;
+    flex-shrink: 0;
+
+    // Mobilde kanvası viewport'a sığacak şekilde ölçekle
+    @include mobile {
+        // 375px ekranda nav-btn(32x2) + gap = ~64px → kalan ~311px
+        // scale faktörü: 311/540 ≈ 0.575 → güvenli: 0.55
+        transform: scale(0.55);
+        transform-origin: center center;
+        // Küçültülmüş fiziksel alanı yansıt (orijinal 540 → ~297px)
+        margin: -120px auto;
+    }
+
+    @include tablet {
+        transform: scale(0.75);
+        transform-origin: center center;
+        margin: -65px auto;
+    }
+
+    @include small-mobile {
+        transform: scale(0.48);
+        margin: -140px auto;
+    }
+}
+
+// ── Genel Daire ───────────────────────────────────────────
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    @include flex-center;
+    user-select: none;
+}
+
+// ── Sembol (long shadow efekti) ───────────────────────────
+.symbol {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    text-shadow:
+        2px 2px 0 rgba(0, 0, 0, .18),
+        4px 4px 0 rgba(0, 0, 0, .15),
+        6px 6px 0 rgba(0, 0, 0, .11),
+        8px 8px 0 rgba(0, 0, 0, .07),
+        10px 10px 0 rgba(0, 0, 0, .04);
+}
+
+// ── Merkez Dairesi ────────────────────────────────────────
+.center-circle {
+    width: 195px;
+    height: 195px;
+    top: 172px;
+    left: 172px;
+    cursor: default;
+    z-index: 2;
+
+    .symbol {
+        font-size: 5.5rem;
+    }
+}
+
+// ── Uydu Seçenekler ───────────────────────────────────────
+.option-circle {
+    width: 135px;
+    height: 135px;
+    border: 6px solid #fff;
+    outline: none;
+    cursor: pointer;
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s;
+    z-index: 3;
+
+    .symbol {
+        font-size: 3.4rem;
+    }
+
+    &:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 4px;
+    }
+}

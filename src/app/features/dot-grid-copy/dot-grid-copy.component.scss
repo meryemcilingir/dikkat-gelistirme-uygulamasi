@@ -1,0 +1,193 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+@keyframes shakeAnim {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-6px); }
+    75%       { transform: translateX(6px); }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100dvh;
+    }
+}
+
+// ── Düzen ──────────────────────────────────────────────────
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: min(1000px, 95vw);
+    margin: 0 auto;
+    padding: clamp(4px, 1vw, 12px);
+}
+
+.puzzles-container {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2vh, 20px);
+    width: 100%;
+}
+
+.puzzle-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 2.5vw, 28px);
+    width: 100%;
+
+    @include mobile {
+        flex-direction: column;
+        gap: clamp(8px, 2vw, 14px);
+    }
+}
+
+// ── Tahta ──────────────────────────────────────────────────
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+    max-width: clamp(150px, 28vw, 230px);
+    width: 100%;
+
+    @include mobile {
+        max-width: clamp(140px, 50vw, 190px);
+    }
+
+    &.user.error {
+        animation: shakeAnim 0.4s ease;
+
+        .svg-container {
+            border-color: #ef4444;
+            background: #fff5f5;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.18);
+        }
+    }
+}
+
+.board-label {
+    font-size: clamp(0.55rem, 1vw, 0.75rem);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: clamp(4px, 1vw, 8px);
+    text-align: center;
+
+    &.example { color: #64748b; }
+    &.user     { color: #22c55e; }
+}
+
+.svg-container {
+    background: #fff;
+    border-radius: clamp(10px, 2vw, 18px);
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    padding: clamp(6px, 1.5vw, 14px);
+    width: 100%;
+    transition: all 0.3s ease;
+
+    &.interactive {
+        border-color: #ef4444;
+        cursor: crosshair;
+    }
+
+    &.success {
+        border-color: #22c55e !important;
+        background: #f0fdf4;
+    }
+
+    &.locked {
+        pointer-events: none;
+    }
+}
+
+svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+// ── Çizgiler & Noktalar ────────────────────────────────────
+.target-line {
+    stroke: #7c3aed;
+    stroke-width: 5;
+    stroke-linecap: round;
+}
+
+.user-line {
+    stroke: #334155;
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke 0.3s;
+
+    &.success { stroke: #16a34a; }
+}
+
+.preview-line {
+    stroke: #334155;
+    stroke-width: 5;
+    stroke-linecap: round;
+    opacity: 0.5;
+    stroke-dasharray: 7 5;
+}
+
+.hint-line {
+    stroke: #94a3b8;
+    stroke-width: 5;
+    stroke-linecap: round;
+    opacity: 0.22;
+    stroke-dasharray: 7 7;
+}
+
+.dot {
+    transition: all 0.15s;
+
+    &.static {
+        fill: #94a3b8;
+    }
+
+    &.interactive {
+        fill: #94a3b8;
+        cursor: pointer;
+
+        &:hover {
+            fill: #475569;
+            r: 8;
+        }
+
+        &.active {
+            fill: #1e293b;
+            r: 7;
+        }
+    }
+}
+
+// ── Ok bölücü ─────────────────────────────────────────────
+.divider-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    flex-shrink: 0;
+
+    .material-icons {
+        font-size: clamp(1.2rem, 2vw, 1.6rem);
+    }
+
+    @include mobile {
+        display: none;
+    }
+}

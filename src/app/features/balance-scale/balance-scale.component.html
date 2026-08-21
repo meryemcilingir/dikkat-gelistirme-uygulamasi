@@ -1,0 +1,61 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="⚖️"
+            instruction="Her terazide daha ağır olan tarafa tıkla."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="scales-row">
+                @for (scale of scales; track scale.id) {
+                <div class="scale">
+                    <div class="beam-wrap">
+                        <div class="beam"></div>
+
+                        <button class="pan left-pan"
+                            [class.picked]="scale.picked === 'left'"
+                            [disabled]="isSubmitted"
+                            (click)="pick(scale, 'left')">
+                            <div class="pan-items">
+                                @for (i of items(scale.leftCount); track i) {
+                                <span class="fruit">{{ scale.leftEmoji }}</span>
+                                }
+                            </div>
+                            <div class="pan-plate"></div>
+                        </button>
+
+                        <button class="pan right-pan"
+                            [class.picked]="scale.picked === 'right'"
+                            [disabled]="isSubmitted"
+                            (click)="pick(scale, 'right')">
+                            <div class="pan-items">
+                                @for (i of items(scale.rightCount); track i) {
+                                <span class="fruit">{{ scale.rightEmoji }}</span>
+                                }
+                            </div>
+                            <div class="pan-plate"></div>
+                        </button>
+                    </div>
+
+                    <div class="pivot"></div>
+                    <div class="stand"></div>
+                    <div class="base"></div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

@@ -1,0 +1,50 @@
+<!-- Açıktan Koyuya Sıralama – Shade Sorting -->
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+        <app-activity-header icons="🎨 📐 🔺"
+            instruction="Üçgenleri en açıktan en koyuya doğru sıralayarak yerleştir."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik"><span
+                class="material-icons">arrow_back</span></button>
+
+        <!-- Kanvas: tüm orta alanı kaplar -->
+        <div class="game-content canvas-area">
+
+
+
+            @for (tri of triangles; track tri.id) {
+            <div class="triangle-wrap" [class.hover]="!tri.clicked" [class.found]="tri.clicked"
+                (click)="onTriangleClick(tri)" role="button" tabindex="0" (keydown.enter)="onTriangleClick(tri)">
+                <div class="triangle" [style.background]="tri.shade"></div>
+                @if (tri.clicked) { <span class="step-label">{{ tri.clickStep }}</span> }
+            </div>
+            }
+
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted" (click)="goNext()"
+            aria-label="Sonraki etkinlik"><span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── İlerleme Çubuğu (frame-middle ile frame-bottom arası) ── -->
+    <div class="progress-strip">
+        <div class="progress-bar-wrap" aria-label="İlerleme">
+            <div class="progress-bar-fill" [style.width.%]="(clickOrder.length / 12) * 100"></div>
+            <span class="progress-text">{{ clickOrder.length }} / 12</span>
+        </div>
+    </div>
+
+    <!-- ── Butonlar (sabit 120px – diğer sayfalarla aynı) ──────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="restartGame()" (check)="checkAnswer()" />
+    </div>
+
+</div>

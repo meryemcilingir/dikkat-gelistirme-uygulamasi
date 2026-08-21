@@ -1,0 +1,50 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🎯" instruction="Aynı harfleri eşleştirin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Ahşap Kara Tahta Container -->
+            <div class="chalkboard-container" aria-label="Harflerle dolu kara tahta">
+                <div class="chalkboard-grid">
+                    @for (item of letters; track item.id) {
+                    <button class="letter-cell hover" [class.selected]="item.isSelected"
+                        [class.hint]="showHint && item.pairedWith === null && item.letter === activeHintLetter && item.id !== firstSelection"
+                        [class.paired]="item.pairedWith !== null" (click)="selectLetter(item.id)"
+                        [attr.aria-label]="item.letter + ' harfi'" [attr.aria-pressed]="item.isSelected"
+                        [disabled]="item.pairedWith !== null">
+
+                        <span class="chalk-text">{{ item.letter }}</span>
+
+                        @if (item.pairedWith !== null && item.pairIndex !== null) {
+                            <div class="pair-badge" [style.background]="pairBadgeColor(item)">{{ item.pairIndex! + 1 }}</div>
+                        }
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()"
+            (check)="checkAnswer()"></app-action-buttons>
+    </div>
+
+</div>

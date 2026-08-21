@@ -1,0 +1,115 @@
+<div class="page-header">
+    <div>
+        <h1 style="font-size: 1.1rem;">Sorumlu Olduğu Öğrenciler</h1>
+    </div>
+</div>
+
+<div class="list-toolbar">
+    <input
+        class="search-input"
+        [(ngModel)]="query.search"
+        (ngModelChange)="onSearchInput()"
+        placeholder="Ad veya kullanıcı adı ara..."
+        maxlength="100"
+    />
+    <button class="filter-toggle-btn" [class.active]="showFilters()" (click)="toggleFilters()">
+        Filtreler{{ filterChips.length ? ' (' + filterChips.length + ')' : '' }}
+    </button>
+    <label class="toolbar-select">
+        <span>Sırala</span>
+        <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
+            <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
+        </select>
+    </label>
+</div>
+
+<div class="filter-panel" *ngIf="showFilters()">
+    <label class="toolbar-select">
+        <span>Sınav Durumu</span>
+        <select [(ngModel)]="query.status" (ngModelChange)="reload(1)">
+            <option value="">Tümü</option>
+            <option value="Completed">Tamamlandı</option>
+            <option value="InProgress">Devam Ediyor</option>
+            <option value="Assigned">Başlamadı</option>
+        </select>
+    </label>
+    <label class="toolbar-select">
+        <span>Hesap</span>
+        <select [(ngModel)]="query.active" (ngModelChange)="reload(1)">
+            <option value="">Aktif + Pasif</option>
+            <option value="active">Yalnızca aktif</option>
+            <option value="passive">Yalnızca pasif</option>
+        </select>
+    </label>
+    <div class="range-field">
+        <span>Puan</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMin" (change)="reload(1)" placeholder="Min" />
+        <span class="dash">–</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMax" (change)="reload(1)" placeholder="Max" />
+    </div>
+    <div class="range-field">
+        <span>Başarı %</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.correctRateMin" (change)="reload(1)" placeholder="Min" />
+        <span class="dash">–</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.correctRateMax" (change)="reload(1)" placeholder="Max" />
+    </div>
+    <button class="link-btn" type="button" (click)="clearFilters()">Filtreleri Temizle</button>
+</div>
+
+<div class="filter-chips" *ngIf="filterChips.length">
+    <span class="chip" *ngFor="let c of filterChips">
+        {{ c.label }}
+        <button type="button" (click)="c.clear()" aria-label="Filtreyi kaldır">×</button>
+    </span>
+</div>
+
+<div class="empty" *ngIf="loading()">Yükleniyor...</div>
+<div class="empty" *ngIf="!loading() && studentPage()?.total === 0">Kayıt bulunamadı.</div>
+
+<div class="table-scroll" *ngIf="!loading() && (studentPage()?.total ?? 0) > 0">
+    <table class="student-table">
+        <thead>
+            <tr>
+                <th class="sortable" (click)="sortBy('name')">Ad Soyad {{ sortIcon('name') }}</th>
+                <th class="sortable" (click)="sortBy('username')">Username {{ sortIcon('username') }}</th>
+                <th class="sortable" (click)="sortBy('progress')">İlerleme {{ sortIcon('progress') }}</th>
+                <th>Sınav Durumu</th>
+                <th class="sortable" (click)="sortBy('correctRate')">Doğru {{ sortIcon('correctRate') }}</th>
+                <th>Yanlış</th>
+                <th class="sortable" (click)="sortBy('score')">Puan {{ sortIcon('score') }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let s of studentPage()!.items">
+                <td>{{ s.firstName }} {{ s.lastName }}</td>
+                <td class="muted">{{ s.username }}</td>
+                <td>{{ s.exam.answered }} / {{ s.exam.total }}</td>
+                <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
+                <td class="ok">{{ s.exam.correctCount ?? 0 }}</td>
+                <td class="bad">{{ s.exam.wrongCount ?? 0 }}</td>
+                <td>
+                    <div class="score-cell">
+                        <span>{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+                        <div class="rate-bar" *ngIf="s.exam.correctRate !== null && s.exam.correctRate !== undefined">
+                            <div class="rate-bar-fill" [style.width.%]="s.exam.correctRate"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="actions-cell">
+                    <button class="link-btn review" (click)="openReview(s)" [disabled]="s.exam.answered === 0">İncele</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<app-pagination
+    *ngIf="studentPage() as p"
+    [page]="p.page"
+    [totalPages]="p.totalPages"
+    [total]="p.total"
+    [pageSize]="p.pageSize"
+    (pageChange)="reload($event)"
+    (pageSizeChange)="query.pageSize = $event; reload(1)"
+></app-pagination>

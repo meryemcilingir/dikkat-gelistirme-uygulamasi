@@ -1,0 +1,77 @@
+@use './portal-tokens' as *;
+
+// ── 12 kolonluk dashboard satırları — sabit 22px gap, eşit yükseklik ──
+.dash-row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 22px;
+    align-items: stretch;
+    margin-bottom: 22px;
+
+    &:last-child { margin-bottom: 0; }
+
+    > .col-4 { grid-column: span 4; min-width: 0; }
+    > .col-5 { grid-column: span 5; min-width: 0; }
+    > .col-6 { grid-column: span 6; min-width: 0; }
+    > .col-7 { grid-column: span 7; min-width: 0; }
+    > .col-8 { grid-column: span 8; min-width: 0; }
+}
+
+@media (max-width: 860px) {
+    .dash-row {
+        grid-template-columns: 1fr;
+
+        > [class*="col-"] { grid-column: span 1; }
+    }
+}
+
+// ── Panel kartı: 22px padding, 12px radius (paylaşılan p-card ile aynı radius),
+//    grid satırı içinde tam yükseklik, gereksiz alt margin sıfırlanır.
+.panel-card.dash-card {
+    padding: 22px;
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.panel-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+// ── Tıklanabilir satır/kart hover'ı: hafif kalkış, 160ms ──────────
+.action-item,
+.segmented-legend-row,
+.hbar-row,
+.mini-table tr.row-clickable,
+.premium-table tr.row-clickable,
+.activity-feed-row {
+    transition: transform 160ms ease, background-color 160ms ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.mini-table tr.row-clickable:hover,
+.premium-table tr.row-clickable:hover {
+    background: $p-surface-muted;
+}
+
+// ── Bir tablo panel-card içine gömülüyse kendi kutusu olmasın ──
+.table-scroll.bare {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    overflow-x: auto;
+}
+
+// ── Kart girişi: yalnızca ilk yüklemede hafif fade + translateY ──
+@keyframes p-card-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-animate-in {
+    animation: p-card-in 250ms ease-out;
+}

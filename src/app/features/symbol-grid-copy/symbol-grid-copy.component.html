@@ -1,0 +1,74 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="" instruction="Örnek şekle bakarak aynısını yapmaya çalışın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Grids row -->
+            <div class="grids-row">
+
+                <!-- Reference grid (left, read-only) -->
+                <div class="grid-section">
+                    <div class="grid-label">Örnek</div>
+                    <div class="grid ref-grid">
+                        @for (row of rows; track row) {
+                        @for (col of cols; track col) {
+                        <div class="cell ref-cell" [class.plus]="referenceGrid[row][col] === '+'">
+                            {{ referenceGrid[row][col] === '+' ? '+' : '−' }}
+                        </div>
+                        }
+                        }
+                    </div>
+                </div>
+
+                <!-- User grid (right, interactive) -->
+                <div class="grid-section">
+                    <div class="grid-label">{{ reviewMode.active() ? 'Öğrencinin Cevabı' : 'Senin sıran' }}</div>
+                    <div class="grid user-grid">
+                        @for (row of rows; track row) {
+                        @for (col of cols; track col) {
+                        <div class="cell user-cell" [class.correct]="feedbackGrid[row][col] === 'correct'"
+                            [class.wrong]="feedbackGrid[row][col] === 'wrong'" [class.hint]="isHintCell(row, col)"
+                            [class.plus]="userGrid[row][col] === '+'" [class.filled]="userGrid[row][col] !== null"
+                            [class.paintable]="selectedSymbol !== null"
+                            [class.has-ghost]="getGhostSymbol(row, col) !== null" (click)="onCellClick(row, col)">
+                            @if (userGrid[row][col] !== null) {
+                            {{ userGrid[row][col] === '+' ? '+' : '−' }}
+                            } @else if (getGhostSymbol(row, col)) {
+                            <span class="ghost-symbol">{{ getGhostSymbol(row, col) }}</span>
+                            }
+                        </div>
+                        }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sembol seçim butonları — flower-coloring'deki palet gibi -->
+            <div class="symbol-buttons">
+                <button class="sym-btn plus-btn" [class.active]="selectedSymbol === '+'" (click)="onSymbolSelect('+')"
+                    aria-label="Artı seç">
+                    +
+                </button>
+                <button class="sym-btn minus-btn" [class.active]="selectedSymbol === '-'" (click)="onSymbolSelect('-')"
+                    aria-label="Eksi seç">
+                    −
+                </button>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons (check)="checkAnswer()" (reset)="clearSelection()" />
+    </div>
+</div>

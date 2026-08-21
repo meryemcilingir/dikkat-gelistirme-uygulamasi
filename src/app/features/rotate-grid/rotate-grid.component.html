@@ -1,0 +1,66 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔄" instruction="Kareleri sola döndürdüğümüzde hangisi oluşur? İşaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="rotate-layout">
+                
+                <div class="main-card">
+                    <!-- Target side -->
+                    <div class="target-side">
+                        <div class="color-grid">
+                            @for (color of targetColors; track $index) {
+                                <div class="color-cell" [style.background-color]="color"></div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Options side -->
+                    <div class="options-side">
+                        @for (option of options; track option.id) {
+                            <div class="option-container"
+                                 [class.hint-pulse]="isHintPulse(option.id)"
+                                 [class.shake]="option.isShaking"
+                                 (click)="selectOption(option.id)">
+                                
+                                <div class="color-grid option-grid" [class.selected]="selectedOptionId === option.id">
+                                    @for (color of option.colors; track $index) {
+                                        <div class="color-cell" [style.background-color]="color"></div>
+                                    }
+                                </div>
+                                
+                                <div class="radio-btn" [class.checked]="selectedOptionId === option.id">
+                                    <div class="inner-dot" *ngIf="selectedOptionId === option.id"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

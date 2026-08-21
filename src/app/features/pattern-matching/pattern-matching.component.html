@@ -1,0 +1,66 @@
+<!-- Pattern Matching Activity -->
+<div class="page-frame">
+
+  <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+  <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩"
+      instruction="Kutulara tıklayarak örnek şeklin aynısını oluştur."></app-activity-header>
+  </div>
+
+  <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+  <div class="frame-middle">
+
+    <!-- Sol Ok – ilk etkinlik, kilitli -->
+    <button class="nav-btn locked" disabled aria-label="İlk etkinlik, önceki yok"><span
+        class="material-icons">arrow_back</span></button>
+
+    <!-- Oyun İçeriği -->
+    <div class="game-content">
+      <div class="grids-row">
+
+        <!-- Hedef Grid -->
+        <div class="grid-wrapper target-wrapper">
+          <span class="grid-label">ÖRNEK DESEN</span>
+          <div class="grid target-grid" role="img" aria-label="Hedef desen">
+            @for (row of rowIndices; track row) {
+            @for (col of colIndices; track col) {
+            <div class="cell" [class.filled]="targetGrid()[row][col]"></div>
+            }
+            }
+          </div>
+        </div>
+
+        <div class="arrow-divider" aria-hidden="true">→</div>
+
+        <!-- Kullanıcı Gridi -->
+        <div class="grid-wrapper user-wrapper">
+          <span class="grid-label user-label">{{ reviewMode.active() ? 'ÖĞRENCİNİN CEVABI' : 'SENİN SIRAN' }}</span>
+          <div class="grid user-grid" role="group" aria-label="Kullanıcı alanı">
+            @for (row of rowIndices; track row) {
+            @for (col of colIndices; track col) {
+            <button class="cell" [class.user-filled]="userGrid[row][col]" [class.hint-remove]="isHintRemove(row, col)"
+              [class.hint-add]="isHintAdd(row, col)" (click)="toggleCell(row, col)"
+              [attr.aria-label]="'Satır ' + (row+1) + ' Sütun ' + (col+1)" [attr.aria-pressed]="userGrid[row][col]">
+            </button>
+            }
+            }
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sağ Ok -->
+    <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+      [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce doğru deseni oluştur'"><span
+        class="material-icons">arrow_forward</span>
+    </button>
+
+  </div>
+
+  <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+  <div class="frame-bottom">
+    <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearGrid()" (check)="checkPattern()" />
+  </div>
+
+</div>

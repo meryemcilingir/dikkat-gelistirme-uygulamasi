@@ -1,0 +1,63 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🎨" instruction="Renk örüntüsünü tamamlayan iki noktayı bulun."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Desen gösterimi -->
+            <div class="target-container">
+                <div class="board-card">
+                    <div class="dot-sequence">
+                        @for (color of givenPattern; track $index) {
+                            <div class="dot" [ngClass]="color"></div>
+                        }
+                        <!-- Eksik kısım -->
+                        @if (selectedColors && feedbackState === 'correct') {
+                            @for (color of selectedColors; track $index) {
+                                <div class="dot filled" [ngClass]="color"></div>
+                            }
+                        } @else {
+                            <div class="dot placeholder"><span class="q-mark">?</span></div>
+                            <div class="dot placeholder"><span class="q-mark">?</span></div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seçenekler -->
+            <div class="options-container">
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option-card hover"
+                        [class.selected]="selectedId === opt.id"
+                        [class.shake]="opt.isShaking"
+                        [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                        (click)="selectOption(opt.id)"
+                        [attr.aria-label]="'Seçenek ' + opt.id"
+                        [attr.aria-pressed]="selectedId === opt.id">
+                        <div class="dot-sequence small">
+                            @for (color of opt.colors; track $index) {
+                                <div class="dot small" [ngClass]="color"></div>
+                            }
+                        </div>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()"></app-action-buttons>
+    </div>
+</div>

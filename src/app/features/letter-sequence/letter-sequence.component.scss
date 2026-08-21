@@ -1,0 +1,52 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.rows-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 16px;
+    /* explicitly asked per rules */
+    max-width: 800px;
+    width: 100%;
+    padding: 0 20px;
+    margin: 0 auto;
+}
+
+.sequence-row {
+    padding: 12px 24px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 3px solid transparent;
+    /* Provide space for border calculation naturally */
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+
+    &:focus-visible {
+        outline: 3px solid $color-primary;
+    }
+}
+
+.letters-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.letter {
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 700;
+    line-height: 1;
+    /* This ensures custom font gets applied correctly for text elements if needed globally */
+    font-family: 'Baloo 2', sans-serif;
+}

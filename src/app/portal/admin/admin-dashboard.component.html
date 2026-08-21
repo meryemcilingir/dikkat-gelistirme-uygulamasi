@@ -1,0 +1,8 @@
+<app-portal-shell
+    brandLabel="Yönetici Paneli"
+    [sections]="sections"
+    [userName]="userName"
+    userRole="Yönetici"
+    (changePassword)="openChangePassword()"
+    (logout)="logout()"
+></app-portal-shell>

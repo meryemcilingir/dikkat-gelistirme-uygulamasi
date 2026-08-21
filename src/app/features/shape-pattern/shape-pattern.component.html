@@ -1,0 +1,60 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🧩" instruction="Bu örüntü aşağıdakilerin hangisiyle aynıdır? İşaretleyin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Target Pattern Area (Green Board) -->
+            <div class="target-container">
+                <div class="board-card" aria-label="Bulunması gereken hedef örüntü dizilimi">
+                    <div class="shape-sequence">
+                        @for (shape of targetPattern; track $index) {
+                        <div class="shape-block" [ngClass]="shape"></div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Grid Area -->
+            <div class="options-container">
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option-card hover" [class.selected]="selectedId === opt.id"
+                        [class.shake]="opt.isShaking" [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                        (click)="selectOption(opt.id)" [attr.aria-label]="'Örüntü seçeneği ' + opt.id"
+                        [attr.aria-pressed]="selectedId === opt.id">
+
+                        <div class="shape-sequence">
+                            @for (shape of opt.sequence; track $index) {
+                            <div class="shape-block small" [ngClass]="shape"></div>
+                            }
+                        </div>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()"
+            (check)="checkAnswer()"></app-action-buttons>
+    </div>
+
+</div>

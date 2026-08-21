@@ -1,0 +1,70 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="⚖️"
+            instruction="İki grup arasındaki sayı farkını bulun ve işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block">
+                    
+                    <div class="groups-container">
+                        <!-- Sol Grup -->
+                        <div class="object-group">
+                            @for (i of getArray(q.leftCount); track $index) {
+                            <span class="emoji">{{ q.emoji }}</span>
+                            }
+                        </div>
+
+                        <div class="vs-sign">?</div>
+
+                        <!-- Sağ Grup -->
+                        <div class="object-group">
+                            @for (i of getArray(q.rightCount); track $index) {
+                            <span class="emoji">{{ q.emoji }}</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Seçenekler -->
+                    <div class="options-row" [style.--q-color]="q.color">
+                        @for (opt of q.options; track opt) {
+                        <button class="option-btn"
+                            [class.selected]="q.selectedAnswer === opt"
+                            [class.correct]="feedbackState === 'correct' && q.selectedAnswer === opt"
+                            [class.wrong]="feedbackState === 'wrong' && q.selectedAnswer === opt && opt !== q.answer"
+                            [class.hint]="showHint && opt === q.answer && feedbackState !== 'correct'"
+                            (click)="selectAnswer(q, opt)">
+                            {{ opt }}
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

@@ -1,0 +1,57 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📏"
+            instruction="Nesneleri küçükten büyüğe doğru sıralayın. Kutucuklara sırasıyla 1, 2 ve 3 yazın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="sets-list">
+
+                @for (set of sets; track set.id) {
+                <div class="size-set" [style.--set-color]="set.color">
+                    
+                    <div class="items-row">
+                        @for (item of set.items; track item.id) {
+                        <div class="item-card" [class.hint]="showHint && item.userValue === ''">
+                            <div class="visual" [class]="item.size">
+                                <span class="emoji">{{ item.emoji }}</span>
+                            </div>
+                            <input type="text"
+                                class="rank-input"
+                                [value]="item.userValue"
+                                (input)="onInput(item, $any($event.target).value)"
+                                placeholder="?"
+                                maxlength="1"
+                                inputmode="numeric"
+                                [class.correct]="feedbackState === 'correct'"
+                                [class.wrong]="feedbackState === 'wrong' && item.userValue !== '' && item.userValue !== item.correctOrder.toString()">
+                        </div>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

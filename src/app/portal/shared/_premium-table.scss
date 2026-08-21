@@ -1,0 +1,57 @@
+@use './portal-tokens' as *;
+
+// ── Premium liste tablosu: isim+username tek hücrede, sade hover ──
+.premium-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: $p-surface;
+
+    th, td {
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 1px solid $p-border;
+        font-size: 0.86rem;
+    }
+
+    th {
+        font-weight: 700;
+        color: $p-text-muted;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.04em;
+        background: $p-surface-muted;
+
+        &.sortable {
+            cursor: pointer;
+            user-select: none;
+
+            &:hover { color: $p-accent; }
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease;
+
+        &:hover { background: $p-surface-muted; }
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr.row-clickable { cursor: pointer; }
+
+    .cell-primary {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+
+        .cell-name {
+            font-weight: 600;
+            color: $p-text;
+        }
+
+        .cell-sub {
+            font-size: 0.76rem;
+            color: $p-text-muted;
+        }
+    }
+}

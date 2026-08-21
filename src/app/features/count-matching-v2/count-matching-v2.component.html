@@ -1,0 +1,68 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Karpuz ve çilek sayılarını eşleştirin.'"
+      [icons]="'🍉🍓'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="match-container">
+        <div class="side left-side">
+          @for (group of leftGroups; track group.id) {
+            <div class="group-card"
+                 [class.selected]="selectedLeftId === group.id"
+                 [class.matched]="group.isPaired"
+                 (click)="selectLeft(group.id)">
+              <div class="emoji-cluster">
+                @for (i of getArray(group.count); track $index) {
+                  <span class="emoji">{{ group.emoji }}</span>
+                }
+              </div>
+              @if (group.isPaired && group.pairIndex !== null) {
+                <div class="pair-badge" [style.background]="pairBadgeColor(group)">{{ group.pairIndex! + 1 }}</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="side right-side">
+          @for (group of rightGroups; track group.id) {
+            <div class="group-card"
+                 [class.selected]="selectedRightId === group.id"
+                 [class.matched]="group.isPaired"
+                 (click)="selectRight(group.id)">
+              <div class="emoji-cluster">
+                @for (i of getArray(group.count); track $index) {
+                  <span class="emoji">{{ group.emoji }}</span>
+                }
+              </div>
+              @if (group.isPaired && group.pairIndex !== null) {
+                <div class="pair-badge" [style.background]="pairBadgeColor(group)">{{ group.pairIndex! + 1 }}</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

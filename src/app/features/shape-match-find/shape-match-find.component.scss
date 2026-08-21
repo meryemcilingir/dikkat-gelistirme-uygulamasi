@@ -1,0 +1,81 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    padding: clamp(2px, 1vw, 8px);
+}
+
+// ── Board ─────────────────────────────────────────────────
+.board {
+    display: flex;
+    flex-direction: column;
+    width: min(96vw, 560px);
+    background: #fff;
+    border: 2px solid #c0c0c0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+// ── Referans satırı ───────────────────────────────────────
+.ref-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: #f8f9fa;
+}
+
+.ref-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(6px, 1.5vw, 12px);
+    border-right: 1px solid #d0d0d0;
+
+    &:last-child { border-right: none; }
+}
+
+// ── Ayırıcı ───────────────────────────────────────────────
+.divider {
+    height: 3px;
+    background: #c8102e;
+}
+
+// ── Seçenek satırları ─────────────────────────────────────
+.option-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.option-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(6px, 1.5vw, 10px);
+    border-right: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    aspect-ratio: 1;
+
+    &:last-child { border-right-color: transparent; }
+}
+
+// ── SVG boyutları ─────────────────────────────────────────
+.sv {
+    display: block;
+
+    &.lg {
+        width: clamp(36px, 8vw, 60px);
+        height: auto;
+    }
+
+    &.md {
+        width: clamp(30px, 6.5vw, 50px);
+        height: auto;
+    }
+}

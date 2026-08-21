@@ -1,0 +1,63 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩" instruction="Kırmızı çizgileri bulun ve seçin."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <!-- Sol Ok -->
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <!-- Oyun İçeriği -->
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="shapes-container">
+                    @for (shape of shapes; track $index) {
+                    <div class="shape-box" [class]="shape.type">
+                        <svg [attr.viewBox]="shape.viewBox" preserveAspectRatio="xMidYMid meet">
+                            @for (line of shape.lines; track line.id) {
+                            <g class="line-group" [class.selected]="line.isSelected" (click)="toggleLine(line)"
+                                [class.hint-add]="isHintAdd(line)" [class.hint-remove]="isHintRemove(line)">
+
+                                <!-- Click Hitbox (larger transparent area) -->
+                                <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
+                                    class="hitbox" />
+
+                                <!-- Main Line -->
+                                <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
+                                    class="visible-line" [style.stroke]="line.color" />
+
+                                <!-- Selection Circle Indicator (appears on center of line) -->
+                                <circle [attr.cx]="(line.x1 + line.x2) / 2" [attr.cy]="(line.y1 + line.y2) / 2" r="12"
+                                    class="selection-indicator" />
+
+                                <!-- Hint Circle (appears on center of line) -->
+                                <circle [attr.cx]="(line.x1 + line.x2) / 2" [attr.cy]="(line.y1 + line.y2) / 2" r="14"
+                                    class="hint-indicator" />
+                            </g>
+                            }
+                        </svg>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Ok -->
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce doğru çizgileri seçmelisiniz'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelections()" (check)="checkAnswers()" />
+    </div>
+
+</div>

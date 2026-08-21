@@ -1,0 +1,84 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.groups-container {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 40px);
+  width: 100%;
+  align-items: stretch;
+}
+
+.object-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border-radius: 24px;
+  padding: clamp(12px, 2vw, 24px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  min-width: clamp(100px, 18vw, 180px);
+  justify-content: space-between;
+}
+
+.emoji-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 12px;
+}
+
+.obj-emoji {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.number-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 2px solid #f0f2ff;
+}
+
+.num-btn {
+  width: clamp(36px, 6vw, 48px);
+  height: clamp(36px, 6vw, 48px);
+  border-radius: 12px;
+  border: 3px solid #e0e7ff;
+  background: #fafbff;
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 900;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+
+  &:hover {
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    border-color: #a5b4fc;
+  }
+
+  &.selected {
+    background: #e0e7ff;
+    border-color: #6366f1;
+    color: #6366f1;
+    box-shadow: 0 3px 10px rgba(99,102,241,0.2);
+  }
+}
+
+@include mobile {
+  .groups-container {
+    gap: 10px;
+  }
+  .object-column {
+    padding: 10px;
+    min-width: 90px;
+  }
+}

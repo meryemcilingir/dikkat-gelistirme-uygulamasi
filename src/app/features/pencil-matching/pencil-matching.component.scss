@@ -1,0 +1,223 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Pencil palette ───────────────────────────────────────────────
+$red:    #e8432d;
+$orange: #f97316;
+$green:  #22a84b;
+$yellow: #d4a017;
+
+// ── Pencil sizes (total width including all parts) ───────────────
+$xl: 230px;
+$lg: 165px;
+$md: 110px;
+$sm: 78px;
+
+// ── Fixed part widths ────────────────────────────────────────────
+$eraser-w: 14px;
+$band-w:    5px;
+$point-w:  30px;  // combined wood+graphite tip
+// body = size - (14+5+30) = size - 49px
+
+// ── Pencil height ────────────────────────────────────────────────
+$h: 26px;
+
+// ────────────────────────────────────────────────────────────────
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.match-container {
+    position: relative;
+    width: 560px;
+    height: 440px;
+    flex-shrink: 0;
+    transform-origin: center center;
+
+    @include mobile {           // ≤ 768px — scale + compensate both axes
+        transform: scale(0.80);
+        margin: calc(440px * -0.10) calc(560px * -0.10); // ≈ -44px / -56px
+    }
+
+    @include small-mobile {     // ≤ 480px
+        transform: scale(0.60);
+        margin: calc(440px * -0.20) calc(560px * -0.20); // ≈ -88px / -112px
+    }
+
+    @media (max-width: 400px) { // ≤ 400px (360px cihazlar)
+        transform: scale(0.47);
+        margin: calc(440px * -0.265) calc(560px * -0.265); // ≈ -117px / -148px
+    }
+}
+
+// ── Columns ──────────────────────────────────────────────────────
+.pencil-col {
+    position: absolute;
+    top: 0;
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+
+    &.left-col  { left: 0; }
+    &.right-col { right: 0; }
+}
+
+// ── Slot (clickable row) ─────────────────────────────────────────
+.pencil-slot {
+    width: 240px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background-color 0.18s, box-shadow 0.18s, transform 0.15s;
+    user-select: none;
+    box-sizing: border-box;
+
+    // Left col: erasers aligned at left edge, tips point toward center
+    .left-col & {
+        justify-content: flex-start;
+        padding-left: 8px;
+    }
+
+    // Right col: erasers aligned at right edge (pencil flipped, so eraser is on the right)
+    .right-col & {
+        justify-content: flex-end;
+        padding-right: 8px;
+    }
+
+    &:hover:not(.matched) {
+        background-color: rgba(99, 102, 241, 0.06);
+    }
+
+    &.selected {
+        background-color: rgba(99, 102, 241, 0.1);
+        box-shadow: 0 0 0 3px #6366f1;
+        transform: scale(1.03);
+    }
+
+    &.matched {
+        opacity: 0.38;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    &.hint {
+        background-color: rgba(245, 158, 11, 0.08);
+        box-shadow: 0 0 0 3px #f59e0b;
+        animation: pulse-hint 1s ease-in-out infinite;
+    }
+
+    &.ready:not(.matched):hover {
+        background-color: rgba(99, 102, 241, 0.08);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+    }
+}
+
+// ── Pencil shell ─────────────────────────────────────────────────
+.pencil {
+    display: flex;
+    align-items: center;
+    height: $h;
+    flex-shrink: 0;
+
+    &.size-xl { width: $xl; }
+    &.size-lg { width: $lg; }
+    &.size-md { width: $md; }
+    &.size-sm { width: $sm; }
+
+    // Right-column pencils face left
+    &.flipped { transform: scaleX(-1); }
+}
+
+// ── Eraser cap ───────────────────────────────────────────────────
+.p-eraser {
+    width: $eraser-w;
+    height: $h;
+    background: #fca5a5;
+    border-radius: 3px 0 0 3px;
+    flex-shrink: 0;
+    box-shadow:
+        inset 0 3px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+}
+
+// ── Metal ferrule ────────────────────────────────────────────────
+.p-band {
+    width: $band-w;
+    height: $h;
+    background: linear-gradient(to bottom, #e5e7eb 0%, #9ca3af 50%, #e5e7eb 100%);
+    flex-shrink: 0;
+}
+
+// ── Main body (color from currentColor) ──────────────────────────
+.p-body {
+    flex: 1;
+    height: $h;
+    background: currentColor;
+    box-shadow:
+        inset 0 5px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -5px 0 rgba(0, 0, 0, 0.14);
+}
+
+// ── Combined sharpened tip: wood → graphite in one triangle ──────
+// clip-path carves a right-pointing triangle; gradient fills it
+// with the body color blending into warm wood then dark graphite.
+.p-point {
+    width: $point-w;
+    height: $h;
+    flex-shrink: 0;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    background: linear-gradient(
+        to right,
+        currentColor      0%,
+        currentColor     40%,
+        #c8823a          58%,
+        #7a4a1e          72%,
+        #374151          84%,
+        #111827         100%
+    );
+}
+
+// ── Per-color classes (set CSS currentColor) ─────────────────────
+.pencil-red    { color: $red; }
+.pencil-orange { color: $orange; }
+.pencil-green  { color: $green; }
+.pencil-yellow { color: $yellow; }
+
+// ── SVG overlay ──────────────────────────────────────────────────
+.lines-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.match-line {
+    filter: drop-shadow(0 1px 3px rgba(99, 102, 241, 0.35));
+}
+
+// ── Animations ───────────────────────────────────────────────────
+@keyframes pulse-hint {
+    0%, 100% { box-shadow: 0 0 0 3px #f59e0b; }
+    50%       { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.2); }
+}
+
+.shake {
+    animation: shake 0.42s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-7px); }
+    40%       { transform: translateX(7px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}

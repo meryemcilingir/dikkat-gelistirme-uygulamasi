@@ -1,0 +1,73 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.activities-container {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 36px);
+  width: 100%;
+}
+
+.activity-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 28px;
+  padding: clamp(16px, 3vw, 32px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  border: 4px solid #f0f2ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: clamp(120px, 20vw, 200px);
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: #a5b4fc;
+    box-shadow: 0 10px 35px rgba(99,102,241,0.14);
+  }
+
+  &.selected {
+    border-color: #6366f1;
+    background: #f5f3ff;
+    box-shadow: 0 10px 35px rgba(99,102,241,0.2);
+  }
+
+  &.completed {
+    border-color: #10b981;
+    background: #ecfdf5;
+  }
+}
+
+.activity-scene {
+  width: clamp(80px, 14vw, 130px);
+  height: clamp(80px, 14vw, 130px);
+  background: linear-gradient(135deg, #f0f2ff, #e8ebff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-emoji {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+}
+
+.activity-label {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-weight: 800;
+  color: #3a3a5c;
+  text-align: center;
+}
+
+@include mobile {
+  .activities-container {
+    gap: 10px;
+  }
+  .activity-card {
+    padding: 12px;
+    min-width: 100px;
+  }
+}

@@ -1,0 +1,93 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vw, 30px);
+    align-items: center;
+    width: 100%;
+}
+
+.math-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(4px, 1.5vw, 16px);
+    width: 100%;
+
+    > * {
+        flex-shrink: 1;
+    }
+}
+
+.object-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(2px, 1vw, 8px);
+    justify-content: space-evenly;
+    align-items: center;
+    width: clamp(70px, 22vw, 200px);
+    min-height: clamp(40px, 10vw, 100px);
+    padding: clamp(4px, 1vw, 12px) clamp(6px, 1vw, 20px);
+    border: 3px solid #cdd9e8;
+    border-radius: 16px;
+    background: #ffffff;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.math-sign {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: #5b9bd5;
+}
+
+.answer-input {
+    width: clamp(45px, 12vw, 100px);
+    height: clamp(45px, 12vw, 100px);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    text-align: center;
+    border: 3px solid #cdd9e8;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #3a3a5c;
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-weight: 900;
+    outline: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+
+    // Hide number spin buttons
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    &.show-hint {
+        &::placeholder {
+            color: rgba($color-nav, 0.6);
+            font-weight: 900;
+            opacity: 1;
+        }
+    }
+
+    &.error {
+        color: #e55039;
+    }
+
+    &:focus {
+        border-color: $color-nav;
+    }
+
+    &:disabled {
+        background: #f8f9fa;
+        color: #2ecc71;
+        border-color: #2ecc71;
+        cursor: not-allowed;
+    }
+}

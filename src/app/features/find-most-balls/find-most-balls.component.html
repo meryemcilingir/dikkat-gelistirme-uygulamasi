@@ -1,0 +1,64 @@
+<div class="page-frame">
+        <div class="frame-top">
+        <app-activity-header icons="" instruction="Hangi grupta daha fazla top var? İşaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="groups-container">
+                @for (group of groups; track group.id) {
+                <div class="group-row-wrapper" (click)="selectGroup(group)">
+                    <!-- Grup Şeridi -->
+                    <div class="group-strip hover" [style.--group-color]="group.borderColor"
+                        [class.selected]="group.isSelected" [class.shake]="group.isWrong"
+                        [class.hint]="showHint && group.isCorrect && !group.isSelected">
+
+                        <div class="balls-container" [ngClass]="'layout-' + group.id">
+                            @if (group.topRow) {
+                            <div class="ball-row top-row">
+                                @for (ball of group.topRow; track $index) {
+                                <div class="ball-wrapper" [ngClass]="ball"></div>
+                                }
+                            </div>
+                            }
+                            @if (group.middleRow) {
+                            <div class="ball-row middle-row">
+                                @for (ball of group.middleRow; track $index) {
+                                <div class="ball-wrapper" [ngClass]="ball"></div>
+                                }
+                            </div>
+                            }
+                            @if (group.bottomRow) {
+                            <div class="ball-row bottom-row">
+                                @for (ball of group.bottomRow; track $index) {
+                                <div class="ball-wrapper" [ngClass]="ball"></div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="group-checkbox" [style.border-color]="group.isSelected ? group.borderColor : ''"
+                        [style.background-color]="group.isSelected ? group.borderColor : ''">
+                        <span class="material-icons" [style.opacity]="group.isSelected ? 1 : 0"
+                            style="color: white; font-weight: bold;">check</span>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons (reset)="clearSelection()" (check)="checkAnswer()" [isCompleted]="isNextUnlocked" />
+    </div>
+</div>

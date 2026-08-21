@@ -1,0 +1,70 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.food-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 32px);
+  width: 100%;
+}
+
+.food-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(16px, 3vw, 30px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  min-width: clamp(90px, 14vw, 130px);
+  min-height: clamp(90px, 14vw, 130px);
+  justify-content: center;
+
+  &:hover {
+    background: rgba(99,102,241,0.04);
+  }
+
+  &.circled {
+    border-color: #6366f1;
+    border-style: dashed;
+    background: rgba(99,102,241,0.06);
+    box-shadow: 0 0 20px rgba(99,102,241,0.12);
+  }
+
+  &.correct {
+    border-color: #10b981;
+    border-style: solid;
+    background: rgba(16,185,129,0.06);
+    box-shadow: 0 0 20px rgba(16,185,129,0.15);
+  }
+
+  &.wrong {
+    border-color: #ef4444;
+    border-style: solid;
+    background: rgba(239,68,68,0.06);
+    box-shadow: 0 0 20px rgba(239,68,68,0.15);
+  }
+}
+
+.food-emoji {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+}
+
+.food-label {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-weight: 800;
+  color: #3a3a5c;
+  text-align: center;
+}
+
+@include mobile {
+  .food-card {
+    min-width: 80px;
+    min-height: 80px;
+    padding: 12px;
+  }
+}

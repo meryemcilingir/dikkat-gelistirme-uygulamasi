@@ -1,0 +1,153 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes scaleUp {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+// ── Yerel Renkler ─────────────────────────────────────────
+$color-error-bg: #fff3f0;
+$color-error-tx: #e55039;
+$color-success-bg: #e6f7f1;
+$color-card-bg: #f5f6f8;
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: #edf4fa;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Ana İçerik ──────────────────────────────────────────
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 3vw, 30px);
+    width: 100%;
+    padding: clamp(10px, 2.5vw, 20px);
+    animation: scaleUp 0.4s ease-out;
+}
+
+// ── Options Grid ────────────────────────────────────────
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(8px, 1.5vw, 16px);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    @include mobile {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.animal-card {
+    background: #ffffff;
+    border-radius: clamp(16px, 3vw, 24px);
+    padding: clamp(10px, 1.5vw, 15px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 1.2vw, 12px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    border: 3px solid transparent;
+
+    &.selected {
+        .checkbox {
+            background: #50b875;
+            border-color: #50b875;
+
+            .check-icon {
+                display: block;
+            }
+        }
+    }
+
+    &.correct {
+        border-color: #8db5e6;
+        background: #e9f2fb;
+    }
+
+    &.error {
+        border-color: $color-error-tx;
+        background: $color-error-bg;
+
+        .checkbox {
+            background: $color-error-tx;
+            border-color: $color-error-tx;
+
+            .check-icon {
+                display: none !important;
+            }
+
+            .error-icon {
+                display: block;
+                color: #fff;
+            }
+        }
+    }
+
+    .emoji-container {
+        width: clamp(80px, 18vw, 120px);
+        height: clamp(70px, 14vw, 100px);
+        background: $color-card-bg;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .emoji {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            line-height: 1;
+        }
+    }
+
+    .animal-name {
+        font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+        font-weight: 700;
+        color: #444;
+    }
+
+    .checkbox {
+        width: clamp(20px, 3.5vw, 24px);
+        height: clamp(20px, 3.5vw, 24px);
+        border-radius: 6px;
+        border: 2px solid #dde2e8;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+
+        .material-icons {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #fff;
+            display: none;
+        }
+    }
+}

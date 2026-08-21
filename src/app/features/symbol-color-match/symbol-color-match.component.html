@@ -1,0 +1,94 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Birbiriyle eş olan sembolleri aynı renge boyayın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="board">
+
+                <!-- Semboller 4x2 grid -->
+                <div class="symbols-grid">
+                    @for (cell of cells; track cell.id) {
+                    <div class="symbol-cell hover"
+                         [class.shake]="cell.isShaking"
+                         [class.hint]="isHint(cell)"
+                         (click)="paintCell(cell)">
+                        <svg class="symbol-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            @switch (cell.symbol) {
+
+                            @case ('star') {
+                                <polygon
+                                    points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35"
+                                    [attr.fill]="cell.color || 'transparent'"
+                                    [attr.stroke]="cell.color || '#333'"
+                                    stroke-width="4"
+                                    stroke-linejoin="round" />
+                            }
+
+                            @case ('circle') {
+                                <circle
+                                    cx="50" cy="50" r="42"
+                                    [attr.fill]="cell.color || 'transparent'"
+                                    [attr.stroke]="cell.color || '#333'"
+                                    stroke-width="4" />
+                            }
+
+                            @case ('triangle') {
+                                <polygon
+                                    points="50,8 94,92 6,92"
+                                    [attr.fill]="cell.color || 'transparent'"
+                                    [attr.stroke]="cell.color || '#333'"
+                                    stroke-width="4"
+                                    stroke-linejoin="round" />
+                            }
+
+                            @case ('diamond') {
+                                <polygon
+                                    points="50,5 95,50 50,95 5,50"
+                                    [attr.fill]="cell.color || 'transparent'"
+                                    [attr.stroke]="cell.color || '#333'"
+                                    stroke-width="4"
+                                    stroke-linejoin="round" />
+                            }
+
+                            }
+                        </svg>
+                    </div>
+                    }
+                </div>
+
+                <!-- Renk paleti -->
+                <div class="palette">
+                    <span class="palette-label">Renk seç:</span>
+                    <div class="palette-colors">
+                        @for (c of palette; track c.value) {
+                        <button class="color-btn"
+                                [class.active]="selectedColor === c.value"
+                                [style.background]="c.value"
+                                [attr.aria-label]="c.name"
+                                (click)="selectColor(c.value)">
+                        </button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

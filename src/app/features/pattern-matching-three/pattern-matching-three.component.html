@@ -1,0 +1,63 @@
+<div class="page-frame">
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Üstteki desenin aynısını alttaki boş tabloya çiziniz.'"
+      [icons]="'🎨'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="patterns-container">
+        <!-- Target Grid (Read-only) -->
+        <div class="grid-section">
+          <div class="grid target-grid shadow-sm">
+            @for (r of rowIndices; track r) {
+              <div class="grid-row">
+                @for (c of colIndices; track c) {
+                  <div class="cell" [class.filled]="targetGrid()[r][c]"></div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="vertical-divider"></div>
+
+        <!-- User Grid (Interactive) -->
+        <div class="grid-section">
+          <div class="grid user-grid shadow-sm" [class.locked]="isCompleted">
+            @for (r of rowIndices; track r) {
+              <div class="grid-row">
+                @for (c of colIndices; track c) {
+                  <div
+                    class="cell interactive"
+                    [class.filled]="userGrid[r][c]"
+                    [class.hint-remove]="isHintRemove(r, c)"
+                    [class.hint-add]="isHintAdd(r, c)"
+                    (click)="toggleCell(r, c)">
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+</div>
+
+<app-shared-feedback></app-shared-feedback>

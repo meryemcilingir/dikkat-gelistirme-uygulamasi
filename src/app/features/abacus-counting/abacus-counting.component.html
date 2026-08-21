@@ -1,0 +1,71 @@
+<!-- Abacus Counting Component -->
+<div class="page-frame">
+
+    <!-- Yönerge Alanı -->
+        <div class="frame-top">
+        <app-activity-header icons="🧮" instruction="Abaküsteki boncukları say ve kutucuğa yaz."></app-activity-header>
+    </div>
+
+    <!-- Oyun Alanı -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="abacus-grid">
+                @for (q of questions; track q.id) {
+                <div class="abacus-item">
+
+                    <!-- Abacus Frame (School / chalkboard style border but white center based on pic 1 layout but styled with pic 2 colors) -->
+                    <div class="abacus-frame">
+                        <div class="abacus-inner-board">
+                            <!-- Top Wire -->
+                            <div class="wire">
+                                <div class="wire-line"></div>
+                                <div class="beads">
+                                    @for (bead of q.topBeads; track $index) {
+                                    <div class="bead" [class.green]="bead === 'g'" [class.red]="bead === 'r'"></div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Bottom Wire -->
+                            <div class="wire">
+                                <div class="wire-line"></div>
+                                <div class="beads">
+                                    @for (bead of q.bottomBeads; track $index) {
+                                    <div class="bead" [class.green]="bead === 'g'" [class.red]="bead === 'r'"></div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Card (identical to Question 4) -->
+                    <div class="card input-card" [class.error]="showHint && q.hasError" [class.show-hint]="showHint && !q.input">
+                        <input type="text" inputmode="numeric" maxlength="2"
+                            [placeholder]="(showHint && !q.input) ? q.expectedTotal : '?'" [(ngModel)]="q.input"
+                            (ngModelChange)="onInputChange(q.id)" [attr.aria-label]="'Abaküs toplamı'"
+                            class="number-input" />
+                    </div>
+
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- Action Butonları ve Geri Bildirim -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

@@ -1,0 +1,92 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🧠" instruction="Kutulara tıklayarak soldaki şeklin aynısını oluştur."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="drawing-area">
+
+                <!-- Örnek Desen -->
+                <div class="board-wrapper">
+                    <div class="board-header example">ÖRNEK DESEN</div>
+                    <div class="svg-container">
+                        <svg [attr.viewBox]="'0 0 ' + SVG_SIZE + ' ' + SVG_SIZE">
+                            <!-- Target Edges -->
+                            @for (edge of getParsedEdges(targetEdges); track $index) {
+                            <line [attr.x1]="edge.from.x" [attr.y1]="edge.from.y" [attr.x2]="edge.to.x"
+                                [attr.y2]="edge.to.y" class="target-line" />
+                            }
+                            <!-- Dots -->
+                            @for (dot of dots; track dot.id) {
+                            <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="8" class="dot static" />
+                            }
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="arrow-icon">
+                    <span class="material-icons">east</span>
+                </div>
+
+                <!-- Senin Sıran -->
+                <div class="board-wrapper user" [class.error]="feedbackState === 'wrong' && hasChecked">
+                    <div class="board-header user">{{ reviewMode.active() ? 'ÖĞRENCİNİN CEVABI' : 'SENİN SIRAN' }}</div>
+                    <div class="svg-container interactive" [class.locked]="isNextUnlocked">
+                        <svg [attr.viewBox]="'0 0 ' + SVG_SIZE + ' ' + SVG_SIZE">
+                            <!-- Hints (Target Edges with low opacity) -->
+                            @if (showHint && !isNextUnlocked) {
+                            @for (edge of getParsedEdges(targetEdges); track $index) {
+                            <line [attr.x1]="edge.from.x" [attr.y1]="edge.from.y" [attr.x2]="edge.to.x"
+                                [attr.y2]="edge.to.y" class="hint-line" />
+                            }
+                            }
+
+                            <!-- User Edges -->
+                            @for (edge of getParsedEdges(userEdges); track $index) {
+                            <line [attr.x1]="edge.from.x" [attr.y1]="edge.from.y" [attr.x2]="edge.to.x"
+                                [attr.y2]="edge.to.y" class="user-line" [class.success]="feedbackState === 'correct'" />
+                            }
+
+                            <!-- Active Drawing Line (Preview) -->
+                            @if (activeDot !== null && hoverDot !== null && activeDot !== hoverDot) {
+                            <line [attr.x1]="getDotById(activeDot).x" [attr.y1]="getDotById(activeDot).y"
+                                [attr.x2]="getDotById(hoverDot).x" [attr.y2]="getDotById(hoverDot).y"
+                                class="preview-line" />
+                            }
+
+                            <!-- Dots -->
+                            @for (dot of dots; track dot.id) {
+                            <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="8" class="dot interactive"
+                                [class.active]="activeDot === dot.id" (click)="onDotClick(dot.id)"
+                                (dblclick)="onDotDoubleClick(dot.id)" (mouseenter)="onDotHover(dot.id)"
+                                (mouseleave)="onDotHover(null)" />
+                            }
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

@@ -1,0 +1,111 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Soru Listesi ─────────────────────────────────────────
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 1.4vh, 16px);
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+// ── Blok kapsayıcı — her satır kendi kartı içinde ─────────
+.question-block {
+    background: #fff;
+    border-radius: clamp(14px, 2.5vw, 22px);
+    padding: clamp(10px, 1.6vh, 18px) clamp(12px, 2vw, 20px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border: 1.5px solid #edf0f7;
+}
+
+// ── Tek Soru Satırı (4 kart yan yana) ─────────────────────
+.question-row {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: clamp(6px, 1.2vw, 12px);
+    flex-wrap: nowrap;
+}
+
+// ── Öğe Kartı ─────────────────────────────────────────────
+.item-card {
+    flex: 1;
+    max-width: clamp(72px, 16vw, 130px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(3px, 0.5vh, 6px);
+    padding: clamp(6px, 1vh, 12px) clamp(4px, 0.8vw, 8px);
+    background: #fff;
+    border: 2.5px solid #e8ecf2;
+    border-radius: clamp(12px, 2vw, 20px);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        border-color: $color-nav;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    &.selected {
+        border-color: $color-nav;
+        background: color-mix(in srgb, #{$color-nav} 10%, white);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px color-mix(in srgb, #{$color-nav} 20%, transparent);
+    }
+
+    &.correct {
+        border-color: #50b875;
+        background: #edf9f3;
+        box-shadow: 0 6px 16px rgba(80, 184, 117, 0.2);
+    }
+
+    &.wrong {
+        border-color: #e55039;
+        background: #fff3f0;
+        animation: shakeAnim 0.45s ease;
+    }
+
+    &.hint {
+        border-color: #f9a825;
+        background: #fff8e1;
+    }
+}
+
+.item-emoji {
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    line-height: 1;
+    display: block;
+}
+
+.item-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.6rem, 1.5vw, 0.85rem);
+    font-weight: 800;
+    color: $color-text;
+    text-align: center;
+    white-space: nowrap;
+}

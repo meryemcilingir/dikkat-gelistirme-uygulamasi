@@ -1,0 +1,74 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      instruction="Büyük harflere karşılık gelen küçük harfleri yazın."
+      [icons]="'🔤'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" [class.locked]="false"
+            (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="matching-container">
+        
+        <div class="frames-grid">
+          @for (frame of frames; track frame.id) {
+            <div class="letter-frame">
+                <div class="frame-border">
+                    <div class="frame-quadrants">
+                        <!-- Top left: uppercase 1 -->
+                        <div class="quadrant">
+                            <span class="large-letter">{{ frame.upper1 }}</span>
+                        </div>
+                        <!-- Top right: input for lowercase 1 -->
+                        <div class="quadrant input-quadrant">
+                            <input type="text"
+                                   class="letter-input"
+                                   maxlength="1"
+                                   [(ngModel)]="frame.userLower1"
+                                   [class.correct]="feedbackState === 'correct'"
+                                   [class.wrong]="feedbackState === 'wrong' && frame.userLower1.trim() !== frame.lower1"
+                                   placeholder="?">
+                        </div>
+                        <!-- Bottom left: uppercase 2 -->
+                        <div class="quadrant">
+                            <span class="large-letter">{{ frame.upper2 }}</span>
+                        </div>
+                        <!-- Bottom right: input for lowercase 2 -->
+                        <div class="quadrant input-quadrant">
+                            <input type="text"
+                                   class="letter-input"
+                                   maxlength="1"
+                                   [(ngModel)]="frame.userLower2"
+                                   [class.correct]="feedbackState === 'correct'"
+                                   [class.wrong]="feedbackState === 'wrong' && frame.userLower2.trim() !== frame.lower2"
+                                   placeholder="?">
+                        </div>
+                    </div>
+                </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isNextUnlocked"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

@@ -1,0 +1,142 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+
+@keyframes scaleUp {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-8px);
+    }
+
+    75% {
+        transform: translateX(8px);
+    }
+}
+
+// Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+
+
+// ── Eşleştirme Tahtası ────────────────────────────────────
+.matching-board {
+    display: flex;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 120px); 
+    width: 100%;
+    padding: clamp(10px, 2.5vw, 20px);
+    flex-wrap: nowrap;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 2vw, 20px); 
+}
+
+// ── İşaret Kartları ───────────────────────────────────────
+.sign-card {
+    width: clamp(100px, 25vw, 160px); // Responsive width shrink
+    height: clamp(60px, 15vw, 90px);
+    border-radius: 16px;
+    background: #f8fafc;
+    border: clamp(2px, 0.5vw, 3px) solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    outline: none;
+
+    .emoji {
+        font-size: clamp(1.8rem, 5vw, 2.5rem);
+        transition: transform 0.2s;
+    }
+
+    // Hover Effect
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    // Focus visible for accessibility
+    &:focus-visible {
+        border-color: #cbd5e1;
+        box-shadow: 0 0 0 4px rgba(203, 213, 225, 0.3);
+    }
+
+    // Selection state
+    &.selected {
+        border-color: #3b82f6; 
+        background: #eff6ff;
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+        z-index: 10;
+    }
+
+    // Paired state
+    &.paired {
+        border-color: #cbd5e1;
+        background: #f1f5f9;
+    }
+
+    // Checked Correct State
+    &.correct {
+        border-color: #22c55e;
+        background: #f0fdf4;
+        cursor: default;
+
+        .emoji {
+            animation: scaleUp 0.5s ease;
+        }
+    }
+
+    // Checked Wrong State
+    &.wrong {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+
+    // Animations
+    &.shake {
+        animation: shake 0.4s ease-in-out;
+    }
+}

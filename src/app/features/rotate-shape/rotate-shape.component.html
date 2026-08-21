@@ -1,0 +1,83 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📐"
+            instruction="Soldaki referans şekil ile aynı yönde duran şekli bulun ve işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block" [style.--q-color]="q.color">
+                    
+                    <!-- Referans -->
+                    <div class="reference-side">
+                        <div class="shape-container ref" [style.transform]="'rotate(' + q.targetAngle + 'deg)'">
+                            <ng-container [ngTemplateOutlet]="shapeTemplate" [ngTemplateOutletContext]="{ type: q.shapeType }"></ng-container>
+                        </div>
+                        <div class="label">REFERANS</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Seçenekler -->
+                    <div class="options-side">
+                        @for (opt of q.options; track opt.id) {
+                        <button class="option-card"
+                            [class.selected]="q.selectedId === opt.id"
+                            [class.correct]="feedbackState === 'correct' && opt.isCorrect"
+                            [class.wrong]="feedbackState === 'wrong' && q.selectedId === opt.id && !opt.isCorrect"
+                            [class.hint]="showHint && opt.isCorrect && q.selectedId !== opt.id"
+                            (click)="select(q, opt)">
+                            <div class="shape-container" [style.transform]="'rotate(' + opt.angle + 'deg)'">
+                                <ng-container [ngTemplateOutlet]="shapeTemplate" [ngTemplateOutletContext]="{ type: q.shapeType }"></ng-container>
+                            </div>
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>
+
+<!-- Şekil Şablonu -->
+<ng-template #shapeTemplate let-type="type">
+    <div class="shape-renderer" [attr.data-type]="type">
+        @if (type === 'L') {
+            <div class="cell"></div><div class="cell empty"></div>
+            <div class="cell"></div><div class="cell empty"></div>
+            <div class="cell"></div><div class="cell"></div>
+        } @else if (type === 'F') {
+            <div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell empty"></div>
+            <div class="cell"></div><div class="cell empty"></div>
+        } @else if (type === 'T') {
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell empty"></div><div class="cell"></div><div class="cell empty"></div>
+            <div class="cell empty"></div><div class="cell"></div><div class="cell empty"></div>
+        }
+    </div>
+</ng-template>

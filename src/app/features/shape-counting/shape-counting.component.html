@@ -1,0 +1,53 @@
+<div class="page-frame">
+
+        <div class="frame-top">
+        <app-activity-header icons="🔢" instruction="Şekilleri sayın. Şekillerin sayısını gösteren rakamı işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="rows-container">
+                    @for (row of rows; track row.id; let rIdx = $index) {
+                    <div class="count-row">
+                        <div class="emoji-group">
+                            @for (e of row.emojiArray; track $index) {
+                            <span class="emoji-item">{{ e }}</span>
+                            }
+                        </div>
+                        <div class="number-options">
+                            @for (num of row.options; track num) {
+                            <div class="number-box" [class.selected]="row.selectedOption === num"
+                                [class.hint]="isHintCorrect(rIdx, num)" (click)="selectNumber(rIdx, num)">
+                                <span class="number-label">{{ num }}</span>
+                                <div class="checkbox" [class.selected]="row.selectedOption === num">
+                                    @if (row.selectedOption === num) {
+                                    <span class="material-icons check-icon">check</span>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelections()" (check)="checkAnswers()" />
+    </div>
+
+</div>

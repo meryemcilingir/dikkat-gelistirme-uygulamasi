@@ -1,0 +1,53 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'\'ZEBRA\' kelimesinde olan harfleri işaretleyiniz.'"
+      [icons]="'🦓 🔠'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="selection-container">
+        <div class="target-word">
+          <span class="letter">Z</span>
+          <span class="letter">E</span>
+          <span class="letter">B</span>
+          <span class="letter">R</span>
+          <span class="letter">A</span>
+        </div>
+
+        <div class="options-grid">
+          @for (option of options; track option.id) {
+            <div class="option-card"
+                 [class.selected]="option.isSelected"
+                 [class.locked]="isCompleted"
+                 (click)="toggleSelection(option.id)">
+                <div class="option-char">{{ option.char }}</div>
+                @if (option.isSelected) {
+                  <div class="check-mark">✓</div>
+                }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

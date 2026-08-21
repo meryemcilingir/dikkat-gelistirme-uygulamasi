@@ -1,0 +1,61 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🎨🔢"
+            [instruction]="targetColor.name + ' kareleri sayın ve kutucuğa yazın.'">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="activity-layout">
+                
+                <div class="grid-container">
+                    @for (item of items; track item.id) {
+                    <div class="color-box" [style.background-color]="item.color"
+                        [class.highlight]="showHint && item.name === targetColor.name">
+                    </div>
+                    }
+                </div>
+
+                <div class="input-side">
+                    <div class="target-info" [style.--target-color]="targetColor.color">
+                        <span class="target-label">HEDEF RENK:</span>
+                        <div class="color-sample" [style.background-color]="targetColor.color"></div>
+                        <span class="color-name">{{ targetColor.name }}</span>
+                    </div>
+
+                    <div class="answer-box">
+                        <label for="count-input">Kaç tane?</label>
+                        <input type="text" id="count-input"
+                            autocomplete="off"
+                            [value]="inputValue"
+                            (input)="onInput($any($event.target).value)"
+                            placeholder="?"
+                            maxlength="2"
+                            inputmode="numeric"
+                            [class.correct]="feedbackState === 'correct'"
+                            [class.wrong]="feedbackState === 'wrong'">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

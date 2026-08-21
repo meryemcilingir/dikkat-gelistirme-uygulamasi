@@ -1,0 +1,70 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Tablodaki sembolleri sayarak doğru kutucukları işaretleyin.'"
+      [icons]="'❤️🔢'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="grid-counting-layout">
+
+        <!-- Scatter Area -->
+        <div class="scatter-area">
+          @for (sym of scatterSymbols; track $index) {
+            <span class="scatter-emoji">{{ sym }}</span>
+          }
+        </div>
+
+        <!-- Counting Table -->
+        <div class="count-table">
+          <!-- Header row -->
+          <div class="table-row header-row">
+            <div class="table-cell symbol-cell"></div>
+            @for (col of columns; track col) {
+              <div class="table-cell header-cell">{{ col }}</div>
+            }
+          </div>
+
+          <!-- Data rows -->
+          @for (row of rows; track row.symbol; let rIdx = $index) {
+            <div class="table-row">
+              <div class="table-cell symbol-cell">
+                <span class="row-symbol">{{ row.symbol }}</span>
+              </div>
+              @for (col of columns; track col) {
+                <div class="table-cell data-cell"
+                     [class.selected]="row.selectedCount === col"
+                     [class.correct]="isCompleted && row.selectedCount === col && row.correctCount === col"
+                     [class.wrong]="isCompleted && row.selectedCount === col && row.correctCount !== col"
+                     (click)="selectCell(rIdx, col)">
+                  @if (row.selectedCount === col) {
+                    <span class="check-mark">✓</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

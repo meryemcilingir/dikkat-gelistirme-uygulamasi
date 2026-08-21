@@ -1,0 +1,71 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🐱" instruction="Aşağıdaki kedilerin altına numaralarını yazın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="cat-layout">
+                
+                <!-- Target Mapping -->
+                <div class="mapping-container">
+                    <div class="mapping-grid">
+                        <div class="mapping-row top">
+                            @for (cat of mappings; track cat.id) {
+                                <div class="cell emoji-cell">{{ cat.emoji }}</div>
+                            }
+                        </div>
+                        <div class="mapping-row bottom">
+                            @for (cat of mappings; track cat.id) {
+                                <div class="cell number-cell">{{ cat.id }}</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sequence -->
+                <div class="sequence-container">
+                    <div class="sequence-grid">
+                        <div class="mapping-row top">
+                            @for (item of sequence; track item.id) {
+                                <div class="cell emoji-cell">{{ item.emoji }}</div>
+                            }
+                        </div>
+                        <div class="mapping-row bottom">
+                            @for (item of sequence; track item.id) {
+                                <div class="cell input-cell"
+                                     [class.hint-pulse]="showHint && item.userNumber !== null && item.userNumber !== item.catId">
+                                    <input type="number" 
+                                           [(ngModel)]="item.userNumber" 
+                                           [class.correct]="feedbackState === 'correct'"
+                                           [class.wrong]="feedbackState === 'wrong' && item.userNumber !== item.catId"
+                                           min="1" max="4">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

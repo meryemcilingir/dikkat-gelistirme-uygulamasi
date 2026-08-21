@@ -1,0 +1,76 @@
+@use '../../shared/portal' as *;
+@use '../../shared/portal-tokens' as *;
+@use '../../shared/kpi-strip' as *;
+@use '../../shared/dash-grid' as *;
+@use 'sass:color';
+
+// ══════════════════════════════════════════════════════════
+// Genel Bakış — production dashboard düzeni.
+// .dashboard / .kpi-* / .dash-row / .panel-card.dash-card artık paylaşılan
+// partial'larda — bu dosya yalnızca Genel Bakış'a özel activity-feed'i içerir.
+// ══════════════════════════════════════════════════════════
+
+// ── Son Aktiviteler: sade activity-feed ────────────────────────────
+.activity-feed {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-feed-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid $p-border;
+    cursor: pointer;
+    border-radius: $p-radius-sm;
+
+    &:last-child { border-bottom: none; }
+}
+
+.activity-avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: $p-accent-soft;
+    color: $p-accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.activity-feed-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.activity-feed-title {
+    font-size: 0.85rem;
+    color: $p-text-secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    strong {
+        color: $p-text;
+        font-weight: 700;
+    }
+}
+
+.activity-feed-time {
+    font-size: 0.72rem;
+    color: $p-text-muted;
+}
+
+.activity-feed-score {
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: $p-text;
+}

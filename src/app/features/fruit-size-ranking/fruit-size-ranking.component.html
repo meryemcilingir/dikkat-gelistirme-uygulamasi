@@ -1,0 +1,53 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+    <app-activity-header icons="🍎 🍊 🍐" instruction="Boyutlarına göre kutucuklara en büyüğüne 1, ortancasına 2, en küçüğüne 3 yazın."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="rows-container">
+                    @for (row of rows; track row.id; let rIdx = $index) {
+                    <div class="fruit-row">
+                        @for (fruit of row.fruits; track fruit.label; let cIdx = $index) {
+                        <div class="fruit-item">
+                            <div class="fruit-visual" [style.height.px]="100">
+                                <span class="fruit-emoji" [style.font-size.px]="fruit.displaySize">
+                                    {{ fruit.emoji }}
+                                </span>
+                            </div>
+                            <div class="rank-input-wrapper" [class.hint]="isHint(rIdx, cIdx)"
+                                [class.correct]="feedbackState === 'correct'">
+                                <input type="text" class="rank-input" maxlength="1" [value]="fruit.userRank"
+                                    (input)="onRankInput($event, fruit)" (keydown)="onKeyDown($event)"
+                                    inputmode="numeric" placeholder="?" [disabled]="isNextUnlocked" />
+                                @if (getHintValue(rIdx, cIdx)) {
+                                <span class="hint-value">{{ getHintValue(rIdx, cIdx) }}</span>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce doğru sıralamayı bulmalısınız'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

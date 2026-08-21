@@ -1,0 +1,56 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Sepette olan meyveleri aşağıda bul ve seç.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="board">
+
+                <!-- Sepet + içindeki meyveler -->
+                <div class="basket-wrap">
+                    <img src="assets/sepet.png" alt="Sepet" class="basket-img" draggable="false">
+                    @for (f of basketFruits; track $index) {
+                        <span class="basket-fruit"
+                              [style.top.%]="f.top"
+                              [style.left.%]="f.left"
+                              [style.font-size.px]="f.size"
+                              [style.transform]="'translate(-50%, -50%) rotate(' + f.rotate + 'deg)'">
+                            {{ f.emoji }}
+                        </span>
+                    }
+                </div>
+
+                <!-- Seçenekler -->
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option hover"
+                            [class.selected]="opt.isSelected"
+                            [class.shake]="opt.isShaking"
+                            [class.hint]="isHintOption(opt)"
+                            [disabled]="isNextUnlocked"
+                            (click)="toggleOption(opt)">
+                        <span class="opt-emoji">{{ opt.emoji }}</span>
+                    </button>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

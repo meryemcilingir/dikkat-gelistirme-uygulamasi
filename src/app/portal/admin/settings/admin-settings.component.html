@@ -1,0 +1,18 @@
+<div class="page-header">
+    <div>
+        <h1>Ayarlar</h1>
+        <p class="page-subtitle">Hesap bilgileriniz</p>
+    </div>
+</div>
+
+<div class="panel-card" style="max-width: 480px;" *ngIf="user as u">
+    <div class="panel-title">Hesap Bilgileri</div>
+    <table class="mini-table">
+        <tbody>
+            <tr><td>Ad Soyad</td><td>{{ u.firstName }} {{ u.lastName }}</td></tr>
+            <tr><td>Kullanıcı Adı</td><td>{{ u.username }}</td></tr>
+            <tr><td>Rol</td><td>Yönetici</td></tr>
+        </tbody>
+    </table>
+    <button class="secondary-btn" style="margin-top: 16px;" (click)="openChangePassword()">Şifremi Değiştir</button>
+</div>

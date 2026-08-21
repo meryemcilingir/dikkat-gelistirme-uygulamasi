@@ -1,0 +1,29 @@
+<div class="pager-bar" *ngIf="total > 0">
+    <span class="pager-range">{{ rangeLabel() }}</span>
+
+    <div class="pager-right">
+        <label class="page-size-select">
+            <span>Sayfa başına</span>
+            <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+                <option *ngFor="let n of pageSizeOptions" [ngValue]="n">{{ n }}</option>
+            </select>
+        </label>
+
+        <nav class="pager" *ngIf="totalPages > 1" aria-label="Sayfalama">
+            <button class="page-btn page-btn-nav" [disabled]="page === 1" (click)="go(page - 1)" aria-label="Önceki sayfa">‹</button>
+
+            <ng-container *ngFor="let n of pageList(); trackBy: trackByIndex">
+                <span class="page-ellipsis" *ngIf="n === '...'">…</span>
+                <button
+                    *ngIf="n !== '...'"
+                    class="page-btn"
+                    [class.active]="n === page"
+                    [attr.aria-current]="n === page ? 'page' : null"
+                    (click)="go(n)"
+                >{{ n }}</button>
+            </ng-container>
+
+            <button class="page-btn page-btn-nav" [disabled]="page === totalPages" (click)="go(page + 1)" aria-label="Sonraki sayfa">›</button>
+        </nav>
+    </div>
+</div>

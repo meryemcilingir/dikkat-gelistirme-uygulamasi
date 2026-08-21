@@ -1,0 +1,86 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+@keyframes pulseYellow {
+    0%, 100% { transform: scale(1); border-width: 4px; opacity: 1; }
+    50% { transform: scale(1.1); border-width: 6px; opacity: 0.7; }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.interaction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 40px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: min(1100px, 95vw);
+    width: 95%;
+    margin: 0 auto;
+    min-height: fit-content;
+    flex-shrink: 0;
+    @include card-shadow($color-nav, .12);
+}
+
+.shapes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(12px, 3vw, 40px);
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+
+    @include mobile {
+        flex-direction: column;
+    }
+}
+
+.shape-box {
+    flex: 1;
+    min-width: clamp(80px, 15vw, 160px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        width: 100%;
+        height: auto;
+        max-height: clamp(120px, 25vw, 240px);
+        overflow: visible;
+    }
+
+    &.square svg { max-width: clamp(100px, 20vw, 160px); }
+    &.rectangle svg { max-width: clamp(120px, 25vw, 240px); }
+    &.polygon svg { max-width: clamp(110px, 22vw, 180px); }
+}
+
+.line-group {
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    .hitbox { stroke: transparent; stroke-width: 30px; stroke-linecap: round; }
+    .visible-line { stroke-width: 8px; stroke-linecap: round; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 0 0 transparent); }
+    &:hover .visible-line { stroke-width: 12px; filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2)); }
+    &.selected .visible-line { stroke-width: 16px; filter: drop-shadow(0 0 8px currentColor); }
+    .selection-indicator { display: none; }
+    .hint-indicator { fill: transparent; stroke: #f1c40f; stroke-width: 6px; opacity: 0; pointer-events: none; transform-origin: center; transition: opacity 0.3s ease; }
+    &.hint-add .hint-indicator { opacity: 1; animation: pulseYellow 1.2s infinite ease-in-out; }
+    &.hint-remove .selection-indicator { stroke: #e74c3c; }
+}

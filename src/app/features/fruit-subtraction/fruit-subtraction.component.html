@@ -1,0 +1,78 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Çıkarma işlemlerini yapın ve sonucu yazın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="problems-list">
+
+                @for (p of problems; track p.id) {
+                <div class="problem-row">
+
+                    <!-- Toplam grup -->
+                    <div class="fruit-group">
+                        @for (i of totalArray(p.total); track i) {
+                            <span class="fruit" [class.removed]="i >= p.total - p.subtracted">{{ p.emoji }}</span>
+                        }
+                    </div>
+
+                    <span class="op">−</span>
+
+                    <!-- Çıkarılan grup -->
+                    <div class="fruit-group small">
+                        @for (i of totalArray(p.subtracted); track i) {
+                            <span class="fruit crossed">{{ p.emoji }}</span>
+                        }
+                    </div>
+
+                    <span class="op">=</span>
+
+                    <!-- Cevap kutusu -->
+                    <div class="answer-box" [class.shake]="p.isShaking" [class.correct]="p.isCorrect === true">
+                        <div class="input-wrapper">
+                            @if (showHint && p.isCorrect !== true) {
+                                <span class="ghost-answer">{{ p.answer }}</span>
+                            }
+                            <input
+                                type="text"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                maxlength="2"
+                                class="count-input"
+                                [class.input-correct]="p.isCorrect === true"
+                                [class.input-wrong]="p.isCorrect === false"
+                                [(ngModel)]="p.userInput"
+                                (ngModelChange)="onInput()"
+                                [disabled]="isNextUnlocked"
+                                [placeholder]="showHint ? '' : '?'" />
+                        </div>
+                    </div>
+
+                    <!-- Soru metni -->
+                    <div class="speech-bubble">
+                        {{ p.text }}
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

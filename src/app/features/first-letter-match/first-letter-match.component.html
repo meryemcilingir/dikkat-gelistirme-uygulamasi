@@ -1,0 +1,57 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🍎"
+            instruction="Belirtilen harf ile başlayan nesneleri seçin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block">
+                    
+                    <div class="letter-circle" [style.--q-color]="q.color">
+                        {{ q.letter }}
+                    </div>
+
+                    <div class="items-row">
+                        @for (item of q.items; track item.id) {
+                        <button class="item-card"
+                            [class.selected]="item.isSelected"
+                            [class.correct]="feedbackState === 'correct' && item.isCorrect"
+                            [class.wrong]="item.isShaking"
+                            [class.hint]="showHint && item.isCorrect && !item.isSelected"
+                            [style.--q-color]="q.color"
+                            (click)="toggleItem(q, item)">
+                            <span class="emoji">{{ item.emoji }}</span>
+                            <span class="name">{{ item.name }}</span>
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

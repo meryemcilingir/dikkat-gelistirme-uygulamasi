@@ -1,0 +1,182 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+$cell-size: 88px;
+$border-color: #334155;
+$arrow-color: #1e3a5f;
+$active-color: #0277bd;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 3vh, 28px);
+    flex: 1;
+
+    @media (max-width: 420px) {
+        justify-content: flex-start;
+        gap: 10px;
+        padding-top: 8px;
+        overflow-y: auto;
+    }
+}
+
+.grids-row {
+    display: flex;
+    gap: clamp(16px, 4vw, 60px);
+    align-items: flex-start;
+
+    @media (max-width: 420px) {
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+    }
+}
+
+.grid-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.grid-label {
+    font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+    font-weight: 600;
+    color: #64748b;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.grid {
+    --cell: #{$cell-size};
+    display: grid;
+    grid-template-columns: repeat(3, var(--cell));
+    grid-template-rows: repeat(3, var(--cell));
+    border: 2px solid $border-color;
+
+    @include mobile {
+        --cell: clamp(52px, 11vw, #{$cell-size});
+    }
+
+    @media (max-width: 420px) {
+        --cell: clamp(64px, 18vw, 76px);
+    }
+}
+
+.cell {
+    width: var(--cell, #{$cell-size});
+    height: var(--cell, #{$cell-size});
+    border: 1.5px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1;
+    color: $arrow-color;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.ref-cell {
+    background: #f0f4ff;
+    color: #1a237e;
+}
+
+.user-cell {
+    background: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.15s, box-shadow 0.15s;
+    color: #0277bd;
+
+    &:hover:not(.correct) { background-color: #f1f5f9; }
+
+    &.paintable {
+        cursor: crosshair;
+        &:hover:not(.correct) {
+            background-color: #e3f2fd;
+            box-shadow: inset 0 0 0 2px rgba(2, 119, 189, 0.3);
+        }
+    }
+
+    &.correct {
+        background-color: rgba(22, 163, 74, 0.1);
+        color: #15803d;
+        cursor: default;
+    }
+
+    &.wrong {
+        background-color: rgba(220, 38, 38, 0.08);
+        color: #b91c1c;
+        animation: shake-cell 0.4s ease-in-out;
+    }
+
+    &.hint:not(.correct) {
+        animation: pulse-hint 1.2s ease-in-out infinite;
+    }
+
+    &.has-ghost { background-color: rgba(245, 158, 11, 0.05); }
+}
+
+.ghost-symbol {
+    color: #c0c0c0;
+    font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+    font-weight: 700;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.arrow-buttons {
+    display: flex;
+    gap: clamp(12px, 3vw, 20px);
+}
+
+.arrow-btn {
+    width: clamp(58px, 14vw, 80px);
+    height: clamp(58px, 14vw, 80px);
+    font-size: clamp(2rem, 5.5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1;
+    border: 3px solid #cbd5e1;
+    border-radius: 16px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background: #e8f4ff; border-color: #90caf9; }
+    &:active { transform: scale(0.94); }
+
+    &.active {
+        border-color: $active-color;
+        color: $active-color;
+        background: rgba($active-color, 0.08);
+        box-shadow: 0 0 0 4px rgba($active-color, 0.2);
+        transform: scale(1.05);
+    }
+
+    @include mobile {
+        width: clamp(52px, 13vw, 70px);
+        height: clamp(52px, 13vw, 70px);
+        font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+        border-radius: 12px;
+    }
+}
+
+@keyframes shake-cell {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-5px); }
+    40%       { transform: translateX(5px); }
+    60%       { transform: translateX(-3px); }
+    80%       { transform: translateX(3px); }
+}
+
+@keyframes pulse-hint {
+    0%, 100% { background-color: rgba(245, 158, 11, 0.06); }
+    50%       { background-color: rgba(245, 158, 11, 0.18); }
+}

@@ -1,0 +1,45 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🐶" instruction="Canlı varlıkları seçin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="objects-grid">
+                @for (item of items; track item.id) {
+                <button class="object-card hover" [class.selected]="item.isSelected"
+                    [class.shake]="item.isShaking"
+                    [class.hint]="showHint && item.isLiving && !item.isSelected"
+                    (click)="toggleSelection(item)" [attr.aria-label]="item.name + ' seçimi'"
+                    [attr.aria-pressed]="item.isSelected">
+
+                    <span class="emoji-art">{{ item.emoji }}</span>
+                    <!-- Note: Removed the text label as the UI only shows images. The emoji acts as the image -->
+
+                </button>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()">
+        </app-action-buttons>
+    </div>
+
+</div>

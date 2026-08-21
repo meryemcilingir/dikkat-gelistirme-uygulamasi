@@ -1,0 +1,49 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🎨 🔵 ⭕"
+            instruction="Daireleri en açıktan en koyuya doğru sıralayarak yerleştir.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content canvas-area">
+            @for (circle of circles; track circle.id) {
+            <div class="circle-wrap"
+                 [class.hover]="!circle.clicked"
+                 [class.found]="circle.clicked"
+                 (click)="onCircleClick(circle)"
+                 role="button" tabindex="0"
+                 (keydown.enter)="onCircleClick(circle)">
+                <div class="circle" [style.background]="circle.shade"></div>
+                @if (circle.clicked) {
+                    <span class="step-label">{{ circle.clickStep }}</span>
+                }
+            </div>
+            }
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="progress-strip">
+        <div class="progress-bar-wrap" aria-label="İlerleme">
+            <div class="progress-bar-fill" [style.width.%]="(clickOrder.length / 12) * 100"></div>
+            <span class="progress-text">{{ clickOrder.length }} / 12</span>
+        </div>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="restartGame()" (check)="checkAnswer()" />
+    </div>
+
+</div>

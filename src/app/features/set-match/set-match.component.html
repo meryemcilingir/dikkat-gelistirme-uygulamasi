@@ -1,0 +1,70 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Aynı olan kümeleri eşleştirin. İki kutuya tıklayarak eşleştirebilirsiniz.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="boxes-grid">
+                @for (box of boxes; track box.id) {
+                <div class="set-box hover"
+                     [class.selected]="isPending(box)"
+                     [class.paired]="box.pairedWith != null"
+                     [class.shake]="box.isShaking"
+                     [class.hint]="isHintBox(box)"
+                     [style.border-color]="pairColor(box) || null"
+                     [style.background]="pairColor(box) ? pairColor(box) + '15' : null"
+                     (click)="onBoxClick(box)">
+                    <div class="symbols">
+                        @for (s of box.symbols; track $index) {
+                            <ng-container *ngTemplateOutlet="symTpl; context: { k: s }"></ng-container>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Sembol SVG Template
+     ═══════════════════════════════════════════════════════════ -->
+<ng-template #symTpl let-k="k">
+    <svg class="sym" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        @switch (k) {
+        @case ('tri') {
+            <polygon points="12,3 22,21 2,21" fill="#6b3fa0"/>
+        }
+        @case ('circle') {
+            <circle cx="12" cy="12" r="9" fill="#6b3fa0"/>
+        }
+        @case ('plus') {
+            <rect x="10" y="3" width="4" height="18" fill="#6b3fa0"/>
+            <rect x="3" y="10" width="18" height="4" fill="#6b3fa0"/>
+        }
+        @case ('x') {
+            <rect x="10" y="3" width="4" height="18" fill="#6b3fa0" transform="rotate(45 12 12)"/>
+            <rect x="10" y="3" width="4" height="18" fill="#6b3fa0" transform="rotate(-45 12 12)"/>
+        }
+        @case ('square') {
+            <rect x="4" y="4" width="16" height="16" fill="#6b3fa0"/>
+        }
+        }
+    </svg>
+</ng-template>

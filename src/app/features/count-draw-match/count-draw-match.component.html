@@ -1,0 +1,71 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Sayıları eşleştirin: Elma sayısı kadar muz, üçgen sayısı kadar kare seçin.'"
+      [icons]="'🍎🍌🔺🟦'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="tasks-container">
+        @for (task of tasks; track task.id; let tIdx = $index) {
+          <div class="task-card">
+            <!-- Source row -->
+            <div class="source-section">
+              <div class="source-emojis">
+                @for (i of getArray(task.sourceCount); track i) {
+                  <span class="src-emoji">{{ task.sourceEmoji }}</span>
+                }
+              </div>
+              <div class="source-label">{{ task.sourceCount }} {{ task.sourceLabel }}</div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="arrow-section">
+              <span class="arrow-icon">➡️</span>
+            </div>
+
+            <!-- Target: select count -->
+            <div class="target-section">
+              <div class="target-label">{{ task.targetLabel }} sayısı?</div>
+              <div class="target-options">
+                @for (num of task.options; track num) {
+                  <button class="opt-btn"
+                          [class.selected]="task.selectedAnswer === num"
+                          (click)="selectOption(tIdx, num)">
+                    {{ num }}
+                  </button>
+                }
+              </div>
+              <!-- Preview: show emojis matching selection -->
+              @if (task.selectedAnswer !== null) {
+                <div class="preview-emojis">
+                  @for (i of getArray(task.selectedAnswer); track i) {
+                    <span class="tgt-emoji">{{ task.targetEmoji }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

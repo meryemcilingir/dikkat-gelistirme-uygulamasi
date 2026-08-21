@@ -1,0 +1,66 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📐"
+            instruction="Şekillerin kaç kenarı var? Sayın ve altındaki kutucuklardan doğru sayıyı işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block" [style.--q-color]="q.color">
+                    
+                    <div class="shape-display">
+                        <!-- Şekil Çizimi (SVG) -->
+                        <svg viewBox="0 0 100 100" class="shape-svg">
+                            @if (q.shapeType === 'triangle') {
+                                <polygon points="50,10 90,85 10,85" />
+                            } @else if (q.shapeType === 'square') {
+                                <rect x="15" y="15" width="70" height="70" />
+                            } @else if (q.shapeType === 'pentagon') {
+                                <polygon points="50,10 90,40 75,90 25,90 10,40" />
+                            } @else if (q.shapeType === 'hexagon') {
+                                <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" />
+                            }
+                        </svg>
+                    </div>
+
+                    <div class="options-grid">
+                        @for (val of options; track val) {
+                        <button class="option-chip"
+                            [class.selected]="q.selectedSides === val"
+                            [class.correct]="feedbackState === 'correct' && val === q.correctSides"
+                            [class.wrong]="feedbackState === 'wrong' && q.selectedSides === val && val !== q.correctSides"
+                            [class.hint]="showHint && val === q.correctSides && q.selectedSides !== q.correctSides"
+                            (click)="select(q, val)">
+                            {{ val }}
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

@@ -1,0 +1,84 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="En çok kolu olan nehir hangisidir? İşaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="rivers-grid">
+                @for (river of rivers; track river.id) {
+                <div class="river-card hover"
+                    [class.selected]="selectedId === river.id"
+                    [class.shake]="river.isShaking"
+                    [class.hint]="showHint && river.isCorrect && feedbackState !== 'correct'"
+                    (click)="selectRiver(river.id)">
+
+                    <!-- SVG nehir çizimi -->
+                    <svg class="river-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+
+                        <!-- Ana gövde (dikey dalgalı kanal) -->
+                        <path d="M 55,130 C 50,110 60,100 55,80 C 50,60 60,50 55,30 C 50,10 60,0 55,0"
+                            fill="none" stroke="#4ba3c7" stroke-width="12" stroke-linecap="round"/>
+
+                        <!-- 2 kol -->
+                        @if (river.branches >= 2) {
+                        <path d="M 55,40 C 45,38 30,32 15,35"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        <path d="M 55,80 C 42,78 28,73 14,76"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        }
+
+                        <!-- +1 kol sağ üst (3 kol) -->
+                        @if (river.branches >= 3) {
+                        <path d="M 55,40 C 65,38 80,32 95,35"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        }
+
+                        <!-- +1 kol sağ orta (4 kol) -->
+                        @if (river.branches >= 4) {
+                        <path d="M 55,80 C 68,78 82,73 96,76"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        }
+
+                        <!-- +1 kol sol alt (5 kol) -->
+                        @if (river.branches >= 5) {
+                        <path d="M 55,112 C 42,110 28,105 13,108"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        }
+
+                        <!-- +1 kol sağ alt (6 kol) -->
+                        @if (river.branches >= 6) {
+                        <path d="M 55,112 C 68,110 82,105 97,108"
+                            fill="none" stroke="#4ba3c7" stroke-width="9" stroke-linecap="round"/>
+                        }
+
+                    </svg>
+
+                    <!-- Checkbox -->
+                    <div class="checkbox" [class.selected]="selectedId === river.id">
+                        @if (selectedId === river.id) {
+                        <span class="material-icons check-icon">check</span>
+                        }
+                    </div>
+
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

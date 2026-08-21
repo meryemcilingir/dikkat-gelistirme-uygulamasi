@@ -1,0 +1,213 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes shakeAnim {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-6px);
+    }
+
+    75% {
+        transform: translateX(6px);
+    }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: min(1000px, 95vw);
+    margin: 0 auto;
+    padding: clamp(8px, 2vw, 16px);
+}
+
+.drawing-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(16px, 4vw, 40px);
+    width: 100%;
+
+    @include mobile {
+        flex-direction: column;
+        gap: clamp(8px, 2vw, 16px);
+    }
+}
+
+.arrow-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #94a3b8;
+
+    .material-icons {
+        font-size: clamp(1.4rem, 2.5vw, 2rem);
+    }
+
+    @include mobile {
+        display: none;
+    }
+}
+
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // On mobile, each board should take most of the available width
+    // but never exceed the viewport
+    max-width: 100%;
+
+    @include mobile {
+        width: 100%;
+        max-width: clamp(200px, 70vw, 320px);
+    }
+
+    @include small-mobile {
+        max-width: clamp(180px, 75vw, 280px);
+    }
+
+    &.user.error {
+        animation: shakeAnim 0.4s ease;
+
+        .svg-container {
+            border-color: #ef4444;
+            background: #fff5f5;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+    }
+}
+
+.board-header {
+    font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: clamp(6px, 1.5vw, 24px);
+    text-align: center;
+
+    @include mobile {
+        margin-bottom: clamp(4px, 1vw, 8px);
+    }
+
+    &.example {
+        color: #64748b;
+    }
+
+    &.user {
+        color: #22c55e;
+    }
+}
+
+.svg-container {
+    background: #ffffff;
+    border-radius: clamp(12px, 3vw, 24px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    padding: clamp(8px, 2vw, 24px);
+    width: 100%;
+
+    &.interactive {
+        background: #fff;
+        border: 2px solid #ef4444;
+
+        &.success {
+            border-color: #22c55e;
+        }
+    }
+
+    &.locked {
+        pointer-events: none;
+    }
+}
+
+svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    // Ensure the SVG always fills its container proportionally
+    max-width: 100%;
+}
+
+.target-line {
+    stroke: #334155;
+    stroke-width: 6;
+    stroke-linecap: round;
+}
+
+.user-line {
+    stroke: #334155;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke 0.3s;
+
+    &.success {
+        stroke: #22c55e;
+    }
+}
+
+.preview-line {
+    stroke: #334155;
+    stroke-width: 6;
+    stroke-linecap: round;
+    opacity: 0.6;
+    stroke-dasharray: 8 6;
+}
+
+.hint-line {
+    stroke: #94a3b8;
+    stroke-width: 6;
+    stroke-linecap: round;
+    opacity: 0.25;
+    stroke-dasharray: 8 8;
+}
+
+.dot {
+    transition: all 0.2s;
+
+    &.static {
+        fill: #cbd5e1;
+    }
+
+    &.interactive {
+        fill: #cbd5e1;
+        cursor: pointer;
+
+        &:hover {
+            fill: #94a3b8;
+            r: 10;
+        }
+
+        &.active {
+            fill: #334155;
+            r: 8;
+        }
+    }
+}

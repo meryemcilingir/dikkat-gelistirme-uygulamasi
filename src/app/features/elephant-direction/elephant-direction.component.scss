@@ -1,0 +1,94 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.elephants-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(15px, 4vw, 40px);
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 900px;
+}
+
+.elephant-card {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: clamp(10px, 2vw, 20px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &.hover:not(.selected):hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+        border-color: #eee;
+    }
+
+    &.selected {
+        border-color: #5D9CEC;
+        background: #f0f7ff;
+    }
+
+    &.shake {
+        animation: shake 0.4s ease-in-out;
+    }
+
+    &.hint {
+        box-shadow: 0 0 0 4px rgba(255, 166, 35, 0.3);
+        background: #fff9f0;
+    }
+}
+
+.elephant-image-wrap {
+    width: clamp(80px, 15vw, 140px);
+    height: clamp(80px, 15vw, 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.elephant-emoji {
+    font-size: clamp(3rem, 10vw, 6rem);
+    display: inline-block;
+    transition: transform 0.3s;
+
+    &.flipped {
+        transform: scaleX(-1);
+    }
+}
+
+.check-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    transition: all 0.2s;
+
+    &.checked {
+        background: #5D9CEC;
+        border-color: #5D9CEC;
+    }
+}
+
+.check-tick {
+    color: #fff;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}

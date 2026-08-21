@@ -1,0 +1,95 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Aynı olan nesneleri bulup eşleştiriniz.'"
+      [icons]="'📐 ✏️'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="matching-container">
+        <!-- Top Row (Dashed) -->
+        <div class="row top-row">
+          @for (shape of topShapes; track shape.id) {
+            <div class="shape-box"
+                 [class.selected]="selectedTopId === shape.id"
+                 [class.matched]="shape.assignedMatchId !== null"
+                 [class.locked]="isCompleted"
+                 (click)="selectTop(shape.id)">
+              <svg viewBox="0 0 100 100" class="shape-svg">
+                @switch (shape.type) {
+                  @case ('pentagon') {
+                    <polygon points="50,5 95,45 80,95 20,95 5,45" fill="none" stroke="currentColor" stroke-width="3"></polygon>
+                  }
+                  @case ('triangle') {
+                    <polygon points="50,15 90,85 10,85" fill="none" stroke="currentColor" stroke-width="3"></polygon>
+                  }
+                  @case ('circle') {
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="3"></circle>
+                  }
+                  @case ('square') {
+                    <rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" stroke-width="3"></rect>
+                  }
+                }
+              </svg>
+              @if (shape.assignedMatchId) {
+                <div class="match-info" [style.background]="badgeColor(topBadgeNumber(shape))">{{ topBadgeNumber(shape) }}</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="divider-line"></div>
+
+        <!-- Bottom Row (Solid) -->
+        <div class="row bottom-row">
+          @for (shape of bottomShapes; track shape.id) {
+            <div class="shape-box"
+                 [class.selected]="selectedBottomId === shape.id"
+                 [class.matched]="shape.assignedMatchId !== null"
+                 [class.locked]="isCompleted"
+                 (click)="selectBottom(shape.id)">
+              <svg viewBox="0 0 100 100" class="shape-svg">
+                @switch (shape.type) {
+                  @case ('triangle') {
+                    <polygon points="50,15 90,85 10,85" fill="none" stroke="currentColor" stroke-width="3"></polygon>
+                  }
+                  @case ('circle') {
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="3"></circle>
+                  }
+                  @case ('pentagon') {
+                    <polygon points="50,5 95,45 80,95 20,95 5,45" fill="none" stroke="currentColor" stroke-width="3"></polygon>
+                  }
+                  @case ('square') {
+                    <rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" stroke-width="3"></rect>
+                  }
+                }
+              </svg>
+              @if (shape.assignedMatchId) {
+                <div class="match-info" [style.background]="badgeColor(bottomBadgeNumber(shape)!)">{{ bottomBadgeNumber(shape) }}</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

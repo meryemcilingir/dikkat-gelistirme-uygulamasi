@@ -1,0 +1,50 @@
+<div class="review-page">
+    <button class="back-btn" style="margin-bottom: 16px;" (click)="back()">← Öğrenci Listesine Dön</button>
+
+    <div *ngIf="review() as r">
+        <div class="page-header">
+            <div>
+                <h1>{{ r.student.firstName }} {{ r.student.lastName }}</h1>
+                <p class="page-subtitle">Sınav İncelemesi — Dikkat Geliştirme Testi</p>
+            </div>
+            <span class="badge" [class]="r.attempt.status">{{ statusLabel(r.attempt.status) }}</span>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-grid">
+                <div><span class="label">Toplam Soru</span><span class="value">{{ r.attempt.totalQuestions }}</span></div>
+                <div><span class="label">Doğru</span><span class="value correct">{{ r.attempt.correctCount ?? '—' }}</span></div>
+                <div><span class="label">Yanlış</span><span class="value wrong">{{ r.attempt.wrongCount ?? '—' }}</span></div>
+                <div><span class="label">Puan</span><span class="value">{{ r.attempt.finalScore !== null ? (r.attempt.finalScore + ' / 100') : '—' }}</span></div>
+                <div><span class="label">Toplam Sınav Süresi</span><span class="value">{{ formatDuration(totalTimeSeconds) }}</span></div>
+                <div><span class="label">Ortalama Soru Süresi</span><span class="value">{{ formatDuration(avgTimeSeconds) }}</span></div>
+            </div>
+            <p class="note" *ngIf="r.attempt.status !== 'Completed'">
+                Sınav henüz tamamlanmadı ({{ r.answers.length }}/{{ r.attempt.totalQuestions }}). Final puan yalnızca 150 soru bitince oluşur.
+            </p>
+        </div>
+
+        <h3 class="questions-title">Sorular</h3>
+        <div class="question-grid">
+            <button
+                *ngFor="let q of r.questions; let i = index"
+                class="q-cell"
+                [class]="cellClass(i)"
+                [disabled]="!answerFor(i)"
+                (click)="openQuestion(i)"
+                [title]="q"
+            >
+                {{ i + 1 }}
+            </button>
+        </div>
+
+        <div class="legend">
+            <span><i class="dot correct"></i> Doğru</span>
+            <span><i class="dot wrong"></i> Yanlış</span>
+            <span><i class="dot unanswered"></i> Cevaplanmadı</span>
+        </div>
+    </div>
+
+    <div class="loading" *ngIf="loading()">Yükleniyor...</div>
+    <div class="error-page" *ngIf="error()">{{ error() }}</div>
+</div>

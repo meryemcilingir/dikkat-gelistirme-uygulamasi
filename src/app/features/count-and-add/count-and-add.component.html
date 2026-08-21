@@ -1,0 +1,54 @@
+<div class="page-frame">
+        <div class="frame-top">
+        <app-activity-header icons="🧮" instruction="Nesnelerin toplamını kutucuğa yazınız."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            @for (row of rows; track row.id) {
+            <div class="math-row">
+                <!-- Left Box -->
+                <div class="object-box">
+                    @for (i of getArray(row.leftCount); track $index) {
+                    <span>{{ row.emoji }}</span>
+                    }
+                </div>
+
+                <!-- Plus Sign -->
+                <div class="math-sign">+</div>
+
+                <!-- Right Box -->
+                <div class="object-box">
+                    @for (i of getArray(row.rightCount); track $index) {
+                    <span>{{ row.emoji }}</span>
+                    }
+                </div>
+
+                <!-- Equal Sign -->
+                <div class="math-sign">=</div>
+
+                <!-- Answer Input -->
+                <input type="text" inputmode="numeric" maxlength="2" class="answer-input hover"
+                    [class.show-hint]="showHints && userAnswers[row.id] === null" [class.error]="row.isError"
+                    [class.shake]="row.isShaking" [value]="userAnswers[row.id] !== null ? userAnswers[row.id] : ''"
+                    [placeholder]="(showHints && userAnswers[row.id] === null) ? row.target : ''"
+                    (input)="updateAnswer(row.id, $event)" [disabled]="isNextUnlocked"
+                    [attr.aria-label]="row.leftCount + ' ' + row.emoji + ' artı ' + row.rightCount + ' ' + row.emoji + ' kaç eder?'">
+            </div>
+            }
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

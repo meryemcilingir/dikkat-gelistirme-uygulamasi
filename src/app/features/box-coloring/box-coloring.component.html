@@ -1,0 +1,112 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩" instruction="Aşağıdaki kutuların içini örnekteki gibi istenilen sayıya kadar boyayın."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="groups-container">
+
+                    <!-- Group 1 (Example) -->
+                    <div class="box-group example">
+                        <div class="columns-container">
+                            <div class="box-column">
+                                @for (i of col1Indices; track $index) {
+                                <div class="paint-box" [class.filled]="group1[i]"></div>
+                                }
+                            </div>
+                            <div class="box-column">
+                                @for (i of col2Indices; track $index) {
+                                <div class="paint-box" [class.filled]="group1[i]"></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="group-label">12</div>
+                    </div>
+
+                    <!-- Group 2 -->
+                    <div class="box-group" [class.error]="feedbackState === 'wrong' && !isGroupCorrect(2)">
+                        <div class="columns-container">
+                            <div class="box-column">
+                                @for (i of col1Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group2[i]"
+                                    [class.hint-add]="isHintAdd(2, i)" [class.hint-remove]="isHintRemove(2, i)"
+                                    (click)="toggleBox(2, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                            <div class="box-column">
+                                @for (i of col2Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group2[i]"
+                                    [class.hint-add]="isHintAdd(2, i)" [class.hint-remove]="isHintRemove(2, i)"
+                                    (click)="toggleBox(2, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                        </div>
+                        <div class="group-label">15</div>
+                    </div>
+
+                    <!-- Group 3 -->
+                    <div class="box-group" [class.error]="feedbackState === 'wrong' && !isGroupCorrect(3)">
+                        <div class="columns-container">
+                            <div class="box-column">
+                                @for (i of col1Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group3[i]"
+                                    [class.hint-add]="isHintAdd(3, i)" [class.hint-remove]="isHintRemove(3, i)"
+                                    (click)="toggleBox(3, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                            <div class="box-column">
+                                @for (i of col2Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group3[i]"
+                                    [class.hint-add]="isHintAdd(3, i)" [class.hint-remove]="isHintRemove(3, i)"
+                                    (click)="toggleBox(3, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                        </div>
+                        <div class="group-label">19</div>
+                    </div>
+
+                    <!-- Group 4 -->
+                    <div class="box-group" [class.error]="feedbackState === 'wrong' && !isGroupCorrect(4)">
+                        <div class="columns-container">
+                            <div class="box-column">
+                                @for (i of col1Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group4[i]"
+                                    [class.hint-add]="isHintAdd(4, i)" [class.hint-remove]="isHintRemove(4, i)"
+                                    (click)="toggleBox(4, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                            <div class="box-column">
+                                @for (i of col2Indices; track $index) {
+                                <button class="paint-box interactive" [class.filled]="group4[i]"
+                                    [class.hint-add]="isHintAdd(4, i)" [class.hint-remove]="isHintRemove(4, i)"
+                                    (click)="toggleBox(4, i)" [attr.aria-label]="'Kutu ' + (i + 1)"></button>
+                                }
+                            </div>
+                        </div>
+                        <div class="group-label">8</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce şekilleri doğru şekilde boyamalısınız'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearGrid()" (check)="checkPattern()" />
+    </div>
+
+</div>

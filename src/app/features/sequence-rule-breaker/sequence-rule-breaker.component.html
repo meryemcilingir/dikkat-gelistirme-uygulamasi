@@ -1,0 +1,57 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🔢" instruction="Kutu içindeki sıralamaya dikkat edin. Kuralı bozan kutuyu seçin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+
+            <div class="columns-container" aria-label="Sayı sıralamaları olan sütunlar">
+
+                @for (col of columns; track col.id; let i = $index) {
+                <!-- Tıklanabilir Sütun Wrapper'ı -->
+                <button class="column-wrapper hover" [class.selected]="selectedId === col.id"
+                    [class.shake]="col.isShaking" [class.hint]="showHint && col.isCorrect && selectedId === null"
+                    (click)="selectColumn(col.id)" [attr.aria-label]="i + 1 + '. sıradaki sütun'"
+                    [attr.aria-pressed]="selectedId === col.id">
+
+                    <!-- Farklı border desenleri vermek için index'i class olarak gönderelim -->
+                    <div class="number-column" [ngClass]="'border-style-' + (i % 5)">
+                        @for (num of col.numbers; track $index) {
+                        <div class="number-item">{{ num }}</div>
+                        }
+                    </div>
+
+                    <!-- En alttaki Yıldız -->
+                    <div class="star-icon">
+                        <span class="material-icons">star</span>
+                    </div>
+                </button>
+                }
+
+            </div>
+
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()"
+            (check)="checkAnswer()"></app-action-buttons>
+    </div>
+
+</div>

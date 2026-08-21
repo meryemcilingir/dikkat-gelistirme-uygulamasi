@@ -1,0 +1,96 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.columns-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(10px, 2vw, 30px);
+  width: 100%;
+}
+
+.column-card {
+  background: white;
+  padding: 15px 10px;
+  border-radius: 20px;
+  border: 4px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  &:hover:not(.locked) {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: $color-primary;
+    background: #f8fbff;
+    transform: translateY(-5px);
+    
+    .star-icon .material-icons {
+      color: #ffd700;
+      transform: scale(1.3);
+    }
+  }
+
+  &.shake {
+    animation: shake 0.5s;
+  }
+
+  &.locked {
+    cursor: default;
+    opacity: 0.9;
+  }
+}
+
+.fruit-column {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+
+  .fruit-item {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    line-height: 1;
+  }
+
+  &.border-style-0 { border-left: 6px dashed #e67e22; border-right: 6px dashed #e67e22; border-radius: 20px; }
+  &.border-style-1 { border-left: 8px ridge #9b59b6; border-right: 8px ridge #9b59b6; border-radius: 8px; }
+  &.border-style-2 { border-left: 6px dotted #e74c3c; border-right: 6px dotted #e74c3c; }
+  &.border-style-3 { border-left: 6px double #3498db; border-right: 6px double #3498db; }
+  &.border-style-4 { border-left: 8px solid #2ecc71; border-right: 8px solid #2ecc71; border-radius: 10px; }
+}
+
+.star-icon {
+  margin-top: 5px;
+  .material-icons {
+    font-size: 2rem;
+    color: #e0e0e0;
+    transition: all 0.3s;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@include mobile {
+  .columns-container {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .fruit-column {
+    padding: 5px;
+    .fruit-item { font-size: 1.2rem; }
+  }
+  .column-card {
+    padding: 10px 5px;
+  }
+}

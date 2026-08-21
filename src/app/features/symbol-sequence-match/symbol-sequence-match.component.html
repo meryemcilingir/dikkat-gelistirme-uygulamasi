@@ -1,0 +1,54 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🎯" instruction="Sembollerin aynısını bulun ve işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Hedef kart -->
+            <div class="target-container">
+                <div class="target-card">
+                    <div class="symbol-row">
+                        @for (sym of targetSymbols; track $index) {
+                            <span class="sym">{{ sym }}</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seçenekler -->
+            <div class="options-container">
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option-card hover"
+                        [class.selected]="selectedId === opt.id"
+                        [class.shake]="opt.isShaking"
+                        [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                        (click)="selectOption(opt.id)"
+                        [attr.aria-label]="'Seçenek ' + opt.id"
+                        [attr.aria-pressed]="selectedId === opt.id">
+                        <div class="symbol-row">
+                            @for (sym of opt.symbols; track $index) {
+                                <span class="sym">{{ sym }}</span>
+                            }
+                        </div>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()"></app-action-buttons>
+    </div>
+</div>

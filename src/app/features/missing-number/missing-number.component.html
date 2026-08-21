@@ -1,0 +1,78 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔢"
+            instruction="Sayı dizisindeki eksik sayıyı bulun ve işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block">
+
+                    <!-- Sayı Bandı -->
+                    <div class="sequence-row">
+                        @for (num of q.sequence; track $index) {
+                        <div class="seq-cell"
+                            [class.missing-cell]="num === null"
+                            [style.--q-color]="q.color">
+
+                            @if (num !== null) {
+                                <span class="seq-number">{{ num }}</span>
+                            } @else {
+                                @if (q.selectedOption !== null) {
+                                    <span class="seq-number filled"
+                                        [class.correct]="feedbackState === 'correct'"
+                                        [class.wrong]="feedbackState === 'wrong' && q.selectedOption !== q.answer">
+                                        {{ q.selectedOption }}
+                                    </span>
+                                } @else {
+                                    <span class="seq-blank">?</span>
+                                }
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Seçenekler -->
+                    <div class="options-row">
+                        @for (opt of q.options; track opt) {
+                        <button class="option-btn"
+                            [class.selected]="q.selectedOption === opt"
+                            [class.correct]="feedbackState === 'correct' && q.selectedOption === opt"
+                            [class.wrong]="feedbackState === 'wrong' && q.selectedOption === opt && opt !== q.answer"
+                            [class.hint]="showHint && opt === q.answer && feedbackState !== 'correct'"
+                            [style.--q-color]="q.color"
+                            (click)="selectOption(q, opt)"
+                            [attr.aria-label]="'Seçenek ' + opt">
+                            {{ opt }}
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

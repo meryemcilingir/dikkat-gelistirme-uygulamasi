@@ -1,0 +1,93 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="" instruction="Görsele uygun sembolü bulun ve işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="board">
+
+                <!-- Sol: S şeklindeki yılan görseli -->
+                <div class="visual-area">
+                    <div class="visual-bg">
+                        <svg viewBox="0 0 200 260" class="snake-svg" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Arka plan oval -->
+                            <ellipse cx="100" cy="130" rx="95" ry="125" fill="#d6e8d6" opacity="0.8"/>
+
+                            <!-- Yılan gövdesi: S şekli -->
+                            <path d="M 150 50
+                                     Q 150 20 110 20
+                                     Q 40 20 40 80
+                                     Q 40 130 100 130
+                                     Q 160 130 160 180
+                                     Q 160 230 90 230
+                                     Q 50 230 50 210"
+                                  fill="none"
+                                  stroke="#e8b040"
+                                  stroke-width="42"
+                                  stroke-linecap="round"/>
+
+                            <!-- Gölge/alt kısım -->
+                            <path d="M 150 50
+                                     Q 150 20 110 20
+                                     Q 40 20 40 80
+                                     Q 40 130 100 130
+                                     Q 160 130 160 180
+                                     Q 160 230 90 230
+                                     Q 50 230 50 210"
+                                  fill="none"
+                                  stroke="#c88030"
+                                  stroke-width="42"
+                                  stroke-linecap="round"
+                                  stroke-dasharray="3 8"
+                                  opacity="0.5"/>
+
+                            <!-- Gözler (üst kısım, başı) -->
+                            <circle cx="135" cy="42" r="6" fill="#fff" stroke="#333" stroke-width="1.5"/>
+                            <circle cx="135" cy="42" r="3" fill="#222"/>
+                            <circle cx="158" cy="42" r="6" fill="#fff" stroke="#333" stroke-width="1.5"/>
+                            <circle cx="158" cy="42" r="3" fill="#222"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Sağ: Harf seçenekleri -->
+                <div class="options-column">
+                    @for (opt of options; track opt.id) {
+                    <div class="option-row">
+                        <div class="letter-circle hover"
+                             [class.selected]="selectedId === opt.id"
+                             [class.shake]="opt.isShaking"
+                             [class.hint]="isHint(opt)"
+                             [style.background]="opt.bgColor"
+                             (click)="onSelect(opt.id)">
+                            <span class="letter" [style.color]="opt.color">{{ opt.letter }}</span>
+                        </div>
+                        <div class="check-box"
+                             [class.checked]="selectedId === opt.id">
+                            @if (selectedId === opt.id) {
+                                <span class="check-mark">✓</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+                (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

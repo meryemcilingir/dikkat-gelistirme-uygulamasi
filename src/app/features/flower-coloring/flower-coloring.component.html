@@ -1,0 +1,114 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩" instruction="Verilen görseli aynı renge boyayın."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="coloring-grid">
+
+                    <!-- Reference Section -->
+                    <div class="house-section reference">
+                        <div class="section-label">Örnek</div>
+                        <div class="house-svg-wrapper">
+                            <ng-container
+                                *ngTemplateOutlet="flowerSvg; context: { colors: targetColors, isInteractive: false }"></ng-container>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Interaction Section -->
+                    <div class="house-section interaction" [class.error]="feedbackState === 'wrong'">
+                        <div class="section-label">{{ reviewMode.active() ? 'Öğrencinin Cevabı' : 'Senin Sıran' }}</div>
+                        <div class="house-svg-wrapper">
+                            <ng-container
+                                *ngTemplateOutlet="flowerSvg; context: { colors: flowerColors, isInteractive: true }"></ng-container>
+                        </div>
+
+                        <!-- Palette -->
+                        <div class="color-palette">
+                            @for (color of palette; track color.hex) {
+                            <button class="palette-btn" [style.backgroundColor]="color.hex"
+                                [class.active]="selectedColor === color.hex" (click)="selectPaletteColor(color.hex)"
+                                [attr.aria-label]="color.name + ' rengini seç'">
+                                <span class="material-icons" *ngIf="selectedColor === color.hex">check</span>
+                            </button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce çiçeği doğru şekilde boyamalısınız'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearColors()" (check)="checkAnswers()" />
+    </div>
+
+</div>
+
+<!-- Reusable Flower SVG Template -->
+<ng-template #flowerSvg let-colors="colors" let-isInteractive="isInteractive">
+    <svg viewBox="0 0 240 240" width="100%" height="100%" class="flower-svg">
+
+        <!-- Outer Petals (5) - Increased size and adjusted position to close gaps -->
+        <!-- petal1 (Top) -->
+        <circle [attr.fill]="colors['petal1']" cx="120" cy="65" r="48" stroke="#2c3e50" stroke-width="2.5"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('petal1')"
+            (click)="isInteractive && paintPart('petal1')" />
+        <!-- petal2 (Top-Right) -->
+        <circle [attr.fill]="colors['petal2']" cx="175" cy="105" r="48" stroke="#2c3e50" stroke-width="2.5"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('petal2')"
+            (click)="isInteractive && paintPart('petal2')" />
+        <!-- petal3 (Bottom-Right) -->
+        <circle [attr.fill]="colors['petal3']" cx="155" cy="175" r="48" stroke="#2c3e50" stroke-width="2.5"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('petal3')"
+            (click)="isInteractive && paintPart('petal3')" />
+        <!-- petal4 (Bottom-Left) -->
+        <circle [attr.fill]="colors['petal4']" cx="85" cy="175" r="48" stroke="#2c3e50" stroke-width="2.5"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('petal4')"
+            (click)="isInteractive && paintPart('petal4')" />
+        <!-- petal5 (Top-Left) -->
+        <circle [attr.fill]="colors['petal5']" cx="65" cy="105" r="48" stroke="#2c3e50" stroke-width="2.5"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('petal5')"
+            (click)="isInteractive && paintPart('petal5')" />
+
+        <!-- Inner Layer (5 Clusters) - Adjusted for better overlap -->
+        <circle [attr.fill]="colors['inner1']" cx="120" cy="90" r="34" stroke="#2c3e50" stroke-width="2"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('inner1')"
+            (click)="isInteractive && paintPart('inner1')" />
+        <circle [attr.fill]="colors['inner2']" cx="150" cy="115" r="34" stroke="#2c3e50" stroke-width="2"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('inner2')"
+            (click)="isInteractive && paintPart('inner2')" />
+        <circle [attr.fill]="colors['inner3']" cx="135" cy="150" r="34" stroke="#2c3e50" stroke-width="2"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('inner3')"
+            (click)="isInteractive && paintPart('inner3')" />
+        <circle [attr.fill]="colors['inner4']" cx="105" cy="150" r="34" stroke="#2c3e50" stroke-width="2"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('inner4')"
+            (click)="isInteractive && paintPart('inner4')" />
+        <circle [attr.fill]="colors['inner5']" cx="90" cy="115" r="34" stroke="#2c3e50" stroke-width="2"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('inner5')"
+            (click)="isInteractive && paintPart('inner5')" />
+
+        <!-- Center -->
+        <circle [attr.fill]="colors['center']" cx="120" cy="120" r="38" stroke="#2c3e50" stroke-width="3"
+            [class.interactive]="isInteractive" [class.hint]="isInteractive && isHint('center')"
+            (click)="isInteractive && paintPart('center')" />
+
+    </svg>
+</ng-template>

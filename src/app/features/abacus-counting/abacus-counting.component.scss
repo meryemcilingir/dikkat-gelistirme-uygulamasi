@@ -1,0 +1,213 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes shakeAnim {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-6px);
+    }
+
+    75% {
+        transform: translateX(6px);
+    }
+}
+
+// ── Yerel Renkler ─────────────────────────────────────────
+$color-error-bg: #fff3f0;
+$color-error-tx: #e55039;
+$chalkboard-border: #8b5a2b;
+$chalkboard-bg: #f8fafc;
+$wire-color: #3b82f6;
+$bead-green: #22c55e;
+$bead-red: #ef4444;
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Oyun Alanı Düzeni ─────────────────────────────────────
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: min(1000px, 95vw);
+    margin: 0 auto;
+    padding: clamp(8px, 2vw, 16px);
+}
+
+// ── Soru Izgarası ─────────────────────────────────────────
+.abacus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: clamp(14px, 3vw, 30px) clamp(20px, 5vw, 60px);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+
+    @include mobile {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+// ── Bireysel Soru ─────────────────────────────────────────
+.abacus-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+}
+
+// ── Abaküs Çerçevesi ─────────────────────────
+.abacus-frame {
+    width: clamp(110px, 22vw, 160px);
+    height: clamp(100px, 18vw, 140px);
+    border-radius: clamp(16px, 3vw, 24px);
+    background: $chalkboard-border;
+    padding: clamp(8px, 1.5vw, 12px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.abacus-inner-board {
+    width: 100%;
+    height: 100%;
+    background: $chalkboard-bg;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(14px, 3vw, 24px);
+    padding: 0 clamp(6px, 1.2vw, 10px);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+// ── Teller ve Boncuklar ───────────────────────────────────
+.wire {
+    position: relative;
+    width: 100%;
+    height: clamp(14px, 2.5vw, 20px);
+    display: flex;
+    align-items: center;
+}
+
+.wire-line {
+    position: absolute;
+    width: 100%;
+    height: clamp(2px, 0.5vw, 4px);
+    background: $wire-color;
+    border-radius: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.beads {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
+    z-index: 2;
+}
+
+.bead {
+    width: clamp(12px, 2.5vw, 18px);
+    height: clamp(12px, 2.5vw, 18px);
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    &.green {
+        background: $bead-green;
+    }
+
+    &.red {
+        background: $bead-red;
+    }
+}
+
+// ── Girdi Kartı ─────────────────────────
+.card {
+    @include flex-center;
+    width: clamp(44px, 9vw, 60px);
+    height: clamp(44px, 9vw, 60px);
+    background: #fff;
+    border-radius: 12px;
+    @include card-shadow($color-nav, .13);
+    position: relative;
+}
+
+.input-card {
+    transition: background .2s;
+
+    &.show-hint {
+        .number-input::placeholder {
+            color: rgba($color-nav, 0.6);
+            font-weight: 900;
+            opacity: 1;
+        }
+    }
+
+    &.error {
+        background: $color-error-bg;
+        animation: shakeAnim .45s ease;
+
+        .number-input {
+            color: $color-error-tx;
+        }
+    }
+}
+
+.number-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 900;
+    color: $color-text;
+    padding: 0;
+    border-radius: 12px;
+    cursor: text;
+    transition: color .2s;
+
+    &::placeholder {
+        color: #ccc;
+        font-weight: 700;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    &[type=number] {
+        appearance: textfield;
+    }
+}

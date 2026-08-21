@@ -1,0 +1,61 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Birbiriyle aynı olan sembolleri eşleştirin. İki bloğa sırayla tıklayın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="match-info">
+                <span class="badge">{{ pairs.length }} / {{ totalPairs }} eşleştirildi</span>
+            </div>
+
+            <div class="blocks-grid">
+                @for (block of blocks; track block.id) {
+                    <div class="block-card"
+                         [class.selected]="block.isSelected"
+                         [class.matched]="block.isPaired"
+                         (click)="onBlockClick(block)">
+
+                        <!-- Çapraz bölme çizgileri -->
+                        <div class="cross-h"></div>
+                        <div class="cross-v"></div>
+
+                        <!-- 4 bölme: SolÜst, SağÜst, SolAlt, SağAlt -->
+                        <div class="quadrant tl">
+                            <span class="sym" [style.color]="block.cells[0].color">{{ block.cells[0].char }}</span>
+                        </div>
+                        <div class="quadrant tr">
+                            <span class="sym" [style.color]="block.cells[1].color">{{ block.cells[1].char }}</span>
+                        </div>
+                        <div class="quadrant bl">
+                            <span class="sym" [style.color]="block.cells[2].color">{{ block.cells[2].char }}</span>
+                        </div>
+                        <div class="quadrant br">
+                            <span class="sym" [style.color]="block.cells[3].color">{{ block.cells[3].char }}</span>
+                        </div>
+
+                        @if (block.isPaired && block.pairIndex !== null) {
+                            <div class="matched-overlay"></div>
+                            <div class="pair-badge" [style.background]="pairBadgeColor(block)">{{ block.pairIndex! + 1 }}</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

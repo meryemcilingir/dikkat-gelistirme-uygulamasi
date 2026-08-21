@@ -1,0 +1,71 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🐱"
+            instruction="Yönergelere uygun seçenekleri ilgili görselin altından işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="cat-game">
+
+                <!-- Yönerge kartları (sembol açıklamaları) -->
+                <div class="instructions-row">
+                    <div class="instruction-item">
+                        <span class="instruction-label">Masanın <strong>üstündeki</strong> kediyi</span>
+                        <span class="instruction-symbol symbol-x">" X "</span>
+                        <span class="instruction-suffix">ile gösterin.</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-label">Masanın <strong>yanındaki</strong> kediyi</span>
+                        <span class="instruction-symbol symbol-plus">" + "</span>
+                        <span class="instruction-suffix">ile gösterin.</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-label">Masanın <strong>altındaki</strong> kediyi</span>
+                        <span class="instruction-symbol symbol-v">" V "</span>
+                        <span class="instruction-suffix">ile gösterin.</span>
+                    </div>
+                </div>
+
+                <!-- Sahneler -->
+                <div class="scenes-row">
+                    @for (scene of scenes; track scene.id) {
+                    <div class="scene-card" [class.shake]="scene.isWrong">
+                        <!-- Resim -->
+                        <div class="scene-image" [class.extra-zoom]="scene.id === 2">
+                            <img [src]="scene.image" [alt]="scene.label" />
+                        </div>
+
+                        <!-- Sembol seçim kutuları -->
+                        <div class="symbol-buttons">
+                            @for (sym of symbols; track sym) {
+                            <button class="symbol-btn" [class.active]="scene.selectedSymbol === sym"
+                                [class.correct]="isNextUnlocked && scene.correctSymbol === sym"
+                                [class.hint]="showHint && scene.correctSymbol === sym && scene.selectedSymbol !== sym"
+                                [disabled]="isNextUnlocked" (click)="selectSymbol(scene, sym)">
+                                {{ sym }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons (reset)="clearSelection()" (check)="checkAnswer()" [isCompleted]="isNextUnlocked" />
+    </div>
+</div>

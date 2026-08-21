@@ -1,0 +1,52 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Nesneleri sayarak doğru sayıyı işaretleyin.'"
+      [icons]="'🌺⚽💜'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="groups-container">
+        @for (group of groups; track group.id; let gIdx = $index) {
+          <div class="object-column">
+            <!-- Emoji display -->
+            <div class="emoji-stack">
+              @for (i of getArray(group.count); track i) {
+                <span class="obj-emoji">{{ group.emoji }}</span>
+              }
+            </div>
+
+            <!-- Number options -->
+            <div class="number-options">
+              @for (num of group.options; track num) {
+                <button class="num-btn"
+                        [class.selected]="group.selectedOption === num"
+                        (click)="selectNumber(gIdx, num)">
+                  {{ num }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

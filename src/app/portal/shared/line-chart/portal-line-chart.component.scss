@@ -1,0 +1,15 @@
+@use '../portal' as *;
+@use '../portal-tokens' as *;
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.line-chart-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: $p-text-muted;
+    margin-top: $p-space-1;
+}

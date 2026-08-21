@@ -1,0 +1,201 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes checkPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        background-color: rgba(241, 196, 15, 0.1);
+        border-color: rgba(241, 196, 15, 0.4);
+    }
+
+    50% {
+        background-color: rgba(241, 196, 15, 0.35);
+        border-color: rgba(241, 196, 15, 1);
+    }
+}
+
+@keyframes hintShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-3px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.interaction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 95%; margin: 0 auto;
+    max-width: 960px;
+    @include card-shadow($color-nav, .12);
+    box-sizing: border-box;
+}
+
+.children-grid {
+    display: flex;
+    flex-wrap: wrap; // Changed from rigid grid to flexible wrap
+    justify-content: center;
+    gap: clamp(12px, 3vw, 24px);
+    width: 100%;
+}
+
+.child-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 2vw, 12px);
+    padding: clamp(12px, 2vw, 20px) clamp(10px, 2vw, 16px);
+    border-radius: 24px;
+    border: clamp(2px, 0.5vw, 3px) solid transparent;
+    background: #f0f4fa;
+    cursor: pointer;
+    transition: all 0.2s;
+    animation: scaleIn 0.4s ease-out backwards;
+    
+    // Flexible sizing
+    flex: 1 1 40%; // Allows two per row on mobile, four on desktop
+    min-width: 100px;
+    max-width: 200px;
+
+    @for $i from 1 through 4 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.06}s;
+        }
+    }
+
+    &:hover {
+        background: #e8eef8;
+        transform: translateY(-2px);
+    }
+
+    &.selected {
+        border-color: #8db5e6;
+        background: #e1ecf8;
+    }
+
+    &.hint-add {
+        animation: hintPulse 1.2s ease-in-out infinite;
+        border-color: #f1c40f !important;
+    }
+
+    &.hint-remove {
+        animation: hintShake 0.4s ease-in-out infinite;
+        border-color: #e55039 !important;
+        background: #fff3f0 !important;
+    }
+}
+
+.face-container {
+    width: clamp(60px, 15vw, 100px);
+    height: clamp(60px, 15vw, 100px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &[data-mood="sad"] {
+        background: linear-gradient(135deg, #B3C6E0, #8DA8CC);
+    }
+
+    &[data-mood="happy"] {
+        background: linear-gradient(135deg, #B7E4C7, #81C995);
+    }
+
+    &[data-mood="crying"] {
+        background: linear-gradient(135deg, #E8BCD0, #D4A0B9);
+    }
+}
+
+.face-emoji {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1;
+}
+
+.child-name {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    font-weight: 700;
+    color: #444;
+}
+
+.checkbox {
+    width: clamp(24px, 5vw, 32px);
+    height: clamp(24px, 5vw, 32px);
+    border-radius: 8px;
+    border: clamp(2px, 0.4vw, 3px) solid #dde2e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &.selected {
+        background: #50b875 !important;
+        border-color: #50b875 !important;
+    }
+}
+
+.check-icon {
+    font-size: clamp(16px, 4vw, 22px) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    animation: checkPop 0.2s ease-out;
+}

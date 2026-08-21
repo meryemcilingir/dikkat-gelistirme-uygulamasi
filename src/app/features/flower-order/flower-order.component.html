@@ -1,0 +1,47 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Aşağıdaki görselleri inceleyin. Oluş sırasına göre kutucuğa 1–2–3 yazın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="items-row">
+                @for (item of items; track item.id) {
+                <div class="flower-card">
+                    <img [src]="item.image" alt="Çiçek aşaması" class="flower-img" draggable="false">
+                    <div class="input-wrap">
+                        @if (showHint && feedbackState !== 'correct' && item.userInput === '') {
+                            <span class="ghost-answer">{{ item.correctOrder }}</span>
+                        }
+                        <input
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="1"
+                            class="order-input"
+                            [class.input-correct]="feedbackState === 'correct'"
+                            [(ngModel)]="item.userInput"
+                            (ngModelChange)="onInput(item)"
+                            [disabled]="isNextUnlocked"
+                            placeholder="?" />
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

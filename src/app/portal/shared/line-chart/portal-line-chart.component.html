@@ -1,0 +1,16 @@
+<svg class="line-chart" [attr.viewBox]="viewBox" [style.height.px]="height" preserveAspectRatio="none">
+    <line class="line-chart-grid" x1="0" y1="99" x2="300" y2="99"></line>
+    <path class="line-chart-area" [attr.d]="areaD"></path>
+    <path class="line-chart-path" [attr.d]="pathD" vector-effect="non-scaling-stroke"></path>
+    <circle
+        *ngFor="let d of dots"
+        class="line-chart-dot"
+        [attr.cx]="d.x"
+        [attr.cy]="d.y"
+        r="2.2"
+    ></circle>
+</svg>
+<div class="line-chart-labels">
+    <span>{{ firstLabel }}</span>
+    <span>{{ lastLabel }}</span>
+</div>

@@ -1,0 +1,81 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📐"
+            instruction="Üçgen, kare ve dikdörtgenin köşelerine nokta koyduk. En çok nokta hangilerinde kullanılmıştır? Noktaları çok olan şekilleri işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="corners-container">
+
+                <div class="shapes-row">
+                    @for (shape of shapes; track shape.id) {
+                    <div class="shape-card"
+                         [class.selected]="isSelected(shape.id)"
+                         [class.correct]="feedbackState === 'correct' && isSelected(shape.id)"
+                         [class.error]="feedbackState === 'wrong' && isSelected(shape.id) && !shape.isCorrect"
+                         [class.shake]="shape.isShaking"
+                         [class.hint]="showHint && shape.isCorrect && feedbackState !== 'correct'"
+                         (click)="toggleShape(shape.id)">
+
+                        <div class="shape-visual">
+                            <svg class="corner-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+
+                                <!-- Şekil çizimleri -->
+                                @if (shape.shape === 'triangle') {
+                                <polygon points="60,10 10,100 110,100"
+                                         fill="none" stroke="#5D9CEC" stroke-width="3" />
+                                }
+                                @if (shape.shape === 'square') {
+                                <rect x="15" y="15" width="90" height="90"
+                                      fill="none" stroke="#50b875" stroke-width="3" />
+                                }
+                                @if (shape.shape === 'rectangle') {
+                                <rect x="5" y="25" width="110" height="70"
+                                      fill="none" stroke="#CE93D8" stroke-width="3" />
+                                }
+
+                                <!-- Köşelerdeki noktalar -->
+                                @for (dot of getCornerDots(shape); track $index) {
+                                <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="7"
+                                        fill="#e74c3c" stroke="#c0392b" stroke-width="1.5" />
+                                }
+                            </svg>
+                        </div>
+
+                        <div class="shape-info">
+                            <span class="shape-name">{{ shape.name }}</span>
+                            <span class="corner-count">{{ shape.corners }} nokta</span>
+                        </div>
+
+                        <div class="checkbox" [class.checked]="isSelected(shape.id)">
+                            @if (isSelected(shape.id)) {
+                            <span class="material-icons check-icon">check</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

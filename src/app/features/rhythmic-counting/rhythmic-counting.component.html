@@ -1,0 +1,49 @@
+<div class="page-frame">
+        <div class="frame-top">
+        <app-activity-header icons="🔢" instruction="Verilen ritmik sayıları devam ettirin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            @for (row of rows; track row.rowId) {
+            <div class="sequence-row">
+                @for (item of row.items; track item.id) {
+
+                <!-- Sabit Daireler -->
+                @if (!item.isMissing) {
+                <div class="circle static-circle" [style.background-color]="row.color">
+                    {{ item.value }}
+                </div>
+                }
+
+                <!-- Input Alanları (Boş Daireler) -->
+                @if (item.isMissing) {
+                <input #answerInput type="text" inputmode="numeric" maxlength="2" class="circle input-circle"
+                    [class.show-hint]="showHints && item.userInput === null" [class.shake]="item.isShaking"
+                    [class.error]="item.isError" [style.background-color]="isNextUnlocked ? row.color : 'transparent'"
+                    [style.color]="item.isError ? '#e55039' : (isNextUnlocked ? 'white' : row.color)"
+                    [style.border-color]="item.isError ? '#e55039' : row.color"
+                    [value]="item.userInput !== null ? item.userInput : ''" (input)="updateInput(item, $event)"
+                    [placeholder]="(showHints && item.userInput === null) ? item.value : ''" [disabled]="isNextUnlocked"
+                    [attr.aria-label]="row.color + ' renkli ritmik sayma boşluğu'">
+                }
+
+                }
+            </div>
+            }
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

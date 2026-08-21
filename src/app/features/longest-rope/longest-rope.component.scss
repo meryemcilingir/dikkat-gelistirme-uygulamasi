@@ -1,0 +1,216 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Yerel Renkler (Mavi Tema) ───────────────────────────
+$color-error-bg: #fff3f0;
+$color-error-tx: #e55039;
+$color-success-bg: #e6f7f1;
+$color-card-bg: #ffffff;
+$color-bg-light: #fef1ed; // Default orange BG is #fdf6f5, let's use blue
+$color-blue-bg: #ebf5fb; // background for the blue theme
+$color-blue-border: #8db5e6;
+$color-rope: #ee5d40; // The rope in the image is an orangey-red
+$color-dot: #b8cde0; // Light grayish blue for dots
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-blue-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Yönerge & Progress ──────────────────────────────────────
+.frame-top {
+    margin-bottom: 20px;
+}
+
+.instruction-card.blue-theme {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 16px rgba(100, 149, 237, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+        font-size: 14px;
+        color: #1a2b4c;
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 12px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+
+        .progress-bar-fill {
+            width: 100%; // Since it's 11/11
+            height: 100%;
+            background: #4da6ff; // Blue theme progress fill
+            border-radius: 6px;
+        }
+    }
+
+    .instruction-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .instruction-icon {
+        font-size: 24px;
+    }
+
+    .instruction-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1a2b4c;
+        margin: 0;
+    }
+}
+
+// ── Ana İçerik ──────────────────────────────────────────
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 10px;
+    animation: scaleUp 0.4s ease-out;
+}
+
+// ── Options Grid ────────────────────────────────────────
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // 2 rows, 2 columns exactly like the image
+    gap: 16px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.rope-card {
+    background: $color-card-bg;
+    border-radius: 20px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 6px 12px rgba(100, 149, 237, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    border: 3px solid transparent;
+
+    &.selected {
+        border-color: $color-blue-border;
+        background: #f4f9ff;
+
+        .checkbox {
+            background: #4da6ff;
+            border-color: #4da6ff;
+
+            .check-icon {
+                display: block;
+            }
+        }
+    }
+
+    &.correct {
+        border-color: $color-blue-border;
+        background: #f4f9ff;
+
+        .checkbox {
+            background: #50b875;
+            border-color: #50b875;
+
+            .check-icon {
+                display: block;
+            }
+        }
+    }
+
+    &.error {
+        border-color: $color-error-tx;
+        background: $color-error-bg;
+
+        .checkbox {
+            background: $color-error-tx;
+            border-color: $color-error-tx;
+
+            .error-icon {
+                display: block;
+                color: #fff;
+            }
+        }
+    }
+
+    // removed hint-glow and shaking classes as they are now global
+}
+
+// ── SVG ve Çizgiler ──────────────────────────────────────
+.svg-container {
+    width: 100%;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rope-svg {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    overflow: visible;
+
+    .grid-dot {
+        fill: $color-dot;
+    }
+
+    .rope-path {
+        fill: none;
+        stroke: $color-rope;
+        stroke-width: 6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+}
+
+// ── Checkbox ──────────────────────────────────────────
+.checkbox {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 3px solid #dde2e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    .material-icons {
+        font-size: 20px;
+        color: #fff;
+        display: none;
+    }
+}

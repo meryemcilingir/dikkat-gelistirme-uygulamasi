@@ -1,0 +1,51 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🎯" instruction="Harflerin aynısını bulun ve işaretleyin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Target Card Area -->
+            <div class="target-container">
+                <div class="target-card" aria-label="Bulunması gereken harfler">
+                    <span class="word-text">{{ targetWord }}</span>
+                </div>
+            </div>
+
+            <!-- Options Grid Area -->
+            <div class="options-container">
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option-card hover" [class.selected]="selectedId === opt.id"
+                        [class.shake]="opt.isShaking" [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                        (click)="selectOption(opt.id)" [attr.aria-label]="opt.text + ' seçeneği'"
+                        [attr.aria-pressed]="selectedId === opt.id">
+                        <span class="word-text">{{ opt.text }}</span>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()"
+            (check)="checkAnswer()"></app-action-buttons>
+    </div>
+
+</div>

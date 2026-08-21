@@ -1,0 +1,110 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 2vw, 24px);
+    max-width: 900px;
+    width: 100%;
+
+    /* Fallback wrapper if screen gets too small */
+    flex-wrap: wrap;
+}
+
+/* LEFT SIDE - TARGET AREA */
+.target-area {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.target-box {
+    display: inline-block;
+    /* Takes exact size of content + padding */
+    border: 2px solid #333;
+    /* Dark thin border as requested */
+    background-color: #fff;
+    padding: clamp(8px, 2vw, 16px);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+    img {
+        display: block;
+        object-fit: contain;
+    }
+}
+
+/* RIGHT SIDE - OPTIONS AREA */
+.options-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(8px, 1.5vw, 20px);
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    /* Take up all remaining space */
+    width: 95%; margin: 0 auto;
+    /* Force minimum boundary so wrap happens correctly */
+}
+
+/* Option Block */
+.option-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 3px solid transparent;
+    /* reserve space for selection outline */
+    border-radius: 12px;
+    padding: 6px;
+    /* Extra padding when selected or hovered */
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+
+    img {
+        display: block;
+        object-fit: contain;
+    }
+
+    &:focus-visible {
+        outline: 3px solid $color-primary;
+    }
+}
+
+/* Mini check-box below the option */
+.check-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #757575;
+    background-color: #fff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    .material-icons {
+        font-size: 16px;
+        color: white;
+        font-weight: bold;
+    }
+
+    &.checked {
+        background-color: #4caf50;
+        border-color: #4caf50;
+    }
+}

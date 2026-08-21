@@ -1,0 +1,107 @@
+@use '../../../styles/design-tokens' as *;
+@use '../../../styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: min(1000px, 95vw);
+    padding: 16px;
+}
+
+.columns-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    gap: clamp(4px, 1.5vw, 16px);
+}
+
+.column-wrapper {
+    background: white;
+    @include card-shadow();
+    border-radius: 12px;
+    padding: clamp(4px, 1vw, 8px) clamp(2px, 0.5vw, 4px);
+    border: clamp(2px, 0.5vw, 4px) solid transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    will-change: transform, box-shadow;
+    outline: none;
+    width: 95%; margin: 0 auto;
+
+    &.selected {
+        --selected-bg: #f1f9ff;
+        --selected-transform: scale(1.05);
+
+        .star-icon .material-icons {
+            color: #f1c40f;
+            transform: scale(1.2);
+            text-shadow: 0 0 8px rgba(241, 196, 15, 0.6);
+        }
+    }
+
+    &.hint {
+        z-index: 5;
+    }
+}
+
+.number-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: clamp(4px, 1vw, 8px);
+    padding: 0 clamp(2px, 1vw, 8px);
+
+    .number-item {
+        font-family: 'Comic Sans MS', 'Chalkboard SE', 'Gochi Hand', cursive, sans-serif;
+        font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+        font-weight: 900;
+        color: #2c3e50;
+        line-height: 1.1;
+        margin-bottom: 2px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    &.border-style-0 { border-left: 6px dashed #e67e22; border-right: 6px dashed #e67e22; border-radius: 20px; }
+    &.border-style-1 { border-left: 8px ridge #9b59b6; border-right: 8px ridge #9b59b6; border-radius: 8px; }
+    &.border-style-2 { border-left: 6px dotted #e74c3c; border-right: 6px dotted #e74c3c; }
+    &.border-style-3 { border-left: 6px double #3498db; border-right: 6px double #3498db; }
+    &.border-style-4 { border-left: 8px solid #2ecc71; border-right: 8px solid #2ecc71; border-radius: 10px; }
+}
+
+.star-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .material-icons {
+        font-size: clamp(1.4rem, 4vw, 2.2rem);
+        color: #e0e0e0;
+        transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+    }
+}

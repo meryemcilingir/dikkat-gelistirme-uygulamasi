@@ -1,0 +1,180 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: clamp(4px, 1vw, 10px);
+    width: 100%;
+    box-sizing: border-box;
+    gap: clamp(4px, 0.8vw, 10px);
+}
+
+// ── Eşleşme sayacı ──────────────────────────────────────
+.match-info {
+    display: flex;
+    justify-content: center;
+}
+
+.badge {
+    font-size: clamp(12px, 1.6vw, 16px);
+    font-weight: 700;
+    color: #5a3a1a;
+    background: #fde5c4;
+    border: 2px solid #e8b080;
+    border-radius: 20px;
+    padding: 4px 16px;
+}
+
+// ── 4×3 blok grid ───────────────────────────────────────
+// max-width hem piksel hem de (ekran yüksekliği - üst/alt alan) * 4/3 ile sınırlandırılır
+// böylece 3 satır her zaman ekrana sığar.
+.blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: clamp(4px, 1vw, 12px);
+    width: 100%;
+    // 260px: frame-top(80) + frame-bottom(120) + badge(30) + padding
+    max-width: min(560px, calc((100svh - 260px) * 4 / 3));
+    max-height: calc(100svh - 260px);
+}
+
+// ── Tek blok kartı ──────────────────────────────────────
+.block-card {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    background: #fff;
+    border: 2px solid #bbb;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    overflow: hidden;
+
+    &:hover:not(.matched) {
+        border-color: #888;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transform: scale(1.03);
+    }
+
+    &.selected {
+        border-color: #2196F3;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+    }
+
+    &.matched {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        cursor: default;
+        opacity: 0.75;
+        transform: none;
+    }
+
+    &.hint-glow {
+        animation: hint-pulse 1s ease-in-out infinite;
+    }
+}
+
+@keyframes hint-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); }
+    50%      { box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.5); }
+}
+
+// ── Çapraz bölme çizgileri ──────────────────────────────
+.cross-h, .cross-v {
+    position: absolute;
+    background: #999;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cross-h {
+    top: 50%;
+    left: 6%;
+    right: 6%;
+    height: 1.5px;
+    transform: translateY(-50%);
+}
+
+.cross-v {
+    left: 50%;
+    top: 6%;
+    bottom: 6%;
+    width: 1.5px;
+    transform: translateX(-50%);
+}
+
+// ── Bölmeler (quadrant) ─────────────────────────────────
+.quadrant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.sym {
+    font-size: clamp(14px, 3vw, 28px);
+    line-height: 1;
+    font-weight: 700;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+}
+
+// ── Eşleşme overlay ─────────────────────────────────────
+.matched-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(100, 116, 139, 0.08);
+    z-index: 5;
+    pointer-events: none;
+}
+
+// ── Eşleşme rozeti (hangi bloğun hangisiyle eşleştiğini gösterir) ──
+.pair-badge {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    z-index: 6;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+// ── Mobil ────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .blocks-grid {
+        gap: 4px;
+        max-width: min(98vw, calc((100svh - 240px) * 4 / 3));
+        max-height: calc(100svh - 240px);
+    }
+    .sym {
+        font-size: clamp(10px, 3vw, 16px);
+    }
+    .cross-h { height: 1px; }
+    .cross-v { width: 1px; }
+    .badge {
+        font-size: 12px;
+        padding: 3px 12px;
+    }
+}

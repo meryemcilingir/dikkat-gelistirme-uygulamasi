@@ -1,0 +1,88 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩" instruction="Aşağıdaki adımları takip ederek şekilleri boya."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <!-- Sol Ok -->
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <!-- Oyun İçeriği -->
+        <div class="game-content">
+            <div class="interaction-card">
+
+                <!-- Row 1: Circles -->
+                <div class="shape-row">
+                    <h2 class="row-instruction">İlk dört daireyi boyayın.</h2>
+                    <div class="shape-container">
+                        @for (circle of circles; track $index) {
+                        <button class="shape-btn hover circle" [class.filled]="circle"
+                            [class.hint-add]="isHintAdd('circle', $index)"
+                            [class.hint-remove]="isHintRemove('circle', $index)" (click)="toggleCircle($index)"
+                            [attr.aria-label]="'Daire ' + ($index + 1)">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="1.5" />
+                            </svg>
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Row 2: Triangles -->
+                <div class="shape-row">
+                    <h2 class="row-instruction">Sondan üç üçgeni boyayın.</h2>
+                    <div class="shape-container">
+                        @for (triangle of triangles; track $index) {
+                        <button class="shape-btn hover triangle" [class.filled]="triangle"
+                            [class.hint-add]="isHintAdd('triangle', $index)"
+                            [class.hint-remove]="isHintRemove('triangle', $index)" (click)="toggleTriangle($index)"
+                            [attr.aria-label]="'Üçgen ' + ($index + 1)">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="12,2 22,20 2,20" stroke-width="1.5" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Row 3: Hearts -->
+                <div class="shape-row">
+                    <h2 class="row-instruction">En ortadaki kalbi boyayın.</h2>
+                    <div class="shape-container">
+                        @for (heart of hearts; track $index) {
+                        <button class="shape-btn hover heart" [class.filled]="heart"
+                            [class.hint-add]="isHintAdd('heart', $index)"
+                            [class.hint-remove]="isHintRemove('heart', $index)" (click)="toggleHeart($index)"
+                            [attr.aria-label]="'Kalp ' + ($index + 1)">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                    stroke-width="1.5" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sağ Ok -->
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce şekilleri doğru şekilde boyamalısınız'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearGrid()" (check)="checkPattern()" />
+    </div>
+
+</div>

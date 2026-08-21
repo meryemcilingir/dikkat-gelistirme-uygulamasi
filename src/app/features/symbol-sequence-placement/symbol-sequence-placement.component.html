@@ -1,0 +1,79 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📐" instruction="Yukarıdaki eşleştirmeye bakarak sayılara uygun şekilleri yerleştirin. Önce yukarıdan şekli seçin, sonra kutuya tıklayın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="placement-layout">
+                
+                <!-- Palette / Mapping -->
+                <div class="palette-container">
+                    <div class="mapping-table">
+                        <div class="mapping-row top">
+                            @for (item of palette; track item.id) {
+                                <div class="mapping-cell number">{{ item.id }}</div>
+                            }
+                        </div>
+                        <div class="mapping-row bottom">
+                            @for (item of palette; track item.id) {
+                                <div class="mapping-cell symbol-cell selectable"
+                                     [class.selected]="selectedSymbolId === item.id"
+                                     (click)="selectFromPalette(item.id)">
+                                    <span class="symbol-icon" [class]="item.type">{{ item.symbol }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sequence -->
+                <div class="sequence-container">
+                    <div class="mapping-table sequence-table">
+                        <div class="mapping-row top">
+                            @for (box of boxes; track box.id) {
+                                <div class="mapping-cell number">{{ box.targetNumber }}</div>
+                            }
+                        </div>
+                        <div class="mapping-row bottom">
+                            @for (box of boxes; track box.id) {
+                                <div class="mapping-cell placement-cell"
+                                     [class.hint-pulse]="showHint && box.userSymbolId !== null && box.userSymbolId !== box.targetSymbolId"
+                                     [class.correct]="feedbackState === 'correct'"
+                                     [class.wrong]="feedbackState === 'wrong' && box.userSymbolId !== box.targetSymbolId"
+                                     (click)="placeSymbol(box)">
+                                     
+                                    @if (box.userSymbolId !== null) {
+                                        <span class="symbol-icon" [class]="getSymbolClass(box.userSymbolId)">
+                                            {{ getSymbolChar(box.userSymbolId) }}
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

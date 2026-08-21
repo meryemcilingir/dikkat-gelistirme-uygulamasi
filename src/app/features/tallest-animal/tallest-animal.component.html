@@ -1,0 +1,58 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🦒" instruction="Hangi hayvan en uzundur? En uzun hayvanı bulup işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="animal-container">
+
+                <div class="animal-grid">
+                    @for (animal of animals; track animal.id) {
+                    <div class="animal-card"
+                         [class.selected]="selectedId === animal.id"
+                         [class.correct]="feedbackState === 'correct' && selectedId === animal.id"
+                         [class.error]="feedbackState === 'wrong' && selectedId === animal.id"
+                         [class.shake]="animal.isShaking"
+                         [class.hint]="showHint && animal.isCorrect && feedbackState !== 'correct'"
+                         (click)="selectAnimal(animal.id)">
+
+                        <div class="animal-emoji-area">
+                            <span class="animal-emoji">{{ animal.emoji }}</span>
+                        </div>
+
+                        <div class="animal-name">{{ animal.name }}</div>
+
+                        <div class="checkbox" [class.checked]="selectedId === animal.id">
+                            @if (selectedId === animal.id && feedbackState !== 'wrong') {
+                            <span class="material-icons check-icon">check</span>
+                            }
+                            @if (selectedId === animal.id && feedbackState === 'wrong') {
+                            <span class="material-icons error-icon">close</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

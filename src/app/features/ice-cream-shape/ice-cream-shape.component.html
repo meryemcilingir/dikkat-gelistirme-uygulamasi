@@ -1,0 +1,88 @@
+<div class="page-frame">
+
+        <div class="frame-top">
+        <app-activity-header icons="🍦" instruction="Dondurma külahının benzediği geometrik şekli işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="main-container">
+
+                <!-- Ice cream cone reference -->
+                <div class="reference-area">
+                    <div class="cone-ref">
+                        <svg class="ice-cream-svg" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Cone body -->
+                            <polygon points="60,180 18,88 102,88" fill="#C68642" />
+                            <!-- Waffle grid lines -->
+                            <line x1="60" y1="180" x2="18" y2="88" stroke="#a0622e" stroke-width="1.2" />
+                            <line x1="60" y1="180" x2="102" y2="88" stroke="#a0622e" stroke-width="1.2" />
+                            <line x1="25" y1="105" x2="95" y2="105" stroke="#a0622e" stroke-width="1" />
+                            <line x1="30" y1="120" x2="91" y2="120" stroke="#a0622e" stroke-width="1" />
+                            <line x1="36" y1="138" x2="86" y2="138" stroke="#a0622e" stroke-width="1" />
+                            <line x1="43" y1="158" x2="79" y2="158" stroke="#a0622e" stroke-width="1" />
+                            <!-- Cone highlight -->
+                            <polygon points="60,180 18,88 35,88" fill="rgba(255,255,255,0.1)" />
+                            <!-- Scoop bottom (chocolate) -->
+                            <ellipse cx="60" cy="92" rx="34" ry="22" fill="#A0522D" />
+                            <ellipse cx="60" cy="84" rx="32" ry="28" fill="#C4875A" />
+                            <circle cx="60" cy="82" r="28" fill="#D2956A" />
+                            <ellipse cx="52" cy="70" rx="8" ry="6" fill="rgba(255,255,255,0.25)" />
+                            <!-- Scoop top (strawberry) -->
+                            <ellipse cx="60" cy="56" rx="28" ry="18" fill="#E75480" />
+                            <circle cx="60" cy="52" r="23" fill="#EF8FAE" />
+                            <circle cx="60" cy="50" r="21" fill="#F4B8CB" />
+                            <ellipse cx="53" cy="42" rx="7" ry="5" fill="rgba(255,255,255,0.35)" />
+                            <!-- Cherry on top -->
+                            <circle cx="60" cy="28" r="8" fill="#C0392B" />
+                            <circle cx="57" cy="25" r="3" fill="rgba(255,255,255,0.45)" />
+                            <line x1="60" y1="28" x2="64" y2="18" stroke="#6a3012" stroke-width="1.5" />
+                        </svg>
+                        <span class="ref-label">Dondurma Külahı</span>
+                    </div>
+                </div>
+
+                <!-- Shape options -->
+                <div class="options-grid">
+                    @for (option of options; track option.id) {
+                    <div class="shape-card hover" [class.selected]="selectedId === option.id"
+                        [class.shake]="option.isShaking"
+                        [class.error]="feedbackState === 'wrong' && selectedId === option.id"
+                        [class.correct]="feedbackState === 'correct' && selectedId === option.id"
+                        [class.hint]="showHint && option.isCorrect && feedbackState !== 'correct'"
+                        (click)="selectOption(option.id)">
+
+                        <div class="shape-container">
+                            <div class="geo-shape" [ngClass]="option.shape"></div>
+                        </div>
+                        <div class="shape-name">{{ option.label }}</div>
+                        <div class="checkbox">
+                            <i class="material-icons check-icon"
+                                *ngIf="selectedId === option.id && feedbackState !== 'wrong'">check</i>
+                            <i class="material-icons error-icon"
+                                *ngIf="selectedId === option.id && feedbackState === 'wrong'">close</i>
+                        </div>
+
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

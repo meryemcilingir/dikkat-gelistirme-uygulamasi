@@ -1,0 +1,65 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Soldaki kutudaki şeklin aynısını elde etmek için gerekli yerleri boyayın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="board">
+
+                <!-- Sol: referans şekil -->
+                <div class="reference-side">
+                    <div class="reference-label">Referans</div>
+                    <div class="reference-box">
+                        <svg viewBox="0 0 100 130" class="shape-svg">
+                            @for (pos of positions; track pos) {
+                                <polygon
+                                    [attr.points]="trianglePoints[pos]"
+                                    [attr.fill]="target.includes(pos) ? '#d84040' : '#fff'"
+                                    stroke="#333"
+                                    stroke-width="1.5"/>
+                            }
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Sağ: 6 kutu 3x2 -->
+                <div class="options-grid">
+                    @for (box of boxes; track box.id) {
+                    <div class="option-box" [class.shake]="box.isShaking">
+                        <svg viewBox="0 0 100 130" class="shape-svg">
+                            @for (pos of positions; track pos) {
+                                <polygon
+                                    class="tri"
+                                    [class.locked]="isPreset(box, pos)"
+                                    [class.hint]="isHintTriangle(box, pos)"
+                                    [attr.points]="trianglePoints[pos]"
+                                    [attr.fill]="isFilled(box, pos) ? '#d84040' : '#fff'"
+                                    stroke="#333"
+                                    stroke-width="1.5"
+                                    (click)="toggleTriangle(box, pos)"/>
+                            }
+                        </svg>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

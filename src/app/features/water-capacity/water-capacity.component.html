@@ -1,0 +1,60 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+    <app-activity-header icons="💧 🪣 🧠" instruction="Hangi eşya daha çok su alır? Her satırdan birini işaretleyin."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="pairs-container">
+                    @for (pair of pairs; track pair.id; let i = $index) {
+                    <div class="pair-row">
+                        <div class="item-card" [class.selected]="pair.selected === 'left'"
+                            [class.hint-add]="isHintCorrect(i, 'left')" [class.hint-remove]="isHintWrong(i, 'left')"
+                            (click)="selectItem(i, 'left')">
+                            <div class="item-emoji">{{ pair.left.emoji }}</div>
+                            <div class="item-label">{{ pair.left.label }}</div>
+                            <div class="checkbox" [class.selected]="pair.selected === 'left'">
+                                @if (pair.selected === 'left') {
+                                <span class="material-icons check-icon">check</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="vs-badge">VS</div>
+
+                        <div class="item-card" [class.selected]="pair.selected === 'right'"
+                            [class.hint-add]="isHintCorrect(i, 'right')" [class.hint-remove]="isHintWrong(i, 'right')"
+                            (click)="selectItem(i, 'right')">
+                            <div class="item-emoji">{{ pair.right.emoji }}</div>
+                            <div class="item-label">{{ pair.right.label }}</div>
+                            <div class="checkbox" [class.selected]="pair.selected === 'right'">
+                                @if (pair.selected === 'right') {
+                                <span class="material-icons check-icon">check</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce doğru cevapları bulmalısınız'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelections()" (check)="checkAnswers()" />
+    </div>
+
+</div>

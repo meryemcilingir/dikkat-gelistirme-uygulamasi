@@ -1,0 +1,174 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.activity-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(15px, 3vw, 40px);
+    width: 100%;
+    max-width: 850px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(6px, 1vh, 10px);
+    background: white;
+    padding: clamp(12px, 2vh, 18px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.color-box {
+    width: clamp(30px, 5vh, 48px);
+    height: clamp(30px, 5vh, 48px);
+    border-radius: 10px;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+
+    &.highlight {
+        animation: pulseHighlight 1.5s infinite;
+        transform: scale(1.1);
+        box-shadow: 0 0 15px currentColor;
+    }
+}
+
+@keyframes pulseHighlight {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.2); }
+    50% { transform: scale(1.15); box-shadow: 0 0 15px 5px rgba(0,0,0,0.1); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0.2); }
+}
+
+.input-side {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 160px;
+}
+
+.target-info {
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    border-top: 5px solid var(--target-color);
+
+    .target-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #90a4ae;
+        letter-spacing: 1px;
+    }
+
+    .color-sample {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .color-name {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #37474f;
+    }
+}
+
+.answer-box {
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+
+    label {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #546e7a;
+    }
+
+    input {
+        width: 100%;
+        height: 48px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 900;
+        border: 2.5px solid #e0e6f0;
+        border-radius: 12px;
+        color: #37474f;
+        transition: all 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            background: #f1f4f9;
+        }
+
+        &.correct {
+            border-color: #50b875;
+            background: #edf9f3;
+            color: #50b875;
+        }
+
+        &.wrong {
+            border-color: #e55039;
+            background: #fff3f0;
+            color: #e55039;
+            animation: shakeAnim 0.4s ease;
+        }
+    }
+}
+
+@include mobile {
+    .activity-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .grid-container {
+        padding: 12px;
+    }
+    .color-box {
+        width: 32px;
+        height: 32px;
+    }
+    .input-side {
+        flex-direction: row;
+        width: 100%;
+        gap: 10px;
+        
+        .target-info, .answer-box {
+            flex: 1;
+            padding: 12px;
+            gap: 6px;
+            .color-sample { width: 40px; height: 40px; }
+            .color-name { font-size: 1rem; }
+            input { height: 50px; font-size: 1.5rem; }
+        }
+    }
+}

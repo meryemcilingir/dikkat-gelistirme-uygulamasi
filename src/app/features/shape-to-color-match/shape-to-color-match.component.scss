@@ -1,0 +1,160 @@
+@use '../../../styles/design-tokens' as *;
+@use '../../../styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+/* ================= Referans Matrisi (Üst) ================= */
+.reference-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.reference-matrix {
+    display: grid;
+    grid-template-columns: repeat(3, clamp(45px, 14vw, 75px));
+    grid-template-rows: repeat(3, clamp(45px, 14vw, 75px));
+    border: clamp(2px, 0.5vw, 4px) solid #333;
+    background-color: white; 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.matrix-cell {
+    border: clamp(1px, 0.3vw, 2px) solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Çizimli Siyah-Beyaz Temel Şekiller */
+.outline-shape {
+    position: relative;
+
+    &.square {
+        width: clamp(26px, 8vw, 44px);
+        height: clamp(26px, 8vw, 44px);
+        border: clamp(2px, 0.5vw, 4px) solid #333;
+        background: white; 
+    }
+
+    &.triangle {
+        width: 0;
+        height: 0;
+        border-left: clamp(15px, 4.5vw, 25px) solid transparent;
+        border-right: clamp(15px, 4.5vw, 25px) solid transparent;
+        border-bottom: clamp(26px, 8vw, 44px) solid #333;
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: clamp(3px, 1vw, 5px); 
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: clamp(11px, 3vw, 19px) solid transparent;
+            border-right: clamp(11px, 3vw, 19px) solid transparent;
+            border-bottom: clamp(20px, 6vw, 33px) solid white;
+        }
+    }
+}
+
+.divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: clamp(6px, 1.5vw, 12px);
+
+    .arrow-down {
+        font-size: 2rem;
+        color: #999;
+        font-weight: bold;
+    }
+}
+
+/* ================= Seçenekler Alanı (Alt) ================= */
+.options-container {
+    display: flex;
+    gap: clamp(8px, 2vw, 16px);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.option-card {
+    background: white;
+    @include card-shadow();
+    border-radius: 12px;
+    padding: clamp(6px, 1.5vw, 12px);
+    border: clamp(2px, 0.5vw, 4px) solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    will-change: transform, box-shadow;
+    outline: none;
+
+    &.selected {
+        --selected-bg: #f1f9ff;
+        --selected-transform: scale(1.05);
+    }
+
+    &.hint {
+        z-index: 10;
+    }
+}
+
+/* 3x3 Renk Yuvarlakları Grid'i */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: clamp(4px, 1vw, 10px);
+    border: 2px solid transparent; 
+}
+
+.color-circle {
+    width: clamp(24px, 7vw, 40px);
+    height: clamp(24px, 7vw, 40px);
+    border-radius: 50%;
+
+    &.red {
+        background-color: #E74C3C;
+        box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &.yellow {
+        background-color: #D4E157; 
+        box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.1);
+    }
+}

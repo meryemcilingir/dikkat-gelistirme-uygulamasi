@@ -1,0 +1,51 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔢" instruction="Boş kutuya gelmesi gereken sayıyı yazın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="grid-layout">
+                
+                <div class="number-grid">
+                    @for (cell of grid; track cell.id) {
+                        <div class="cell">
+                            @if (!cell.isEditable) {
+                                <span class="fixed-number">{{ cell.value }}</span>
+                            } @else {
+                                <div class="input-wrapper"
+                                     [class.hint-pulse]="showHint && cell.userValue !== null && cell.userValue !== cell.value">
+                                    <input type="number"
+                                           [(ngModel)]="cell.userValue"
+                                           [class.correct]="feedbackState === 'correct'"
+                                           [class.wrong]="feedbackState === 'wrong' && cell.userValue !== cell.value"
+                                           min="1" max="9">
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

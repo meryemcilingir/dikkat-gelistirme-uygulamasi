@@ -1,0 +1,42 @@
+// ══════════════════════════════════════════════════════════
+// GLOBAL DESIGN TOKENS – tüm component SCSS'lerinden @use ile çağrılır
+// ══════════════════════════════════════════════════════════
+
+// ── Renkler ────────────────────────────────────────────────
+$color-primary: #6ea9e0; // Baştan Başla (mavi)
+$color-success: #67b391; // Kontrol Et (yeşil)
+$color-nav: #5b9bd5; // Nav okları
+$color-bg: #ebf5ff; // Sayfa arka planı
+$color-surface: #f5f8fc; // Kart/panel yüzeyleri
+$color-text: #2c3e50; // Genel metin
+$color-heading: #3a3a5c; // Başlık metni
+$color-hint: rgba(241, 196, 15, 0.9); // Hint-glow sarı
+
+// ── Mixinler ───────────────────────────────────────────────
+
+/// Flexbox ortalama
+/// @param {String} $dir - row | column
+/// @param {Number} $gap - boşluk değeri
+@mixin flex-center($dir: row, $gap: 0) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: $dir;
+
+    @if $gap !=0 {
+        gap: $gap;
+    }
+}
+
+/// Standart kart gölgesi
+/// @param {Color}  $color - gölge taban rengi
+/// @param {Number} $alpha - opaklık
+@mixin card-shadow($color: $color-nav, $alpha: 0.12) {
+    box-shadow: 0 4px 20px rgba($color, $alpha);
+}
+
+/// Buton alt gölgesi
+/// @param {Color} $color - buton arka plan rengi
+@mixin btn-shadow($color) {
+    box-shadow: 0 4px 16px rgba($color, 0.4);
+}

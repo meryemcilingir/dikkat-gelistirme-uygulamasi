@@ -1,0 +1,75 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🥕" instruction="Sebzelere karşılık gelen sayıları sağdaki tabloya yazın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="veg-layout">
+                
+                <!-- Target Mapping -->
+                <div class="mapping-container">
+                    @for (map of mappings; track map.id) {
+                        <div class="map-item">
+                            <span class="veg-emoji">{{ map.emoji }}</span>
+                            <div class="map-number">{{ map.id }}</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="grids-wrapper">
+                    <!-- Source Grid (Veggies) -->
+                    <div class="grid-box">
+                        <div class="veg-grid">
+                            @for (cell of grid; track cell.id) {
+                                <div class="cell">
+                                    <span class="grid-emoji">{{ cell.emoji }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="arrow-indicator">
+                        <span class="material-icons">redo</span>
+                    </div>
+
+                    <!-- Target Grid (Numbers) -->
+                    <div class="grid-box">
+                        <div class="veg-grid target">
+                            @for (cell of grid; track cell.id) {
+                                <div class="cell input-cell"
+                                     [class.hint-pulse]="showHint && cell.userNumber !== null && cell.userNumber !== cell.vegId">
+                                    <input type="number"
+                                           [(ngModel)]="cell.userNumber"
+                                           [class.correct]="feedbackState === 'correct'"
+                                           [class.wrong]="feedbackState === 'wrong' && cell.userNumber !== cell.vegId"
+                                           min="1" max="9">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

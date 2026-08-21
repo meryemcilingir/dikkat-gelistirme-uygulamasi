@@ -1,0 +1,69 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: clamp(4px, 1.5vw, 12px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+// ── 4x2 grid ─────────────────────────────────────────────
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(6px, 1.5vw, 14px);
+    width: 100%;
+    max-width: 880px;
+}
+
+// ── Tek kutu ─────────────────────────────────────────────
+.set-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(6px, 1.2vw, 12px);
+    background: #fff;
+    border: 3px solid #b0b0b0 !important;
+    border-radius: 10px;
+    min-height: clamp(80px, 14vw, 120px);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.symbols {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2px, 0.6vw, 6px);
+    max-width: 100%;
+}
+
+.sym {
+    width: clamp(18px, 3.2vw, 28px);
+    height: clamp(18px, 3.2vw, 28px);
+    display: block;
+}
+
+// ── Mobil: 2 sütun ───────────────────────────────────────
+@media (max-width: 600px) {
+    .boxes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    .set-box {
+        padding: 6px;
+        min-height: 70px;
+    }
+    .sym {
+        width: 18px;
+        height: 18px;
+    }
+}

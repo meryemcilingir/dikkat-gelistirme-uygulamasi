@@ -1,0 +1,89 @@
+.match-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: clamp(20px, 5vw, 60px);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+
+.group-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: clamp(6px, 1.5vw, 12px);
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 4px solid #f0f2ff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+  &:hover {
+    transform: translateX(5px);
+    border-color: #6366f1;
+  }
+
+  &.selected {
+    background: #f0f4ff;
+    border-color: #6366f1;
+  }
+
+  &.matched {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    opacity: 0.6;
+    cursor: default;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.pair-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.emoji-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  max-width: 150px;
+}
+
+.emoji {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+}
+
+.divider {
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(to bottom, transparent, #8b8fb9, transparent);
+  opacity: 0.3;
+}
+
+.right-side .group-card:hover {
+  transform: translateX(-5px);
+}

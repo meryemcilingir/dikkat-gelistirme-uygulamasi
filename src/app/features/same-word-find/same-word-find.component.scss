@@ -1,0 +1,132 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.sets-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2vh, 20px);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.word-set {
+    background: #fff;
+    border-radius: clamp(16px, 3vw, 24px);
+    padding: clamp(12px, 2vh, 20px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    border: 1.5px solid #edf0f7;
+    border-left: 8px solid var(--set-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.target-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    .label {
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: #90a4ae;
+        letter-spacing: 1px;
+    }
+
+    .word {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--set-color);
+        letter-spacing: 2px;
+    }
+}
+
+.options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.word-pill {
+    padding: clamp(8px, 1.2vh, 14px) clamp(15px, 2vw, 24px);
+    background: #f8f9fb;
+    border: 2px solid #e0e6f0;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #546e7a;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+
+    &:hover {
+        background: #f1f4f9;
+        border-color: var(--set-color);
+        transform: translateY(-2px);
+    }
+
+    &.selected {
+        background: color-mix(in srgb, var(--set-color) 10%, white);
+        border-color: var(--set-color);
+        color: var(--set-color);
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--set-color) 15%, transparent);
+    }
+
+    &.correct {
+        background: #edf9f3;
+        border-color: #50b875;
+        color: #50b875;
+        box-shadow: none;
+    }
+
+    &.wrong {
+        background: #fff3f0;
+        border-color: #e55039;
+        color: #e55039;
+        animation: shakeAnim 0.4s ease;
+    }
+
+    &.hint {
+        border-color: #f9a825;
+        background: #fff8e1;
+        animation: pulseHint 1.5s infinite;
+    }
+}
+
+@include mobile {
+    .target-display .word {
+        font-size: 1.25rem;
+    }
+    .word-pill {
+        font-size: 0.95rem;
+        padding: 5px 12px;
+        letter-spacing: 0.5px;
+    }
+    .word-set {
+        padding: 8px 12px;
+        gap: 8px;
+        border-left-width: 5px;
+    }
+    .sets-list {
+        gap: 8px;
+    }
+}

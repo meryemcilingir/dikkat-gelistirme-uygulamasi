@@ -1,0 +1,68 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔢"
+            instruction="Sayıları küçükten büyüğe doğru sıralayın. Sayılara tıklayarak boş kutulara yerleştirin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="sets-list">
+
+                @for (set of sets; track set.id) {
+                <div class="ordering-block" [style.--q-color]="set.color">
+                    
+                    <!-- Sayı Havuzu -->
+                    <div class="number-pool">
+                        @for (num of set.pool; track $index) {
+                        <button class="pool-btn" (click)="moveToSlot(set, num, $index)">
+                            {{ num }}
+                        </button>
+                        }
+                        @if (set.pool.length === 0) {
+                            <div class="pool-empty">Hepsi yerleştirildi!</div>
+                        }
+                    </div>
+
+                    <div class="connector">
+                        <span class="material-icons">keyboard_double_arrow_down</span>
+                    </div>
+
+                    <!-- Sıralama Kutuları -->
+                    <div class="slots-row">
+                        @for (val of set.slots; track $index) {
+                        <button class="slot-box" 
+                            [class.filled]="val !== null"
+                            [class.correct]="feedbackState === 'correct'"
+                            [class.wrong]="feedbackState === 'wrong' && val !== null && val !== set.correctOrder[$index]"
+                            [class.hint]="showHint && val === null"
+                            (click)="removeFromSlot(set, $index)">
+                            {{ val }}
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

@@ -1,0 +1,56 @@
+// ══════════════════════════════════════════════════════════
+// PORTAL TASARIM TOKEN'LARI — admin/öğretmen paneli (profesyonel SaaS).
+// src/styles/_design-tokens.scss (öğrenci/oyun ekranları, pastel/oyuncu dil)
+// ile KARIŞTIRILMAZ — bu dosya yalnızca src/app/portal/** altında kullanılır.
+// ══════════════════════════════════════════════════════════
+
+// ── Yüzeyler ───────────────────────────────────────────────
+$p-bg: #f6f7f9;           // Sayfa arka planı — nötr açık gri
+$p-surface: #ffffff;      // Kart/panel/tablo yüzeyi
+$p-surface-muted: #fafbfc; // Hover/alternate satır
+
+// ── Kenarlık ───────────────────────────────────────────────
+$p-border: #e5e7eb;
+$p-border-strong: #d1d5db;
+
+// ── Metin ──────────────────────────────────────────────────
+$p-text: #111827;         // Ana metin
+$p-text-secondary: #4b5563; // İkincil metin
+$p-text-muted: #9ca3af;   // Etiket/placeholder
+
+// ── Vurgu rengi (tek kontrollü accent) ─────────────────────
+$p-accent: #4f46e5;       // Indigo — birincil eylem, aktif sekme, linkler
+$p-accent-soft: #eef2ff;  // Açık indigo — hover/aktif zemin
+
+// ── Durum renkleri (yalnızca anlamlı yerlerde) ─────────────
+$p-success: #16a34a;
+$p-success-soft: #f0fdf4;
+$p-warning: #d97706;
+$p-warning-soft: #fffbeb;
+$p-danger: #dc2626;
+$p-danger-soft: #fef2f2;
+$p-info: #0284c7;
+$p-info-soft: #f0f9ff;
+
+// ── Spacing (4/8px taban) ────────────────────────────────────
+$p-space-1: 4px;
+$p-space-2: 8px;
+$p-space-3: 12px;
+$p-space-4: 16px;
+$p-space-5: 24px;
+$p-space-6: 32px;
+$p-space-7: 48px;
+
+// ── Radius ───────────────────────────────────────────────────
+$p-radius-sm: 6px;
+$p-radius-md: 8px;
+$p-radius-lg: 12px;
+
+// ── Tipografi ────────────────────────────────────────────────
+$p-font: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+
+@mixin p-card {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+}

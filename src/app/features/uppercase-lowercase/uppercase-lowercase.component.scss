@@ -1,0 +1,110 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.matching-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.frames-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    
+    @include desktop {
+        flex-direction: row;
+        gap: 50px;
+    }
+}
+
+.letter-frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.frame-border {
+    position: relative;
+    padding: 10px;
+    background: #fdfbf7;
+    border: 12px solid transparent;
+    border-image: repeating-linear-gradient(45deg, #e0e0e0, #e0e0e0 10px, #ffffff 10px, #ffffff 20px) 12;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.frame-quadrants {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 200px;
+    height: 200px;
+    background: #fff;
+    border: 2px solid #333;
+    
+    @include mobile {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+.quadrant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+    
+    &.input-quadrant {
+        background: #f8f9fa;
+    }
+}
+
+.large-letter {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #2c3e50;
+    
+    @include mobile {
+        font-size: 3rem;
+    }
+}
+
+.letter-input {
+    width: 80%;
+    height: 80%;
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: 700;
+    border: 2px dashed #999;
+    border-radius: 8px;
+    color: #34495e;
+    background: transparent;
+    transition: all 0.3s;
+
+    &:focus {
+        outline: none;
+        border-style: solid;
+        border-color: #3498db;
+        background: #e1f0fa;
+    }
+
+    &.correct {
+        border-color: #50b875;
+        border-style: solid;
+        background: #e6f9ed;
+        color: #2e7d32;
+    }
+
+    &.wrong {
+        border-color: #e55039;
+        border-style: solid;
+        background: #fff3f0;
+        color: #c62828;
+    }
+    
+    @include mobile {
+        font-size: 2.5rem;
+    }
+}

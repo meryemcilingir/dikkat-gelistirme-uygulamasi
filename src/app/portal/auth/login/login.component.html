@@ -1,0 +1,24 @@
+<div class="login-page">
+    <div class="login-card">
+        <div class="brand-mark">DG</div>
+        <h1>Dikkat Geliştirme</h1>
+        <p class="subtitle">Kullanıcı adı ve şifrenizle giriş yapın</p>
+
+        <form (ngSubmit)="submit()" class="login-form">
+            <label>
+                Kullanıcı adı
+                <input type="text" name="username" [(ngModel)]="username" autocomplete="username" placeholder="kullanici_adi" [maxlength]="limits.username.max" />
+            </label>
+            <label>
+                Şifre
+                <input type="password" name="password" [(ngModel)]="password" autocomplete="current-password" placeholder="••••••••" [maxlength]="limits.password.max" />
+            </label>
+
+            <div class="error" *ngIf="error()">{{ error() }}</div>
+
+            <button type="submit" class="login-btn" [disabled]="loading()">
+                {{ loading() ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+            </button>
+        </form>
+    </div>
+</div>

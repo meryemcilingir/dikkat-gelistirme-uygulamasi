@@ -1,0 +1,177 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Dış kutu: görünür kenarlıklı alan ──────────────────────
+// game-content'i tamamen doldurur; ok butonları dışarıda kalır
+
+.outer-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 2vw, 20px);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+// ── 5x5 Top Gridi ──────────────────────────────────────────
+// Hem sütun hem satır eşit fr → her boyuta sığar, kare kalır
+
+.balls-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: clamp(4px, 0.9vw, 12px);
+    // Kare boyut: genişlik ve kullanılabilir yüksekliğin minimumu
+    // Header ~120px + Footer ~120px + outer-box padding + border = ~290px
+    width: min(
+        calc(100% - clamp(20px, 4vw, 40px)),
+        calc(100vh - 290px - clamp(20px, 4vw, 40px))
+    );
+    aspect-ratio: 1;
+    max-width: 540px;
+}
+
+// ── Her bir top hücresi ─────────────────────────────────────
+
+.ball-cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    user-select: none;
+
+    &:hover:not(.selected) {
+        transform: scale(1.08);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// ── Futbol Topu SVG ─────────────────────────────────────────
+
+.ball-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+    transition: filter 0.2s;
+
+    .ball-cell:hover & {
+        filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.25));
+    }
+}
+
+// ── Seçim Halkası (Yuvarlak İçine Alma) ─────────────────────
+
+.selection-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    pointer-events: none;
+    z-index: 2;
+
+    &.active {
+        border-color: #e53935;
+        box-shadow:
+            0 0 0 2px rgba(229, 57, 53, 0.3),
+            0 0 16px rgba(229, 57, 53, 0.35);
+        animation: ringPulse 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes ringPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 0 2px rgba(229, 57, 53, 0.3),
+            0 0 16px rgba(229, 57, 53, 0.35);
+    }
+    50% {
+        box-shadow:
+            0 0 0 4px rgba(229, 57, 53, 0.2),
+            0 0 24px rgba(229, 57, 53, 0.5);
+    }
+}
+
+// ── Seçili Durum ─────────────────────────────────────────────
+
+.ball-cell.selected {
+    transform: scale(1.08);
+    z-index: 3;
+
+    .ball-svg {
+        filter: drop-shadow(0 6px 16px rgba(229, 57, 53, 0.35));
+    }
+}
+
+// ── Hint (İpucu) ─────────────────────────────────────────────
+
+.ball-cell.hint:not(.selected) {
+    .selection-ring {
+        border-color: rgba(241, 196, 15, 0.8);
+        box-shadow: 0 0 20px rgba(241, 196, 15, 0.6);
+        animation: hintGlow 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes hintGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
+    50%       { box-shadow: 0 0 24px rgba(241, 196, 15, 0.8); }
+}
+
+// ── Shake (Hatalı Seçim) ─────────────────────────────────────
+
+.ball-cell.shake {
+    animation: shakeAnim 0.45s ease;
+}
+
+@keyframes shakeAnim {
+    0%, 100% { translate: 0; }
+    20%      { translate: -5px 0; }
+    40%      { translate: 5px 0; }
+    60%      { translate: -3px 0; }
+    80%      { translate: 3px 0; }
+}
+
+// ── Responsive ───────────────────────────────────────────────
+
+@include mobile {
+    .outer-box {
+        padding: clamp(6px, 1.5vw, 12px);
+    }
+
+    .balls-grid {
+        width: min(
+            calc(100% - 12px),
+            calc(100dvh - 240px - 12px)
+        );
+        max-width: 95vw;
+        gap: clamp(3px, 1vw, 7px);
+    }
+
+    .selection-ring.active {
+        border-width: 3px;
+        inset: -3px;
+    }
+}
+
+@include small-mobile {
+    .balls-grid {
+        gap: 3px;
+    }
+}
+
+@include tablet {
+    .balls-grid {
+        max-width: 480px;
+    }
+}

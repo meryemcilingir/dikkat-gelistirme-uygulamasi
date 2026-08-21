@@ -1,0 +1,96 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🏆"
+            instruction="Aşağıdaki sporlarla ilgili olan nesneleri eşleyin. Önce nesneye, sonra spora tıklayın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="sport-container">
+
+                <!-- Top: Sports -->
+                <div class="sports-row">
+                    @for (sport of sports; track sport.id) {
+                    <div class="sport-card"
+                         [class.assigned]="isSportAssigned(sport.id)"
+                         [class.correct]="feedbackState === 'correct'"
+                         (click)="assignToSport(sport.id)">
+                        <div class="sport-icon">
+                            @if (sport.emoji === 'svg:hoop') {
+                            <svg viewBox="0 0 100 100" class="hoop-svg" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Backboard -->
+                                <rect x="30" y="10" width="40" height="28" rx="3" fill="#f5f5f5" stroke="#333" stroke-width="2.5"/>
+                                <!-- Backboard inner rectangle -->
+                                <rect x="38" y="16" width="24" height="16" rx="2" fill="none" stroke="#e53935" stroke-width="2"/>
+                                <!-- Rim connector -->
+                                <line x1="50" y1="38" x2="50" y2="44" stroke="#333" stroke-width="2.5"/>
+                                <!-- Rim (hoop) -->
+                                <ellipse cx="50" cy="48" rx="16" ry="5" fill="none" stroke="#e53935" stroke-width="3"/>
+                                <!-- Net -->
+                                <path d="M34,48 L38,68 M42,53 L44,68 M50,53 L50,72 M58,53 L56,68 M66,48 L62,68" stroke="#ccc" stroke-width="1.5" fill="none"/>
+                                <path d="M38,58 Q50,62 62,58" stroke="#ccc" stroke-width="1" fill="none"/>
+                                <path d="M40,65 Q50,69 60,65" stroke="#ccc" stroke-width="1" fill="none"/>
+                                <!-- Pole -->
+                                <line x1="50" y1="38" x2="50" y2="10" stroke="#777" stroke-width="0" />
+                            </svg>
+                            } @else {
+                            {{ sport.emoji }}
+                            }
+                        </div>
+                        <div class="sport-name">{{ sport.name }}</div>
+                        @if (isSportAssigned(sport.id)) {
+                        <div class="assigned-badge">
+                            <span class="material-icons">link</span>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Divider -->
+                <div class="match-divider">
+                    <span class="divider-text">Nesneleri yukarıdaki sporlarla eşleyin</span>
+                </div>
+
+                <!-- Bottom: Objects -->
+                <div class="objects-row">
+                    @for (obj of objects; track obj.id) {
+                    <div class="object-card"
+                         [class.active]="selectedObjectId === obj.id"
+                         [class.matched]="obj.assignedSportId !== null"
+                         [class.correct]="feedbackState === 'correct' && obj.assignedSportId === obj.correctSportId"
+                         [class.error]="feedbackState === 'wrong' && obj.assignedSportId !== null && obj.assignedSportId !== obj.correctSportId"
+                         (click)="selectObject(obj.id)">
+                        <div class="object-icon">{{ obj.emoji }}</div>
+                        <div class="object-name">{{ obj.name }}</div>
+                        @if (getSportForObject(obj.id); as sport) {
+                        <div class="linked-sport">→ {{ sport.name }}</div>
+                        }
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

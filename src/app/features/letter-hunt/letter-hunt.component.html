@@ -1,0 +1,41 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🔎"
+            instruction="Harflerin arasından bütün '{{ target }}' harflerini bul ve tıkla."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="header-row">
+                <div class="target-box">Aranacak: <span class="target-letter">{{ target }}</span></div>
+                <div class="progress-badge">{{ markedCount }} / {{ targetCount }} seçildi</div>
+            </div>
+
+            <div class="grid">
+                @for (c of cells; track c.id) {
+                <button class="cell"
+                    [class.marked]="c.isMarked"
+                    [class.shake]="c.isShaking"
+                    [class.hint]="shouldHint(c)"
+                    [disabled]="isNextUnlocked"
+                    (click)="onCellClick(c)">
+                    {{ c.letter }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

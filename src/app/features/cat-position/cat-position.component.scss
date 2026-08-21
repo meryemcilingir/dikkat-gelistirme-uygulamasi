@@ -1,0 +1,268 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Ana oyun düzeni ─────────────────────────────────────────
+
+.cat-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2.5vh, 24px);
+    width: 100%;
+    height: 100%;
+    padding: clamp(8px, 1.5vw, 16px);
+}
+
+// ── Yönerge satırı ──────────────────────────────────────────
+
+.instructions-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(2px, 0.5vh, 6px);
+    width: 100%;
+    max-width: 600px;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.8vw, 8px);
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-size: clamp(0.8rem, 1.6vw, 1.15rem);
+    font-weight: 700;
+    color: #3a3a5c;
+
+    &.highlight {
+        color: #e53935;
+    }
+}
+
+.instruction-label {
+    strong {
+        font-weight: 900;
+    }
+}
+
+.instruction-symbol {
+    font-weight: 900;
+    font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+    letter-spacing: 2px;
+}
+
+.symbol-x {
+    color: #1976d2;
+}
+
+.symbol-plus {
+    color: #e53935;
+}
+
+.symbol-v {
+    color: #388e3c;
+}
+
+.instruction-suffix {
+    font-weight: 600;
+}
+
+// ── Sahneler (3 yan yana) ───────────────────────────────────
+
+.scenes-row {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(20px, 4.5vw, 50px);
+    width: 100%;
+    max-width: 720px; // Biraz genişlettik
+    flex: 1;
+    min-height: 0;
+}
+
+.scene-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 1.5vh, 16px);
+    min-width: 0;
+}
+
+// ── Resim alanı — HER KART AYNI BOYUT ──────────────────────
+
+.scene-image {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 6px; // İç boşluğu azalttık
+
+    img {
+        display: block;
+        max-width: 95%; // %90'dan %95'e çıkardık
+        max-height: 95%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+    }
+
+    &.extra-zoom img {
+        transform: scale(1.33); // 1.18 -> 1.22 (bir tık daha büyüttük)
+        transform-origin: bottom center;
+    }
+}
+
+// ── Sembol seçim butonları ───────────────────────────────────
+
+.symbol-buttons {
+    display: flex;
+    gap: clamp(6px, 1vw, 12px);
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.symbol-btn {
+    width: clamp(32px, 5vw, 44px);
+    height: clamp(32px, 5vw, 44px);
+    border: 2.5px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 900;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    &:hover:not(.active):not(:disabled) {
+        border-color: #888;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &.active {
+        border-color: #5b9bd5;
+        background: #e3f2fd;
+        color: #1565c0;
+        transform: scale(1.05);
+        box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.25);
+    }
+
+    &.correct {
+        border-color: #43a047;
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.85;
+    }
+}
+
+// ── Hint ─────────────────────────────────────────────────────
+
+.symbol-btn.hint:not(.active) {
+    border-color: rgba(241, 196, 15, 0.8);
+    box-shadow: 0 0 12px rgba(241, 196, 15, 0.5);
+    animation: hintBtnPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hintBtnPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 8px rgba(241, 196, 15, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 18px rgba(241, 196, 15, 0.7);
+    }
+}
+
+// ── Shake (Hatalı) ───────────────────────────────────────────
+
+.scene-card.shake {
+    animation: shakeAnim 0.45s ease;
+}
+
+@keyframes shakeAnim {
+
+    0%,
+    100% {
+        translate: 0;
+    }
+
+    20% {
+        translate: -5px 0;
+    }
+
+    40% {
+        translate: 5px 0;
+    }
+
+    60% {
+        translate: -3px 0;
+    }
+
+    80% {
+        translate: 3px 0;
+    }
+}
+
+// ── Responsive ───────────────────────────────────────────────
+
+@include mobile {
+    .cat-game {
+        padding: clamp(4px, 1vw, 8px);
+        gap: clamp(8px, 2vh, 16px);
+    }
+
+    .instructions-row {
+        gap: 1px;
+    }
+
+    .instruction-item {
+        font-size: clamp(0.7rem, 2.8vw, 0.95rem);
+    }
+
+    .scenes-row {
+        gap: clamp(6px, 2vw, 14px);
+    }
+
+    .symbol-btn {
+        width: clamp(28px, 8vw, 38px);
+        height: clamp(28px, 8vw, 38px);
+        font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+    }
+}
+
+@include small-mobile {
+    .scenes-row {
+        gap: 4px;
+    }
+
+    .symbol-buttons {
+        gap: 4px;
+    }
+
+    .symbol-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+        border-width: 2px;
+    }
+}
+
+@include tablet {
+    .scenes-row {
+        max-width: 680px;
+    }
+}

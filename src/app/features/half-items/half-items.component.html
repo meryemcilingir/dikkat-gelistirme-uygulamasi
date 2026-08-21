@@ -1,0 +1,41 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Yarım olanları yuvarlak içine alın.'"
+      [icons]="'🍕🔵'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="food-grid">
+        @for (item of items; track item.id) {
+          <div class="food-card"
+               [class.circled]="item.isSelected"
+               [class.correct]="isCompleted && item.isSelected && item.isHalf"
+               [class.wrong]="isCompleted && item.isSelected && !item.isHalf"
+               (click)="toggleItem(item.id)">
+            <span class="food-emoji">{{ item.emoji }}</span>
+            <span class="food-label">{{ item.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

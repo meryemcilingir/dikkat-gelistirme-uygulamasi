@@ -1,0 +1,96 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Topların sayıları artarak devam ettiğine göre, işaretli olan yere kaç top gelmelidir?">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="boxes-grid">
+                @for (box of boxes; track box.id) {
+                    @if (box.isQuestion) {
+                        <div class="ball-box question-box" [class.shake]="isShaking">
+                            <div class="question-mark">?</div>
+                            <div class="input-wrapper">
+                                @if (showHint && feedbackState !== 'correct') {
+                                    <span class="ghost-answer">7</span>
+                                }
+                                <input
+                                    type="text"
+                                    inputmode="numeric"
+                                    pattern="[0-9]*"
+                                    maxlength="2"
+                                    class="count-input"
+                                    [class.input-correct]="feedbackState === 'correct'"
+                                    [(ngModel)]="userInput"
+                                    (ngModelChange)="onInput()"
+                                    [disabled]="isNextUnlocked"
+                                    [placeholder]="showHint ? '' : '?'" />
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="ball-box">
+                            <div class="balls-area">
+                                @for (ball of box.balls; track $index) {
+                                    <ng-container *ngTemplateOutlet="ballTpl; context: { k: ball }"></ng-container>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     Top SVG Template — 3 top türü
+     ════════════════════════════════════════════════════════════ -->
+<ng-template #ballTpl let-k="k">
+    <svg class="ball-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        @switch (k) {
+
+        @case ('basketball') {
+        <!-- Basketbol topu: turuncu + siyah çizgiler -->
+        <circle cx="20" cy="20" r="18" fill="#e68a3a" stroke="#8b3a0a" stroke-width="1.5"/>
+        <path d="M 2 20 Q 20 12 38 20" fill="none" stroke="#8b3a0a" stroke-width="1.5"/>
+        <path d="M 2 20 Q 20 28 38 20" fill="none" stroke="#8b3a0a" stroke-width="1.5"/>
+        <line x1="20" y1="2" x2="20" y2="38" stroke="#8b3a0a" stroke-width="1.5"/>
+        }
+
+        @case ('soccer') {
+        <!-- Futbol topu: beyaz + siyah beşgenler -->
+        <circle cx="20" cy="20" r="18" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+        <polygon points="20,12 25,16 23,22 17,22 15,16" fill="#222"/>
+        <polygon points="8,14 12,10 14,14 10,18" fill="#222"/>
+        <polygon points="32,14 28,10 26,14 30,18" fill="#222"/>
+        <polygon points="14,30 18,26 22,30 20,34" fill="#222"/>
+        <polygon points="26,30 30,28 28,34" fill="#222"/>
+        }
+
+        @case ('volleyball') {
+        <!-- Voleybol topu: mor + sarı + beyaz -->
+        <circle cx="20" cy="20" r="18" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+        <path d="M 20 2 Q 10 10 10 20 Q 10 30 20 38" fill="#7b4ea0" stroke="#4a2d66" stroke-width="1"/>
+        <path d="M 20 2 Q 30 10 30 20 Q 30 30 20 38" fill="none" stroke="#4a2d66" stroke-width="1"/>
+        <path d="M 2 20 Q 10 14 20 14 Q 30 14 38 20" fill="none" stroke="#4a2d66" stroke-width="1"/>
+        <path d="M 28 6 Q 34 14 34 24 Q 30 20 26 20" fill="#e8b040" opacity="0.7"/>
+        }
+
+        }
+    </svg>
+</ng-template>

@@ -1,0 +1,60 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.objects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: clamp(16px, 4vw, 40px);
+    padding: clamp(14px, 3vw, 30px);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    @include mobile {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.object-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    border: 3px solid transparent;
+    border-radius: 20px;
+    padding: clamp(12px, 2.5vw, 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    .emoji-art {
+        font-size: clamp(3rem, 8vw, 6rem);
+        user-select: none;
+        transition: transform 0.2s;
+    }
+
+    &:active {
+        .emoji-art {
+            transform: scale(0.95);
+        }
+    }
+}

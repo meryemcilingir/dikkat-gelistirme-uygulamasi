@@ -1,0 +1,83 @@
+@use '../portal' as *;
+@use '../portal-tokens' as *;
+
+.pager-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid $p-border;
+}
+
+.pager-range {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $p-text-muted;
+    white-space: nowrap;
+}
+
+.pager-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.page-size-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $p-text-muted;
+    white-space: nowrap;
+
+    select {
+        appearance: none;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        padding: 6px 26px 6px 10px;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        background: $p-surface url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l7 7 7-7'/%3E%3C/svg%3E") no-repeat right 6px center;
+        background-size: 13px;
+        outline: none;
+        cursor: pointer;
+
+        &:focus { border-color: $p-accent; }
+    }
+}
+
+// Sağdaki gerçek sayfa navigasyonu — .pager/.page-btn temel stilleri
+// _portal.scss'den geliyor, burada sadece düzen ve ek varyantlar var.
+.pager {
+    margin-top: 0;
+}
+
+.page-btn-nav {
+    font-weight: 700;
+}
+
+.page-ellipsis {
+    padding: 0 2px;
+    color: $p-text-muted;
+    font-weight: 700;
+    user-select: none;
+}
+
+@media (max-width: 560px) {
+    .pager-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .pager-right {
+        justify-content: space-between;
+    }
+}

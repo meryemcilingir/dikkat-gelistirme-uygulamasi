@@ -1,0 +1,87 @@
+@use './design-tokens' as *;
+
+/* ══════════════════════════════════════════════════════════
+   GLOBAL INTERACTIVE STATES
+   Tüm oyun bileşenlerinde kullanılan standart etkileşim stilleri
+   ══════════════════════════════════════════════════════════ */
+
+/* 1. Global Hover (Vurgu / Büyüme Efekti) */
+.hover {
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s !important;
+    border: 3px solid transparent !important;
+    cursor: pointer;
+
+    &:hover:not(.selected) {
+        transform: var(--hover-transform, translateY(-4px)) !important;
+        box-shadow: var(--hover-shadow, 0 10px 20px rgba(0, 0, 0, 0.08)) !important;
+    }
+
+    // Preserve the hint animation while hovering
+    &.hint:hover:not(.selected) {
+        transform: var(--hover-transform, translateY(-4px)) scale(1.02) !important;
+        // The animation will keep running by default, but we ensure its transform doesn't fight this hard definition
+    }
+}
+
+/* 2. Global Selected (Mavi Çerçeve ve Arkaplan) */
+.selected {
+    border-color: var(--selected-border, $color-primary) !important;
+    background: var(--selected-bg, #e8f4fd) !important;
+    transform: var(--selected-transform, scale(1.02)) !important;
+}
+
+/* 3. Global Shake (Hatalı Seçim Titremesi) */
+@keyframes shakeAnim {
+
+    0%,
+    100% {
+        translate: 0;
+    }
+
+    20% {
+        translate: -6px 0;
+    }
+
+    40% {
+        translate: 6px 0;
+    }
+
+    60% {
+        translate: -4px 0;
+    }
+
+    80% {
+        translate: 4px 0;
+    }
+}
+
+.shake {
+    animation: shakeAnim .45s ease !important;
+}
+
+/* 4. Global Hint Glow (İpucu Sarı Parlama) */
+@keyframes hintPulseGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+        scale: 1;
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(241, 196, 15, 0.8);
+        scale: 1.05;
+    }
+
+    100% {
+        box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+        scale: 1;
+    }
+}
+
+.hint {
+    &:not(.selected) {
+        outline: 4px solid rgba(241, 196, 15, 0.8) !important;
+        outline-offset: 0px !important;
+        animation: hintPulseGlow 1.5s ease-in-out infinite !important;
+        z-index: 5 !important;
+    }
+}

@@ -1,0 +1,183 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        border-color: rgba(241, 196, 15, 0.4);
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+    }
+
+    50% {
+        border-color: rgba(241, 196, 15, 1);
+        box-shadow: 0 0 12px 2px rgba(241, 196, 15, 0.4);
+    }
+}
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Oyun İçeriği ──────────────────────────────────────────
+.interaction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 95%; margin: 0 auto;
+    max-width: 920px;
+    @include card-shadow($color-nav, .12);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.rows-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: clamp(12px, 2.5vw, 28px);
+    width: 100%;
+}
+
+.fruit-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(16px, 3.5vw, 36px);
+    padding: clamp(8px, 2vw, 16px) 0;
+    border-bottom: 2px solid #eef3fa;
+    animation: scaleIn 0.4s ease-out backwards;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    @for $i from 1 through 2 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.08}s;
+        }
+    }
+}
+
+.fruit-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.fruit-visual {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: clamp(60px, 15vw, 120px);
+}
+
+.fruit-emoji {
+    line-height: 1;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.08);
+    }
+}
+
+// ── Rank Input ──────────────────────────────────────────
+.rank-input-wrapper {
+    width: clamp(36px, 8vw, 52px);
+    height: clamp(36px, 8vw, 52px);
+    border-radius: 14px;
+    border: clamp(2px, 0.4vw, 3px) solid #dde2e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    position: relative;
+
+    &.correct {
+        border-color: #50b875;
+        background: #e6f7f1;
+    }
+
+    &.hint {
+        animation: hintPulse 1.2s ease-in-out infinite;
+    }
+}
+
+.hint-value {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #f1c40f;
+    color: #fff;
+    font-size: clamp(10px, 2.5vw, 13px);
+    font-weight: 900;
+    width: clamp(18px, 4.5vw, 24px);
+    height: clamp(18px, 4.5vw, 24px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(241, 196, 15, 0.5);
+    animation: scaleIn 0.3s ease-out;
+}
+
+.rank-input {
+    width: clamp(24px, 5.5vw, 36px);
+    height: clamp(24px, 5.5vw, 36px);
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: clamp(16px, 4vw, 24px);
+    font-weight: 900;
+    color: $color-text;
+    outline: none;
+    caret-color: $color-nav;
+
+    &::placeholder {
+        color: #c5d0de;
+        font-weight: 600;
+    }
+
+    &:focus {
+        color: $color-nav;
+    }
+
+    &:disabled {
+        color: #50b875;
+    }
+}

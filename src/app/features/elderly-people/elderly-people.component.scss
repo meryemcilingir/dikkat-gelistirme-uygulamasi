@@ -1,0 +1,124 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+@keyframes scaleIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes checkPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes hintPulse {
+    0%, 100% { background-color: rgba(241, 196, 15, 0.1); border-color: rgba(241, 196, 15, 0.4); }
+    50% { background-color: rgba(241, 196, 15, 0.35); border-color: rgba(241, 196, 15, 1); }
+}
+
+@keyframes hintShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-3px); }
+    40%, 80% { transform: translateX(3px); }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.interaction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 960px;
+    width: 95%;
+    margin: 0 auto;
+    @include card-shadow($color-nav, .12);
+}
+
+.rows-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: clamp(14px, 3vw, 28px);
+    width: 100%;
+}
+
+.person-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(12px, 2.5vw, 28px);
+    animation: scaleIn 0.4s ease-out backwards;
+    @for $i from 1 through 2 {
+        &:nth-child(#{$i}) { animation-delay: #{$i * 0.08}s; }
+    }
+}
+
+.person-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(4px, 1vw, 8px);
+    padding: clamp(10px, 2vw, 18px) clamp(12px, 2.5vw, 24px);
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background: #f8fbff;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: clamp(90px, 18vw, 140px);
+
+    &:hover { background: #f0f7ff; transform: translateY(-2px); }
+    &.selected { border-color: #8db5e6; background: #e9f2fb; }
+    &.hint-add { animation: hintPulse 1.2s ease-in-out infinite; border-color: #f1c40f !important; }
+    &.hint-remove { animation: hintShake 0.4s ease-in-out infinite; border-color: #e55039 !important; background: #fff3f0 !important; }
+}
+
+.person-emoji {
+    font-size: clamp(36px, 8vw, 64px);
+    line-height: 1;
+}
+
+.person-label {
+    font-size: clamp(12px, 2vw, 15px);
+    font-weight: 700;
+    color: $color-text;
+}
+
+.checkbox {
+    width: clamp(30px, 5.5vw, 42px);
+    height: clamp(30px, 5.5vw, 42px);
+    border-radius: 10px;
+    border: 3px solid #dde2e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    &.selected { background: #50b875 !important; border-color: #50b875 !important; }
+}
+
+.check-icon {
+    font-size: clamp(18px, 4vw, 28px) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    animation: checkPop 0.2s ease-out;
+}

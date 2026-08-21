@@ -1,0 +1,278 @@
+@use '../../portal/shared/portal-tokens' as *;
+
+:host {
+    display: contents;
+}
+
+// Router-outlet'in bulunduğu grid hücresini kaplar (fixed/tam ekran değil) —
+// öğretmen yalnızca soru alanına dokunamaz, geri kalan chrome etkilenmez.
+.review-lock-overlay {
+    grid-area: question;
+    z-index: 5;
+    align-self: stretch;
+    justify-self: stretch;
+    background: transparent;
+    cursor: not-allowed;
+}
+
+.review-header {
+    grid-area: header;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: $p-space-4;
+    padding: $p-space-3 $p-space-5;
+    min-height: 64px;
+    background: $p-surface;
+    border-bottom: 1px solid $p-border;
+    font-family: $p-font;
+}
+
+.back-link {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    padding: $p-space-2 $p-space-4;
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: $p-text-secondary;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+
+    &:hover {
+        border-color: $p-border-strong;
+        color: $p-text;
+        background: $p-surface-muted;
+    }
+}
+
+.header-student {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.25;
+    text-align: center;
+
+    strong {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: $p-text;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .muted {
+        font-size: 0.76rem;
+        color: $p-text-muted;
+        font-weight: 500;
+    }
+}
+
+.header-status {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+}
+
+.q-index {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $p-text-muted;
+    white-space: nowrap;
+}
+
+.badge {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 10px;
+    border-radius: $p-radius-sm;
+    font-weight: 700;
+    font-size: 0.76rem;
+    white-space: nowrap;
+
+    &.correct {
+        background: $p-success-soft;
+        color: $p-success;
+    }
+
+    &.wrong {
+        background: $p-danger-soft;
+        color: $p-danger;
+    }
+
+    &.neutral {
+        background: $p-surface-muted;
+        color: $p-text-muted;
+    }
+}
+
+.review-panel {
+    grid-area: panel;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: $p-space-4;
+    font-family: $p-font;
+    // Soru alanından net ama sade bir çizgiyle ayrılır — gölge/gradient yok.
+    border-left: 1px solid $p-border;
+    // Soru alanı kendi içinde kayarken (bkz. styles.scss) panel her zaman
+    // görünür kalsın diye üstte sabitlenir — kartın kendisi içeriği kadar
+    // yüksektir, sidebar boyunca uzanan boş beyaz alan oluşturmaz.
+    position: sticky;
+    top: 0;
+    align-self: start;
+}
+
+.review-detail-card {
+    @include p-card;
+    padding: $p-space-4;
+    box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06);
+}
+
+.detail-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $p-space-2;
+    margin-bottom: $p-space-3;
+
+    h2 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $p-text;
+        margin: 0;
+    }
+}
+
+.panel-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $p-space-3;
+    padding: $p-space-2 0;
+    border-top: 1px solid $p-border;
+    font-size: 0.85rem;
+
+    .row-label {
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+
+    .row-value {
+        color: $p-text;
+        font-weight: 700;
+        text-align: right;
+    }
+}
+
+.progress-track {
+    margin-top: $p-space-3;
+    height: 5px;
+    border-radius: 3px;
+    background: $p-surface-muted;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: $p-accent;
+    transition: width 250ms ease;
+}
+
+.review-nav {
+    grid-area: nav;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $p-space-2;
+    padding: $p-space-3;
+    font-family: $p-font;
+    background: $p-surface;
+    border-top: 1px solid $p-border;
+    border-left: 1px solid $p-border;
+    // Dış konteyner viewport'a sabitlendiği için (bkz. app.scss) bu zaten
+    // her zaman görünür kalır; sticky ek bir güvence katmanı olarak durur.
+    position: sticky;
+    bottom: 0;
+
+    button {
+        background: $p-surface;
+        border: 1px solid $p-border;
+        border-radius: $p-radius-md;
+        padding: $p-space-2 $p-space-3;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+
+        &:hover:not(:disabled) {
+            border-color: $p-border-strong;
+            color: $p-text;
+            background: $p-surface-muted;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+
+    .nav-index {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: $p-text-muted;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 900px) {
+    .review-panel,
+    .review-nav {
+        border-left: none;
+    }
+
+    .review-panel {
+        border-top: 1px solid $p-border;
+        position: static;
+    }
+
+    // Dar ekranda "← Sınav Özetine Dön" + "Soru X/Y" rozeti tek satırda
+    // öğrenci adına yer bırakmıyor (ikisi tek başına genişliğin çoğunu
+    // dolduruyor) — bu yüzden başlık iki satıra sarıyor: üstte geri
+    // butonu + durum, altta tam genişlikte ortalanmış öğrenci adı.
+    .review-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        row-gap: $p-space-2;
+        min-height: auto;
+        padding: $p-space-3 $p-space-4;
+    }
+
+    .back-link {
+        order: 1;
+    }
+
+    .header-status {
+        order: 2;
+    }
+
+    .header-student {
+        order: 3;
+        flex: 1 1 100%;
+    }
+}

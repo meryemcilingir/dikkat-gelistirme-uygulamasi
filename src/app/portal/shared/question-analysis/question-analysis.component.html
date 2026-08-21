@@ -1,0 +1,177 @@
+<div class="page-header">
+    <div>
+        <h1>Soru Analizi</h1>
+        <p class="page-subtitle">150 sorunun kategori ve öğrenci bazında başarı istatistikleri.</p>
+    </div>
+</div>
+
+<ng-container *ngIf="result() as r">
+    <div class="metric-strip" *ngIf="r.categories.length">
+        <div class="metric-item">
+            <span class="metric-label">Cevaplanan Soru</span>
+            <span class="metric-value">{{ totalAnsweredQuestions }}</span>
+            <span class="metric-context">{{ r.categories.length }} kategori</span>
+        </div>
+        <div class="metric-item">
+            <span class="metric-label">Kategori Ortalaması</span>
+            <span class="metric-value">{{ weightedAvgCorrectRate !== null ? (weightedAvgCorrectRate + '%') : '—' }}</span>
+            <span class="metric-context">kategori bazlı ağırlıklı ortalama</span>
+        </div>
+        <div class="metric-item" *ngIf="hardestCategory as hc">
+            <span class="metric-label">En Zor Kategori</span>
+            <span class="metric-value" style="font-size: 1.05rem;">{{ hc.category }}</span>
+            <span class="metric-context">Başarı oranı: %{{ hc.avgCorrectRate }}</span>
+        </div>
+    </div>
+
+    <div class="grid-12" *ngIf="topHardest().length">
+        <div class="span-6 panel-card">
+            <div class="panel-title">En Çok Zorlanılan Sorular</div>
+            <div class="panel-subtitle">En yüksek yanlış oranına sahip ilk 5 soru</div>
+            <div class="hbar-list">
+                <div class="hbar-row" *ngFor="let q of topHardest()" (click)="openDetail(q)">
+                    <div class="hbar-top">
+                        <span class="hbar-label">Soru {{ (q.questionIndex ?? 0) + 1 }} — {{ title(q.questionId) }}</span>
+                        <span class="hbar-value">%{{ q.wrongRate }} yanlış</span>
+                    </div>
+                    <div class="hbar-track"><div class="hbar-fill" [style.width.%]="hbarWidth(q.wrongRate)"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="span-6 panel-card" *ngIf="r.categories.length">
+            <div class="panel-title">Kategori Bazlı Başarı</div>
+            <div class="panel-subtitle">Soru sayısı ve ortalama başarıya göre</div>
+            <table class="mini-table">
+                <thead>
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Soru</th>
+                        <th>Başarı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of r.categories">
+                        <td>{{ c.category }}</td>
+                        <td>{{ c.questionCount }}</td>
+                        <td>
+                            <div class="score-cell">
+                                <span>%{{ c.avgCorrectRate }}</span>
+                                <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="c.avgCorrectRate"></div></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-header"><h2>Tüm Sorular</h2></div>
+</ng-container>
+
+<div class="list-toolbar">
+    <label class="toolbar-select">
+        <span>Sırala</span>
+        <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
+            <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
+        </select>
+    </label>
+</div>
+
+<div class="table-scroll skeleton-table" *ngIf="loading()">
+    <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]"></div>
+</div>
+<div class="empty-state" *ngIf="!loading() && result()?.total === 0">
+    <p class="empty-title">Henüz tamamlanmış sınav bulunmuyor</p>
+    <p class="empty-subtitle">Soru istatistiği ancak öğrenciler 150 soruyu bitirdikten sonra hesaplanabilir.</p>
+</div>
+
+<div class="table-scroll" *ngIf="!loading() && (result()?.total ?? 0) > 0">
+    <table class="teacher-table">
+        <thead>
+            <tr>
+                <th>Soru</th>
+                <th>Kategori</th>
+                <th>Çözen</th>
+                <th>Doğru</th>
+                <th>Yanlış</th>
+                <th>Başarı</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let q of result()!.items" class="row-clickable" (click)="openDetail(q)">
+                <td>
+                    <a class="row-link">Soru {{ (q.questionIndex ?? 0) + 1 }} — {{ title(q.questionId) }}</a>
+                </td>
+                <td>{{ q.category }}</td>
+                <td>{{ q.answered }}</td>
+                <td class="ok">{{ q.correct }}</td>
+                <td class="bad">{{ q.wrong }}</td>
+                <td>
+                    <div class="score-cell">
+                        <span>%{{ q.correctRate }}</span>
+                        <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="q.correctRate"></div></div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<app-pagination
+    *ngIf="result() as r"
+    [page]="r.page"
+    [totalPages]="r.totalPages"
+    [total]="r.total"
+    [pageSize]="r.pageSize"
+    (pageChange)="reload($event)"
+    (pageSizeChange)="query.pageSize = $event; reload(1)"
+></app-pagination>
+
+<!-- ═══ Soru detayı ═══ -->
+<div class="detail-overlay" *ngIf="selected() || detailLoading()" (click)="closeDetail()">
+    <div class="detail-panel" (click)="$event.stopPropagation()">
+        <div class="empty" *ngIf="detailLoading()">Yükleniyor...</div>
+
+        <ng-container *ngIf="selected() as d">
+            <div class="detail-header">
+                <h3>Soru {{ (d.questionIndex ?? 0) + 1 }} <span class="muted">({{ title(d.questionId) }})</span></h3>
+                <button class="link-btn" (click)="closeDetail()">Kapat ×</button>
+            </div>
+
+            <div class="detail-stats">
+                <div><span class="label">Kategori</span><span class="value">{{ d.category }}</span></div>
+                <div><span class="label">Toplam Cevaplayan</span><span class="value">{{ d.answered }}</span></div>
+                <div><span class="label">Doğru</span><span class="value ok">{{ d.correct }} (%{{ d.correctRate }})</span></div>
+                <div><span class="label">Yanlış</span><span class="value bad">{{ d.wrong }} (%{{ d.wrongRate }})</span></div>
+            </div>
+
+            <div class="tabs">
+                <button [class.active]="detailTab() === 'wrong'" (click)="detailTab.set('wrong')" type="button">
+                    Yanlış Yapanlar ({{ d.wrongStudents.length }})
+                </button>
+                <button [class.active]="detailTab() === 'correct'" (click)="detailTab.set('correct')" type="button">
+                    Doğru Yapanlar ({{ d.correctStudents.length }})
+                </button>
+            </div>
+
+            <div class="wrong-students" *ngIf="detailTab() === 'wrong'">
+                <div class="empty" *ngIf="!d.wrongStudents.length">Bu soruyu yanlış yapan öğrenci yok.</div>
+                <ul class="student-link-list" *ngIf="d.wrongStudents.length">
+                    <li *ngFor="let s of d.wrongStudents">
+                        <a class="row-link" (click)="goToStudentReview(s.studentId)">{{ s.firstName }} {{ s.lastName }}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="wrong-students" *ngIf="detailTab() === 'correct'">
+                <div class="empty" *ngIf="!d.correctStudents.length">Bu soruyu doğru yapan öğrenci yok.</div>
+                <ul class="student-link-list" *ngIf="d.correctStudents.length">
+                    <li *ngFor="let s of d.correctStudents">
+                        <a class="row-link" (click)="goToStudentReview(s.studentId)">{{ s.firstName }} {{ s.lastName }}</a>
+                    </li>
+                </ul>
+            </div>
+        </ng-container>
+    </div>
+</div>

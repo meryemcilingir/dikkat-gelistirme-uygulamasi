@@ -1,0 +1,221 @@
+<div class="page-header">
+    <div>
+        <h1>Öğrencilerim</h1>
+        <p class="page-subtitle">Öğrencilerinizi ve sınav ilerlemelerini yönetin.</p>
+    </div>
+    <button class="primary-btn" (click)="toggleForm()">{{ showForm() ? 'Vazgeç' : '+ Yeni Öğrenci' }}</button>
+</div>
+
+<form class="create-form" *ngIf="showForm()" (ngSubmit)="createStudent()">
+    <div class="form-row">
+        <label>Ad <input [(ngModel)]="firstName" name="firstName" [maxlength]="limits.firstName.max" placeholder="{{ limits.firstName.min }}-{{ limits.firstName.max }} karakter" /></label>
+        <label>Soyad <input [(ngModel)]="lastName" name="lastName" [maxlength]="limits.lastName.max" placeholder="{{ limits.lastName.min }}-{{ limits.lastName.max }} karakter" /></label>
+    </div>
+    <div class="form-row">
+        <label>Kullanıcı adı <input [(ngModel)]="username" name="username" [maxlength]="limits.username.max" placeholder="{{ limits.username.min }}-{{ limits.username.max }} karakter" /></label>
+        <label>Şifre <input [(ngModel)]="password" name="password" type="text" [maxlength]="limits.password.max" placeholder="en az {{ limits.password.min }} karakter" /></label>
+    </div>
+    <div class="error" *ngIf="error()">{{ error() }}</div>
+    <button class="primary-btn" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Kaydediliyor...' : 'Öğrenciyi Oluştur' }}
+    </button>
+</form>
+
+<form class="create-form" *ngIf="editingStudent() as s" (ngSubmit)="saveEdit()">
+    <h3 class="form-title">{{ s.firstName }} {{ s.lastName }} düzenleniyor</h3>
+    <div class="form-row">
+        <label>Ad <input [(ngModel)]="editFirstName" name="editFirstName" [maxlength]="limits.firstName.max" /></label>
+        <label>Soyad <input [(ngModel)]="editLastName" name="editLastName" [maxlength]="limits.lastName.max" /></label>
+    </div>
+    <div class="form-row">
+        <label>Kullanıcı adı <input [(ngModel)]="editUsername" name="editUsername" [maxlength]="limits.username.max" /></label>
+    </div>
+    <div class="error" *ngIf="editError()">{{ editError() }}</div>
+    <div class="form-row">
+        <button class="primary-btn" type="submit" [disabled]="editSaving()">
+            {{ editSaving() ? 'Kaydediliyor...' : 'Kaydet' }}
+        </button>
+        <button class="link-btn" type="button" (click)="cancelEdit()">Vazgeç</button>
+    </div>
+</form>
+
+<form class="create-form" *ngIf="resettingStudent() as s" (ngSubmit)="saveResetPassword()">
+    <h3 class="form-title">{{ s.firstName }} {{ s.lastName }} için yeni şifre</h3>
+    <div class="form-row">
+        <label>Yeni Şifre <input [(ngModel)]="resetPassword" name="resetPassword" type="text" [maxlength]="limits.password.max" placeholder="en az {{ limits.password.min }} karakter" /></label>
+    </div>
+    <div class="error" *ngIf="resetError()">{{ resetError() }}</div>
+    <div class="form-row">
+        <button class="primary-btn" type="submit" [disabled]="resetSaving()">
+            {{ resetSaving() ? 'Kaydediliyor...' : 'Şifreyi Sıfırla' }}
+        </button>
+        <button class="link-btn" type="button" (click)="cancelResetPassword()">Vazgeç</button>
+    </div>
+</form>
+
+<div class="list-toolbar">
+    <input
+        class="search-input"
+        [(ngModel)]="query.search"
+        (ngModelChange)="onSearchInput()"
+        placeholder="Ad veya kullanıcı adı ara..."
+        maxlength="100"
+    />
+    <button class="filter-toggle-btn" [class.active]="showFilters()" (click)="toggleFilters()">
+        Filtreler{{ filterChips.length ? ' (' + filterChips.length + ')' : '' }}
+    </button>
+    <label class="toolbar-select">
+        <span>Sırala</span>
+        <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
+            <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
+        </select>
+    </label>
+</div>
+
+<div class="filter-panel" *ngIf="showFilters()">
+    <label class="toolbar-select">
+        <span>Sınav Durumu</span>
+        <select [(ngModel)]="query.status" (ngModelChange)="reload(1)">
+            <option value="">Tümü</option>
+            <option value="Completed">Tamamlandı</option>
+            <option value="InProgress">Devam Ediyor</option>
+            <option value="Assigned">Başlamadı</option>
+        </select>
+    </label>
+    <label class="toolbar-select">
+        <span>Hesap</span>
+        <select [(ngModel)]="query.active" (ngModelChange)="reload(1)">
+            <option value="">Aktif + Pasif</option>
+            <option value="active">Yalnızca aktif</option>
+            <option value="passive">Yalnızca pasif</option>
+        </select>
+    </label>
+    <div class="range-field">
+        <span>Puan</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMin" (change)="reload(1)" placeholder="Min" />
+        <span class="dash">–</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMax" (change)="reload(1)" placeholder="Max" />
+    </div>
+    <div class="range-field">
+        <span>Başarı %</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.correctRateMin" (change)="reload(1)" placeholder="Min" />
+        <span class="dash">–</span>
+        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.correctRateMax" (change)="reload(1)" placeholder="Max" />
+    </div>
+    <button class="link-btn" type="button" (click)="clearAllFilters()">Filtreleri Temizle</button>
+</div>
+
+<div class="filter-chips" *ngIf="filterChips.length">
+    <span class="chip" *ngFor="let c of filterChips">
+        {{ c.label }}
+        <button type="button" (click)="c.clear()" aria-label="Filtreyi kaldır">×</button>
+    </span>
+</div>
+
+<div class="table-scroll skeleton-table" *ngIf="loading()">
+    <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]"></div>
+</div>
+<div class="empty-state" *ngIf="!loading() && studentPage()?.total === 0">
+    <p class="empty-title">{{ filterChips.length ? 'Bu filtrelerle eşleşen öğrenci yok' : 'Henüz öğrenci eklenmemiş' }}</p>
+    <p class="empty-subtitle">{{ filterChips.length ? 'Filtreleri değiştirip tekrar deneyin.' : '"Yeni Öğrenci" ile ilk öğrencinizi ekleyebilirsiniz.' }}</p>
+</div>
+
+<div class="table-scroll" *ngIf="!loading() && (studentPage()?.total ?? 0) > 0">
+    <table class="student-table student-table-responsive">
+        <thead>
+            <tr>
+                <th>Ad Soyad</th>
+                <th>Kullanıcı Adı</th>
+                <th>İlerleme</th>
+                <th>Durum</th>
+                <th class="col-dy">D / Y</th>
+                <th class="col-score">Puan</th>
+                <th class="col-actions"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let s of studentPage()!.items" class="student-row" (click)="openStudentSheet(s)">
+                <td>{{ s.firstName }} {{ s.lastName }}</td>
+                <td class="muted">{{ s.username }}</td>
+                <td>{{ s.exam.answered }} / {{ s.exam.total }}</td>
+                <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s) }}</span></td>
+                <td class="col-dy"><span class="ok">{{ s.exam.correctCount ?? 0 }}</span> / <span class="bad">{{ s.exam.wrongCount ?? 0 }}</span></td>
+                <td class="col-score">
+                    <div class="score-cell">
+                        <span>{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+                        <div class="rate-bar" *ngIf="s.exam.correctRate !== null && s.exam.correctRate !== undefined">
+                            <div class="rate-bar-fill" [style.width.%]="s.exam.correctRate"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="actions-cell col-actions">
+                    <button class="link-btn review" (click)="openReview(s.id); $event.stopPropagation()">İncele</button>
+                    <div class="action-menu">
+                        <button class="action-menu-trigger" (click)="toggleMenu(s.id, $event)" aria-label="Diğer işlemler">⋯</button>
+                        <div class="action-menu-dropdown" *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
+                            <button (click)="startEdit(s); closeMenu()">Düzenle</button>
+                            <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ── Mobil: öğrenci detay bottom sheet'i ─────────────────── -->
+<div class="sheet-backdrop" *ngIf="selectedStudent() as s" (click)="closeStudentSheet()">
+    <div class="mobile-sheet" (click)="$event.stopPropagation()">
+        <div class="sheet-drag-handle"></div>
+        <button class="sheet-close-btn" (click)="closeStudentSheet()" aria-label="Kapat">×</button>
+
+        <div class="sheet-header">
+            <h3>{{ s.firstName }} {{ s.lastName }}</h3>
+            <p class="sheet-username">&#64;{{ s.username }}</p>
+        </div>
+
+        <div class="sheet-status-row">
+            <span class="sheet-status-label">Sınav Durumu</span>
+            <span class="badge" [class]="s.exam.status">{{ statusLabel(s) }}</span>
+        </div>
+
+        <div class="summary-grid sheet-grid">
+            <div>
+                <span class="label">İlerleme</span>
+                <span class="value">{{ s.exam.answered }} / {{ s.exam.total }}</span>
+            </div>
+            <div>
+                <span class="label">Puan</span>
+                <span class="value">{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+            </div>
+            <div>
+                <span class="label">Doğru</span>
+                <span class="value correct">{{ s.exam.correctCount ?? 0 }}</span>
+            </div>
+            <div>
+                <span class="label">Yanlış</span>
+                <span class="value wrong">{{ s.exam.wrongCount ?? 0 }}</span>
+            </div>
+            <div>
+                <span class="label">Toplam Süre</span>
+                <span class="value">{{ formatDuration(s.exam.totalTimeSeconds) }}</span>
+            </div>
+            <div>
+                <span class="label">Ort. Soru Süresi</span>
+                <span class="value">{{ formatDuration(avgTimeSeconds(s)) }}</span>
+            </div>
+        </div>
+
+        <button class="primary-btn sheet-review-btn" (click)="reviewFromSheet()">Sınavı İncele &rarr;</button>
+    </div>
+</div>
+
+<app-pagination
+    *ngIf="studentPage() as p"
+    [page]="p.page"
+    [totalPages]="p.totalPages"
+    [total]="p.total"
+    [pageSize]="p.pageSize"
+    (pageChange)="reload($event)"
+    (pageSizeChange)="query.pageSize = $event; reload(1)"
+></app-pagination>

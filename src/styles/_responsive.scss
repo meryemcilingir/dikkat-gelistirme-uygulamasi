@@ -1,0 +1,45 @@
+// ══════════════════════════════════════════════════════════
+// RESPONSIVE BREAKPOINTS & MIXINS
+// Tüm component SCSS'lerinden @use ile çağrılır
+// ══════════════════════════════════════════════════════════
+
+// ── Breakpoint Değerleri ────────────────────────────────────
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1024px;
+
+// ── Media Query Mixins ──────────────────────────────────────
+
+/// Sadece mobil (≤ 768px)
+@mixin mobile {
+    @media (max-width: #{$breakpoint-mobile}) {
+        @content;
+    }
+}
+
+/// Sadece tablet (769px – 1024px)
+@mixin tablet {
+    @media (min-width: #{$breakpoint-mobile + 1}) and (max-width: #{$breakpoint-tablet}) {
+        @content;
+    }
+}
+
+/// Mobil + Tablet (≤ 1024px)
+@mixin mobile-tablet {
+    @media (max-width: #{$breakpoint-tablet}) {
+        @content;
+    }
+}
+
+/// Sadece desktop (> 1024px)
+@mixin desktop {
+    @media (min-width: #{$breakpoint-tablet + 1}) {
+        @content;
+    }
+}
+
+/// Küçük mobil (≤ 480px)
+@mixin small-mobile {
+    @media (max-width: 480px) {
+        @content;
+    }
+}

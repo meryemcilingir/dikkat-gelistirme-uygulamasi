@@ -1,0 +1,104 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: clamp(4px, 1.5vw, 12px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(12px, 2.5vw, 28px);
+    width: 100%;
+    max-width: 900px;
+}
+
+// ── Sepet ────────────────────────────────────────────────
+.basket-wrap {
+    position: relative;
+    width: clamp(120px, 18vw, 200px);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.basket-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+}
+
+.basket-fruit {
+    position: absolute;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+}
+
+// ── Seçenekler ───────────────────────────────────────────
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(8px, 1.5vw, 16px);
+    width: 100%;
+    max-width: 720px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(6px, 1.2vw, 12px);
+    background: #fff;
+    border: 3px solid #b0b0b0;
+    border-radius: 14px;
+    min-height: clamp(70px, 10vw, 100px);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+
+    &.selected {
+        border-color: #27ae60;
+        background: #eafaf1;
+        transform: scale(1.05);
+    }
+
+    &:disabled {
+        cursor: default;
+    }
+}
+
+.opt-emoji {
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+// ── Mobil ────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .options-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+    .option {
+        min-height: 60px;
+        padding: 6px;
+    }
+    .opt-emoji { font-size: 32px; }
+    .basket-wrap { width: 38vw; max-width: 150px; }
+}

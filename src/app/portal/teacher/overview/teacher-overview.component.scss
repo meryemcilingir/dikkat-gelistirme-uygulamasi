@@ -1,0 +1,27 @@
+@use '../../shared/portal' as *;
+@use '../../shared/portal-tokens' as *;
+@use '../../shared/kpi-strip' as *;
+@use '../../shared/dash-grid' as *;
+@use '../../shared/premium-table' as *;
+@use '../../shared/entity-card' as *;
+
+// ══════════════════════════════════════════════════════════
+// Öğretmen Genel Bakış — Admin Genel Bakış'la aynı design system
+// (dashboard/kpi-strip/dash-row/panel-card/premium-table/entity-card
+// paylaşılan partial'lardan). Bu dosya yalnızca sayfaya özel
+// masaüstü/mobil görünürlük anahtarlarını içerir.
+// ══════════════════════════════════════════════════════════
+
+.desktop-only {
+    @media (max-width: 640px) {
+        display: none;
+    }
+}
+
+.mobile-only {
+    display: none;
+
+    @media (max-width: 640px) {
+        display: flex;
+    }
+}

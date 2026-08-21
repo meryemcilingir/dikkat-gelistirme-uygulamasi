@@ -1,0 +1,103 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    padding: 4px;
+}
+
+// ── Fixed-size container ──────────────────────────────────
+.match-container {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    transform-origin: center center;
+
+    @include mobile {
+        transform: scale(0.78);
+        margin: calc(420px * -0.11) calc(560px * -0.11);
+    }
+    @include small-mobile {
+        transform: scale(0.62);
+        margin: calc(420px * -0.19) calc(560px * -0.19);
+    }
+    @media (max-width: 400px) {
+        transform: scale(0.50);
+        margin: calc(420px * -0.25) calc(560px * -0.25);
+    }
+}
+
+// ── Sütunlar ─────────────────────────────────────────────
+.cards-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 1;
+}
+
+.left-col  { align-items: flex-end;   width: 172px; }
+.right-col { align-items: flex-start; width: 172px; }
+
+// ── Tek kart ─────────────────────────────────────────────
+.card-slot {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #c8d4e0;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+    overflow: hidden;
+
+    &:hover:not(.matched) {
+        border-color: #94a3b8;
+        background: #f8fafc;
+    }
+
+    &.selected {
+        border-color: #6366f1 !important;
+        background: #eef2ff !important;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+
+    &.matched {
+        opacity: 0.42;
+        cursor: default;
+        border-color: #86efac !important;
+        background: #f0fdf4 !important;
+    }
+
+    &.clickable {
+        cursor: pointer;
+        border-color: #a5b4fc;
+    }
+}
+
+// ── Kart içi SVG ─────────────────────────────────────────
+.card-svg {
+    width: 104px;
+    height: 104px;
+    display: block;
+}
+
+// ── Overlay SVG ──────────────────────────────────────────
+.lines-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+}
+

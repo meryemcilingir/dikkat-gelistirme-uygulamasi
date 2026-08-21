@@ -1,0 +1,55 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      instruction="Yukarıda verilen harflerden kaçar tane olduklarını yazın."
+      [icons]="'📝'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" [class.locked]="false"
+            (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="letter-counting-container">
+        
+        <div class="letters-grid">
+          @for (char of displayLetters; track $index) {
+            <div class="letter-item">{{ char }}</div>
+          }
+        </div>
+
+        <div class="count-table">
+          @for (option of options; track option.letter) {
+            <div class="table-row">
+              <div class="letter-label">{{ option.letter }}</div>
+              <input type="number" 
+                     class="count-input" 
+                     [(ngModel)]="option.userCount" 
+                     [class.correct]="feedbackState === 'correct'"
+                     [class.wrong]="feedbackState === 'wrong' && option.userCount !== option.count"
+                     placeholder="?">
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted"
+            (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

@@ -1,0 +1,64 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🔢" instruction="Verilen tablonun aynısını bulun ve işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Hedef tablo -->
+            <div class="target-section">
+                <div class="target-box">
+                    <div class="num-grid">
+                        @for (row of targetGrid; track $index) {
+                            @for (cell of row; track $index) {
+                                <div class="num-cell target-cell">{{ cell }}</div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ok -->
+            <div class="arrow-section">
+                <span class="material-icons arrow-icon">arrow_forward</span>
+            </div>
+
+            <!-- Seçenekler -->
+            <div class="options-area">
+                @for (opt of options; track opt.id) {
+                <div class="option-wrapper">
+                    <div class="option-card hover"
+                        [class.selected]="opt.isSelected"
+                        [class.shake]="opt.isShaking"
+                        [class.hint]="showHint && opt.isCorrect && !opt.isSelected"
+                        role="button" tabindex="0"
+                        (click)="selectOption(opt.id)"
+                        (keydown.enter)="selectOption(opt.id)"
+                        [attr.aria-label]="'Seçenek ' + opt.id">
+                        <div class="num-grid">
+                            @for (row of opt.cells; track $index) {
+                                @for (cell of row; track $index) {
+                                    <div class="num-cell">{{ cell }}</div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

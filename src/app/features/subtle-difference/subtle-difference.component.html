@@ -1,0 +1,57 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🔍"
+            instruction="Diğerlerinden biraz farklı olan çiçekleri bul ve tıkla."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="grid">
+                @for (c of cells; track c.id) {
+                <button class="cell"
+                    [class.selected]="c.isSelected"
+                    [disabled]="isSubmitted"
+                    (click)="onCellClick(c)">
+                    <svg viewBox="-50 -50 100 100" class="flower"
+                        [style.transform]="'rotate(' + c.rotation + 'deg)'">
+                        <g [attr.transform]="'scale(' + c.petalScale + ')'">
+                            <g transform="rotate(0)">
+                                <ellipse cx="0" cy="-24" rx="11" ry="18" [attr.fill]="c.color" stroke="#8a3d00" stroke-width="1.5" />
+                            </g>
+                            <g transform="rotate(72)">
+                                <ellipse cx="0" cy="-24" rx="11" ry="18" [attr.fill]="c.color" stroke="#8a3d00" stroke-width="1.5" />
+                            </g>
+                            <g transform="rotate(144)">
+                                <ellipse cx="0" cy="-24" rx="11" ry="18" [attr.fill]="c.color" stroke="#8a3d00" stroke-width="1.5" />
+                            </g>
+                            <g transform="rotate(216)">
+                                <ellipse cx="0" cy="-24" rx="11" ry="18" [attr.fill]="c.color" stroke="#8a3d00" stroke-width="1.5" />
+                            </g>
+                            <g transform="rotate(288)">
+                                <ellipse cx="0" cy="-24" rx="11" ry="18" [attr.fill]="c.color" stroke="#8a3d00" stroke-width="1.5" />
+                            </g>
+                        </g>
+                        <circle cx="0" cy="0" r="11" [attr.fill]="c.centerColor" stroke="#8D6E00" stroke-width="1.5" />
+                    </svg>
+                    @if (c.isSelected) {
+                    <span class="check">✓</span>
+                    }
+                </button>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

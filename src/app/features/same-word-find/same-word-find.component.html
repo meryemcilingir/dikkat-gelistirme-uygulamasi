@@ -1,0 +1,56 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔍📖"
+            instruction="Hedef kelimenin aynısını seçenekler arasından bulun ve işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="sets-list">
+
+                @for (set of sets; track set.id) {
+                <div class="word-set" [style.--set-color]="set.color">
+                    
+                    <div class="target-display">
+                        <span class="label">HEDEF:</span>
+                        <span class="word">{{ set.target }}</span>
+                    </div>
+
+                    <div class="options-row">
+                        @for (opt of set.options; track opt.id) {
+                        <button class="word-pill"
+                            [class.selected]="opt.isSelected"
+                            [class.correct]="feedbackState === 'correct' && opt.isCorrect"
+                            [class.wrong]="feedbackState === 'wrong' && opt.isSelected && !opt.isCorrect"
+                            [class.hint]="showHint && opt.isCorrect && !opt.isSelected"
+                            (click)="toggle(opt)">
+                            {{ opt.text }}
+                        </button>
+                        }
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

@@ -1,0 +1,165 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+$color-cell: #ec4899;
+$color-accent-user: #32c459;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes cellPop {
+    0% {
+        transform: scale(0.8);
+    }
+
+    60% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 12px 4px rgba(241, 196, 15, 0.8);
+        transform: scale(1.08);
+    }
+}
+
+@keyframes hintShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-3px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+.game-content {
+    display: flex;
+    gap: clamp(14px, 3vw, 30px);
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.exercise-pair {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 1.2vw, 10px);
+}
+
+.grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(4px, 1vw, 8px);
+}
+
+.grid-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #7a8fa6;
+
+    &.user-label {
+        color: $color-accent-user;
+    }
+}
+
+.arrow-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-accent-user;
+
+    .material-icons {
+        font-size: clamp(20px, 4vw, 28px);
+        font-weight: bold;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(2px, 0.5vw, 4px);
+    padding: clamp(8px, 1.5vw, 12px);
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    &.target-grid {
+        border: 2px solid #d0dce8;
+    }
+
+    &.user-grid {
+        border: 2px solid $color-accent-user;
+        box-shadow: 0 4px 16px rgba($color-accent-user, .22);
+    }
+}
+
+.cell {
+    width: clamp(40px, 10vw, 85px);
+    height: clamp(25px, 5.5vw, 45px);
+    border-radius: 6px;
+    background: #e8f0f8;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: default;
+    transition: background 0.1s;
+
+    &.filled {
+        background: $color-cell;
+    }
+
+    &.user-filled {
+        background: $color-cell;
+        animation: cellPop .18s ease;
+    }
+
+    &.hint-remove {
+        animation: hintShake 0.4s ease-in-out infinite;
+        opacity: 0.6;
+    }
+
+    &.hint-add {
+        animation: hintPulse 1.2s ease-in-out infinite;
+        background: rgba(241, 196, 15, 0.15);
+        border: 2px solid rgba(241, 196, 15, 0.8);
+    }
+}
+
+/* User interaction overrides */
+button.cell {
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 3px solid $color-cell;
+        outline-offset: 2px;
+    }
+
+    &:hover:not(.user-filled) {
+        background: color.adjust(#e8f0f8, $lightness: -5%);
+    }
+}

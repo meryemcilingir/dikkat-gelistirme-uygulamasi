@@ -1,0 +1,46 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🐘 🧭 🐾"
+            instruction="Ters yöne bakan fili bulup işaretle."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="elephants-area">
+                @for (elephant of elephants; track elephant.id) {
+                <div class="elephant-card hover" [class.selected]="selectedId === elephant.id" [class.shake]="elephant.isShaking"
+                    [class.hint]="showHint && elephant.isFlipped" (click)="selectElephant(elephant.id)"
+                    [attr.aria-label]="'Fil ' + (elephant.id + 1)" role="button" tabindex="0"
+                    (keydown.enter)="selectElephant(elephant.id)">
+                    <div class="elephant-image-wrap">
+                        <!-- Using Emoji as per plan -->
+                        <span class="elephant-emoji" [class.flipped]="elephant.isFlipped">🐘</span>
+                    </div>
+                    <div class="check-box" [class.checked]="selectedId === elephant.id">
+                        @if (selectedId === elephant.id) { <span class="check-tick">✓</span> }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="restartActivity()" (check)="checkAnswer()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

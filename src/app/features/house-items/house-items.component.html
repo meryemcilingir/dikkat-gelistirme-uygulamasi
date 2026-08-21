@@ -1,0 +1,46 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Hangileri evin içinde bulunur? İşaretleyiniz.'"
+      [icons]="'🏠🔍'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="items-grid">
+        @for (item of items; track item.id) {
+          <div class="item-card"
+               [class.selected]="item.isSelected"
+               [class.correct]="isCompleted && item.isSelected && item.isCorrect"
+               [class.wrong]="isCompleted && item.isSelected && !item.isCorrect"
+               (click)="toggleItem(item.id)">
+            <div class="item-checkbox">
+              @if (item.isSelected) {
+                <span class="check-icon">✓</span>
+              }
+            </div>
+            <span class="item-emoji">{{ item.emoji }}</span>
+            <span class="item-label">{{ item.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

@@ -1,0 +1,21 @@
+{
+  "name": "dikkat-server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "migrate-from-json": "node src/migrateFromJson.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "uuid": "^9.0.1"
+  }
+}

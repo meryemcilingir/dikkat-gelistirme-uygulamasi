@@ -1,0 +1,36 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    padding: clamp(8px, 2vw, 20px);
+}
+
+// ── 3 × 2 grid ────────────────────────────────────────────────
+.oranges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 3vw, 36px);
+    width: min(88vw, 480px);
+}
+
+// ── Single orange slot ────────────────────────────────────────
+.orange-wrapper {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+
+    --selected-transform: scale(1.05);
+    --hover-transform: scale(1.04);
+}
+
+// ── SVG ──────────────────────────────────────────────────────
+.orange-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

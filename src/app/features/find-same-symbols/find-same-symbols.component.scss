@@ -1,0 +1,113 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    gap: clamp(20px, 5vw, 60px);
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+/* ────────── TARGET CONTAINER ────────── */
+.target-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dcedc8;
+    border: 3px solid #689f38;
+    border-radius: 16px;
+    padding: clamp(12px, 2.5vw, 20px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    flex-shrink: 0;
+}
+
+.target-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: clamp(60px, 14vw, 100px);
+}
+
+/* ────────── SYMBOL STYLING ────────── */
+.symbol-letter {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 900;
+    font-size: clamp(40px, 8vw, 100px);
+    line-height: 1;
+    color: #f44336;
+    text-shadow:
+        -3px -3px 0 #000,
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        3px 3px 0 #000,
+        6px 6px 0 rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    transition: transform 0.2s;
+    &.normal { transform: rotate(0deg) scale(1, 1); }
+    &.rotate-90 { transform: rotate(90deg); }
+    &.rotate-180 { transform: rotate(180deg); }
+    &.flip-x { transform: scaleX(-1); }
+}
+
+/* ────────── OPTIONS CONTAINER ────────── */
+.options-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: clamp(6px, 1.2vw, 10px);
+    flex-grow: 1;
+    min-width: 0;
+
+    @include mobile {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.option-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    aspect-ratio: 1;
+    max-height: clamp(60px, 14vw, 150px);
+    padding: clamp(6px, 1.2vw, 10px);
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+
+    .symbol-letter {
+        font-size: clamp(24px, 5vw, 65px);
+        text-shadow:
+            -2px -2px 0 #000,
+            2px -2px 0 #000,
+            -2px 2px 0 #000,
+            2px 2px 0 #000,
+            4px 4px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    &:focus-visible {
+        outline: 3px solid $color-primary;
+    }
+
+    &.selected {
+        border-color: #2196F3;
+        background-color: #e3f2fd;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+    }
+
+    &.hint {
+        animation: hint-pulse 1s ease-in-out infinite;
+    }
+}
+
+@keyframes hint-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); }
+    50%      { box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.5); }
+}

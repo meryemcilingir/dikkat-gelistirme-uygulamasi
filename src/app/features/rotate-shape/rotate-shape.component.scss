@@ -1,0 +1,211 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.8vh, 20px);
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.question-block {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: clamp(16px, 3vw, 24px);
+    padding: clamp(12px, 2vh, 20px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    border: 1.5px solid #edf0f7;
+}
+
+// ── Sol Taraf (Referans) ───────────────────────────────────
+.reference-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: #f8f9fb;
+    border-radius: 16px;
+    min-width: clamp(100px, 18vw, 140px);
+
+    .label {
+        margin-top: 8px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: #90a4ae;
+        letter-spacing: 1px;
+    }
+}
+
+.divider {
+    width: 2px;
+    height: 60px;
+    background: #f1f4f9;
+    margin: 0 clamp(10px, 2vw, 30px);
+}
+
+// ── Sağ Taraf (Seçenekler) ──────────────────────────────────
+.options-side {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(6px, 1vw, 14px);
+}
+
+.option-card {
+    aspect-ratio: 1;
+    border-radius: clamp(12px, 2vw, 18px);
+    background: #f8f9fb;
+    border: 2.5px solid #e0e6f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--q-color);
+        background: color-mix(in srgb, var(--q-color) 6%, white);
+        transform: translateY(-2px);
+    }
+
+    &.selected {
+        border-color: var(--q-color);
+        background: color-mix(in srgb, var(--q-color) 10%, white);
+        transform: scale(1.05);
+    }
+
+    &.correct {
+        border-color: #50b875;
+        background: #edf9f3;
+    }
+
+    &.wrong {
+        border-color: #e55039;
+        background: #fff3f0;
+        animation: shakeAnim 0.4s ease;
+    }
+
+    &.hint {
+        border-color: #f9a825;
+        background: #fff8e1;
+    }
+}
+
+// ── Şekil Oluşturucu (Shape Renderer) ──────────────────────
+.shape-container {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    
+    &.ref {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+.shape-renderer {
+    display: grid;
+    gap: 2px;
+
+    &[data-type="L"], &[data-type="F"] {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+    
+    &[data-type="T"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    .cell {
+        width: 14px;
+        height: 14px;
+        background: var(--q-color);
+        border-radius: 3px;
+        box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+
+        &.empty {
+            background: transparent;
+            box-shadow: none;
+        }
+    }
+}
+
+@include mobile {
+    .questions-list {
+        gap: 8px;
+    }
+    .question-block {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        padding: 6px 10px;
+        gap: 6px;
+        border-radius: 12px;
+    }
+    
+    .reference-side {
+        padding: 4px;
+        min-width: 60px;
+        background: #f1f4f9;
+
+        .shape-container.ref {
+            width: 36px;
+            height: 36px;
+            .cell { width: 8px; height: 8px; }
+        }
+
+        .label {
+            display: none;
+        }
+    }
+
+    .divider {
+        width: 1.5px;
+        height: 40px;
+        margin: 0 4px;
+        background: #e0e6f0;
+    }
+    
+    .options-side {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important; // Try 4 columns to save vertical space?
+        gap: 4px;
+        flex: 1;
+
+        .option-card {
+            padding: 2px;
+            border-width: 1.5px;
+            .shape-container {
+                width: 28px;
+                height: 28px;
+                .cell { width: 6px; height: 6px; }
+            }
+        }
+    }
+}

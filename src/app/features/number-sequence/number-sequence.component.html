@@ -1,0 +1,57 @@
+<!-- Sayının Öncesi ve Sonrası – Number Sequence -->
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+        <app-activity-header icons="🔢 📏 🧠"
+            instruction="Verilen sayının bir öncesini ve bir sonrasını yazarak boşlukları doldur."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik"><span
+                class="material-icons">arrow_back</span></button>
+
+        <div class="game-content">
+            <div class="questions-grid">
+                @for (q of questions; track q.id) {
+                <div class="question-group">
+
+                    <div class="card input-card" [class.error]="q.prevError"
+                        [class.show-hint]="showHint && !q.prevInput">
+                        <input type="text" inputmode="numeric" maxlength="2"
+                            [placeholder]="(showHint && !q.prevInput) ? q.expectedPrev : '?'" [(ngModel)]="q.prevInput"
+                            (ngModelChange)="feedbackState = null"
+                            [attr.aria-label]="q.centerTarget + ' sayısından önceki'" class="number-input" />
+                    </div>
+
+                    <div class="card center-card" [style.--tape-color]="tapeColors[q.id]">
+                        <span class="center-number">{{ q.centerTarget }}</span>
+                    </div>
+
+                    <div class="card input-card" [class.error]="q.nextError"
+                        [class.show-hint]="showHint && !q.nextInput">
+                        <input type="text" inputmode="numeric" maxlength="2"
+                            [placeholder]="(showHint && !q.nextInput) ? q.expectedNext : '?'" [(ngModel)]="q.nextInput"
+                            (ngModelChange)="onInputChange()" [attr.aria-label]="q.centerTarget + ' sayısından sonraki'"
+                            class="number-input" />
+                    </div>
+
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik"><span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

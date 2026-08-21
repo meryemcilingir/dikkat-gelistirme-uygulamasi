@@ -1,0 +1,91 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Aşağıdaki meslekleri söyleyebilir misin? Resmi doğru isimle eşleştir.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="match-container">
+                <!-- Sol: emoji sütunu -->
+                <div class="item-col left-col">
+                    @for (item of leftItems; track $index) {
+                    <div class="item-slot emoji-slot"
+                        [class.selected]="item.isSelected"
+                        [class.matched]="item.isPaired"
+                        (click)="selectLeft($index)">
+                        <span class="emoji">{{ item.emoji }}</span>
+                    </div>
+                    }
+                </div>
+
+                <!-- Çizgi katmanı -->
+                <svg class="lines-svg"
+                    [attr.width]="CONTAINER_WIDTH"
+                    [attr.height]="CONTAINER_HEIGHT"
+                    [attr.viewBox]="'0 0 ' + CONTAINER_WIDTH + ' ' + CONTAINER_HEIGHT">
+
+                    @for (item of leftItems; track $index) {
+                    @if (!item.isPaired) {
+                    <circle
+                        [attr.cx]="LEFT_ANCHOR_X"
+                        [attr.cy]="getItemCenterY($index)"
+                        r="5"
+                        [attr.fill]="item.isSelected ? '#6366f1' : '#cbd5e1'"
+                        class="anchor-dot" />
+                    }
+                    }
+
+                    @for (item of rightItems; track $index) {
+                    @if (!item.isPaired) {
+                    <circle
+                        [attr.cx]="RIGHT_ANCHOR_X"
+                        [attr.cy]="getItemCenterY($index)"
+                        r="5"
+                        fill="#cbd5e1"
+                        class="anchor-dot" />
+                    }
+                    }
+
+                    @for (line of matchLines; track $index) {
+                    <line
+                        [attr.x1]="LEFT_ANCHOR_X"
+                        [attr.y1]="getItemCenterY(line.leftIndex)"
+                        [attr.x2]="RIGHT_ANCHOR_X"
+                        [attr.y2]="getItemCenterY(line.rightIndex)"
+                        [attr.stroke]="getLineColor(line.key)"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        class="match-line" />
+                    }
+                </svg>
+
+                <!-- Sağ: etiket sütunu -->
+                <div class="item-col right-col">
+                    @for (item of rightItems; track $index) {
+                    <div class="item-slot label-slot"
+                        [class.matched]="item.isPaired"
+                        [class.clickable]="selectedLeftIndex !== null && !item.isPaired"
+                        (click)="selectRight($index)">
+                        <span class="label">{{ item.label }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

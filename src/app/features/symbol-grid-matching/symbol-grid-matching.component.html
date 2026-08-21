@@ -1,0 +1,154 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Benzer sembolleri eşleştirin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="match-container">
+
+                <!-- Sol sütun -->
+                <div class="cards-col left-col">
+                    @for (card of leftCards; track $index) {
+                    <div class="card-slot"
+                        [class.selected]="card.isSelected"
+                        [class.matched]="card.isPaired"
+                        (click)="selectLeft($index)">
+                        <svg class="card-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <!-- ızgara çizgileri -->
+                            <line x1="50" y1="2"  x2="50" y2="98" stroke="#bbb" stroke-width="1.5"/>
+                            <line x1="2"  y1="50" x2="98" y2="50" stroke="#bbb" stroke-width="1.5"/>
+                            <!-- sol-üst -->
+                            <g [attr.transform]="'translate(2,2)'">
+                                <ng-container [ngSwitch]="card.cells[0]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <!-- sağ-üst -->
+                            <g [attr.transform]="'translate(52,2)'">
+                                <ng-container [ngSwitch]="card.cells[1]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <!-- sol-alt -->
+                            <g [attr.transform]="'translate(2,52)'">
+                                <ng-container [ngSwitch]="card.cells[2]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <!-- sağ-alt -->
+                            <g [attr.transform]="'translate(52,52)'">
+                                <ng-container [ngSwitch]="card.cells[3]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                        </svg>
+                    </div>
+                    }
+                </div>
+
+                <!-- SVG çizgi overlay -->
+                <svg class="lines-svg"
+                    [attr.width]="CONTAINER_WIDTH"
+                    [attr.height]="CONTAINER_HEIGHT"
+                    [attr.viewBox]="'0 0 ' + CONTAINER_WIDTH + ' ' + CONTAINER_HEIGHT">
+
+                    @for (card of leftCards; track $index) {
+                    @if (!card.isPaired) {
+                    <circle [attr.cx]="LEFT_ANCHOR_X" [attr.cy]="getItemCenterY($index)" r="5"
+                        [attr.fill]="card.isSelected ? '#6366f1' : '#cbd5e1'" />
+                    }
+                    }
+                    @for (card of rightCards; track $index) {
+                    @if (!card.isPaired) {
+                    <circle [attr.cx]="RIGHT_ANCHOR_X" [attr.cy]="getItemCenterY($index)" r="5"
+                        fill="#cbd5e1" />
+                    }
+                    }
+                    @for (line of matchLines; track $index) {
+                    <line
+                        [attr.x1]="LEFT_ANCHOR_X" [attr.y1]="getItemCenterY(line.leftIndex)"
+                        [attr.x2]="RIGHT_ANCHOR_X" [attr.y2]="getItemCenterY(line.rightIndex)"
+                        stroke="#6366f1" stroke-width="3" stroke-linecap="round"
+                        stroke-dasharray="6 4" />
+                    }
+                </svg>
+
+                <!-- Sağ sütun -->
+                <div class="cards-col right-col">
+                    @for (card of rightCards; track $index) {
+                    <div class="card-slot"
+                        [class.matched]="card.isPaired"
+                        [class.clickable]="selectedLeftIndex !== null && !card.isPaired"
+                        (click)="selectRight($index)">
+                        <svg class="card-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="50" y1="2"  x2="50" y2="98" stroke="#bbb" stroke-width="1.5"/>
+                            <line x1="2"  y1="50" x2="98" y2="50" stroke="#bbb" stroke-width="1.5"/>
+                            <g [attr.transform]="'translate(2,2)'">
+                                <ng-container [ngSwitch]="card.cells[0]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <g [attr.transform]="'translate(52,2)'">
+                                <ng-container [ngSwitch]="card.cells[1]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <g [attr.transform]="'translate(2,52)'">
+                                <ng-container [ngSwitch]="card.cells[2]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                            <g [attr.transform]="'translate(52,52)'">
+                                <ng-container [ngSwitch]="card.cells[3]">
+                                    <ng-container *ngSwitchCase="'rect'">     <rect     x="4" y="9"  width="34" height="22" rx="2" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'circle'">   <circle   cx="21" cy="21" r="16" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'triangle'"> <polygon  points="21,3 41,41 1,41" fill="#9b2c2c"/></ng-container>
+                                    <ng-container *ngSwitchCase="'dot'">      <circle   cx="21" cy="21" r="9"  fill="#9b2c2c"/></ng-container>
+                                </ng-container>
+                            </g>
+                        </svg>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

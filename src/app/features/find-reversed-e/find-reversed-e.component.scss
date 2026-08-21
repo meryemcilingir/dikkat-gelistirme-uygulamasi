@@ -1,0 +1,58 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+    flex-grow: 1;
+}
+
+.letter-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 4px clamp(4px, 1.2vw, 10px);
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(6px, 1.2vw, 10px);
+    row-gap: clamp(8px, 1.5vw, 15px);
+
+    @include mobile {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    @include small-mobile {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+.letter-cell {
+    padding: 0;
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    line-height: 1;
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-weight: 900;
+    text-align: center;
+    border-radius: 12px;
+    background: transparent;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1.2 / 1;
+    min-width: clamp(28px, 6vw, 35px);
+
+    .reversed {
+        display: inline-block;
+        transform: scaleX(-1);
+    }
+
+    &:focus-visible {
+        outline: 3px solid #3498db;
+    }
+}

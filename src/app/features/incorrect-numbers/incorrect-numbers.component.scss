@@ -1,0 +1,175 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+@keyframes numberPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes hintShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.interaction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(16px, 3vw, 30px) clamp(20px, 4vw, 40px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 95%;
+    width: 100%;
+    margin: 0 auto;
+    @include card-shadow($color-nav, .12);
+
+    @include mobile {
+        min-width: unset;
+        padding: 1rem;
+    }
+}
+
+.number-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: clamp(12px, 3vw, 40px);
+    padding: clamp(12px, 2.5vw, 30px);
+    justify-items: center;
+    align-items: center;
+
+    @include mobile {
+        grid-template-columns: repeat(4, 1fr);
+        gap: clamp(8px, 2vw, 16px);
+    }
+
+    @include tablet {
+        grid-template-columns: repeat(5, 1fr);
+        gap: clamp(16px, 2.5vw, 28px);
+    }
+}
+
+.number-btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    cursor: pointer;
+    padding: clamp(6px, 1vw, 10px);
+    border-radius: 20px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    user-select: none;
+    outline: none;
+
+    &:hover {
+        transform: scale(1.15);
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    &.selected {
+        animation: numberPop 0.25s ease forwards;
+        background: transparent;
+
+        // Circular highlight indicator - Dark Blue
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(50px, 12vw, 80px);
+            height: clamp(50px, 12vw, 80px);
+            border: 4px solid #1a2a44;
+            border-radius: 50%;
+            z-index: -1;
+        }
+    }
+
+    // Flipped logic
+    .flipped {
+        display: inline-block;
+        transform: scaleX(-1);
+    }
+
+    // Hint States
+    &.hint-add {
+        animation: hintPulse 1.2s ease-in-out infinite;
+        background: transparent;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(50px, 12vw, 80px);
+            height: clamp(50px, 12vw, 80px);
+            border: 4px solid #f1c40f;
+            border-radius: 50%;
+            z-index: -1;
+        }
+    }
+
+    &.hint-remove {
+        animation: hintShake 0.4s ease-in-out infinite;
+        background: rgba(#e74c3c, 0.1);
+    }
+
+    &:focus-visible {
+        box-shadow: 0 0 0 3px rgba($color-nav, 0.3);
+    }
+}

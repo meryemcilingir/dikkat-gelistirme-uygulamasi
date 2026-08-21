@@ -1,0 +1,71 @@
+<div class="page-frame">
+        <div class="frame-top">
+        <app-activity-header icons="👁️" instruction="Şeklin yukarıdan görünümü aşağıdakilerden hangisidir?"></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+
+            <!-- Üst Taraf: Ana Hedef Şekil (5x3 Grid) -->
+            <div class="master-shape-container">
+                <div class="master-grid">
+                    @for (block of masterLayout; track $index) {
+                    <div class="block" [style.background-color]="block.transparent ? 'transparent' : block.color"
+                        [style.grid-column]="block.colSpan ? 'span ' + block.colSpan : 'auto'"
+                        [class.is-transparent]="block.transparent">
+
+                        <!-- İç Şekil -->
+                        @if (block.innerShape === 'circle') {
+                        <div class="inner-circle" [style.background-color]="block.innerColor"></div>
+                        }
+                        @if (block.innerShape === 'triangle') {
+                        <div class="inner-triangle" [style.border-bottom-color]="block.innerColor"></div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Alt Taraf: 6 Seçenek -->
+            <div class="options-container">
+                @for (opt of options; track opt.id) {
+                <div class="option-card" [ngClass]="getOptionClasses(opt)" role="button" tabindex="0"
+                    (click)="selectOption(opt)" (keydown.enter)="selectOption(opt)"
+                    [attr.aria-label]="'Seçenek ' + opt.id" [attr.aria-pressed]="selectedId === opt.id">
+
+                    <!-- 5 Yatay Blok -->
+                    <div class="option-blocks">
+                        @for (block of opt.blocks; track $index) {
+                        <div class="block" [style.background-color]="block.transparent ? 'transparent' : block.color"
+                            [class.is-transparent]="block.transparent">
+
+                            <!-- İç Şekil (Daire veya Üçgen) -->
+                            @if (block.innerShape === 'circle') {
+                            <div class="inner-circle" [style.background-color]="block.innerColor"></div>
+                            }
+                            @if (block.innerShape === 'triangle') {
+                            <div class="inner-triangle" [style.border-bottom-color]="block.innerColor"></div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

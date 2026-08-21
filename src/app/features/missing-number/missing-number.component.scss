@@ -1,0 +1,152 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── game-content tam yüksekliği kullansın ─────────────────
+.game-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+// ── Soru Listesi ──────────────────────────────────────────
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.8vh, 10px);
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+// ── Soru Bloğu ────────────────────────────────────────────
+.question-block {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.6vh, 8px);
+    background: #fff;
+    border-radius: clamp(10px, 1.8vw, 16px);
+    padding: clamp(6px, 0.9vh, 12px) clamp(10px, 1.6vw, 16px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+// ── Sayı Bandı ────────────────────────────────────────────
+.sequence-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.8vw, 8px);
+    flex-wrap: nowrap;
+}
+
+.seq-cell {
+    width: clamp(36px, 7.5vw, 54px);
+    height: clamp(36px, 7.5vw, 54px);
+    border-radius: clamp(8px, 1.4vw, 12px);
+    background: #f3f6fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+
+    &.missing-cell {
+        background: color-mix(in srgb, var(--q-color) 12%, white);
+        border: 2px dashed var(--q-color);
+    }
+}
+
+.seq-number {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.8rem, 1.8vw, 1.2rem);
+    font-weight: 900;
+    color: $color-text;
+
+    &.filled { color: var(--q-color); }
+    &.correct { color: #50b875; }
+    &.wrong { color: #e55039; }
+}
+
+.seq-blank {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.9rem, 2vw, 1.3rem);
+    font-weight: 900;
+    color: #ccc;
+}
+
+// ── Seçenekler ────────────────────────────────────────────
+.options-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.8vw, 10px);
+    flex-wrap: nowrap;
+}
+
+.option-btn {
+    width: clamp(42px, 8.5vw, 60px);
+    height: clamp(32px, 6vw, 44px);
+    border-radius: clamp(8px, 1.4vw, 12px);
+    border: 2px solid #e0e0e0;
+    background: #f8f9fb;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.8rem, 1.8vw, 1.1rem);
+    font-weight: 800;
+    color: $color-text;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+
+    &:hover {
+        border-color: var(--q-color);
+        background: color-mix(in srgb, var(--q-color) 8%, white);
+        transform: translateY(-1px);
+    }
+
+    &.selected {
+        border-color: var(--q-color);
+        background: color-mix(in srgb, var(--q-color) 15%, white);
+        color: var(--q-color);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px color-mix(in srgb, var(--q-color) 20%, transparent);
+    }
+
+    &.correct {
+        border-color: #50b875;
+        background: #edf9f3;
+        color: #50b875;
+    }
+
+    &.wrong {
+        border-color: #e55039;
+        background: #fff3f0;
+        color: #e55039;
+        animation: shakeAnim 0.45s ease;
+    }
+
+    &.hint {
+        border-color: #f9a825;
+        background: #fff8e1;
+        color: #f9a825;
+    }
+}
+

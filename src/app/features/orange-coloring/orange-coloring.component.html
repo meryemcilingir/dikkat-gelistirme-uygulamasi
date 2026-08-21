@@ -1,0 +1,91 @@
+<div class="page-frame">
+
+  <!-- ÜSTTE: ActivityHeader bileşeni -->
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Örnekteki meyveyi uygun renklerle boyayınız.'"
+      [icons]="'🍊🎨'">
+    </app-activity-header>
+  </div>
+
+  <!-- ORTADA: Oyun içeriği + navigasyon okları -->
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      
+      <div class="coloring-layout">
+        
+        <!-- Reference Image -->
+        <div class="reference-section">
+          <p class="section-title">Örnek</p>
+          <div class="reference-box">
+            <svg viewBox="0 0 100 100" class="orange-svg">
+              <!-- Stem -->
+              <rect x="47" y="5" width="6" height="15" [attr.fill]="targetColors['stem']" stroke="#333" stroke-width="1" />
+              <!-- Leaf -->
+              <path d="M50 15 Q 70 5, 80 15 Q 70 25, 50 15" [attr.fill]="targetColors['leaf']" stroke="#333" stroke-width="1" />
+              <!-- Body -->
+              <circle cx="50" cy="55" r="35" [attr.fill]="targetColors['body']" stroke="#333" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Vertical Divider -->
+        <div class="vertical-divider"></div>
+
+        <!-- Painting Area -->
+        <div class="painting-section">
+          <p class="section-title">{{ reviewMode.active() ? 'Öğrencinin Cevabı' : 'Senin Sıran' }}</p>
+          <div class="canvas-box">
+            <svg viewBox="0 0 100 100" class="orange-svg interactive">
+              <!-- Stem -->
+              <rect x="47" y="5" width="6" height="15" 
+                [attr.fill]="orangeColors['stem']" 
+                stroke="#333" stroke-width="1"
+                (click)="paintPart('stem')" />
+              <!-- Leaf -->
+              <path d="M50 15 Q 70 5, 80 15 Q 70 25, 50 15" 
+                [attr.fill]="orangeColors['leaf']" 
+                stroke="#333" stroke-width="1"
+                (click)="paintPart('leaf')" />
+              <!-- Body -->
+              <circle cx="50" cy="55" r="35" 
+                [attr.fill]="orangeColors['body']" 
+                stroke="#333" stroke-width="2"
+                (click)="paintPart('body')" />
+            </svg>
+          </div>
+
+          <!-- Color Palette -->
+          <div class="palette-container">
+            @for (color of palette; track color.hex) {
+              <button class="palette-btn" 
+                      [style.background-color]="color.hex"
+                      [class.active]="selectedColor === color.hex"
+                      (click)="selectPaletteColor(color.hex)">
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isNextUnlocked" (click)="next()">&#9654;</button>
+  </div>
+
+  <!-- ALTTA: ActionButtons bileşeni -->
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isNextUnlocked"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<!-- Feedback popup — her sayfada olmalı -->
+<app-shared-feedback></app-shared-feedback>

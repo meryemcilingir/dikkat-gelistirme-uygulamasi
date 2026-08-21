@@ -1,0 +1,107 @@
+@use '../../../styles/design-tokens' as *;
+@use '../../../styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    gap: clamp(14px, 3.5vw, 40px);
+    padding: clamp(12px, 2.5vw, 24px);
+}
+
+/* Base style for words */
+.word-text {
+    color: white;
+    font-size: clamp(1.2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    font-family: 'Nunito', 'Baloo 2', sans-serif;
+    letter-spacing: clamp(1px, 0.5vw, 5px);
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.target-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.target-card {
+    background: #5D9CEC;
+    /* Blue Primary */
+    @include card-shadow();
+    border-radius: 16px;
+    padding: clamp(16px, 3.5vw, 20px) clamp(16px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.options-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(12px, 2vw, 28px);
+    width: 100%;
+}
+
+.option-card {
+    background: #FF9DBB;
+    /* Soft sweet pink */
+    @include card-shadow();
+    border-radius: 16px;
+    padding: clamp(12px, 2vw, 24px) clamp(10px, 2vw, 32px);
+    border: 4px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    will-change: transform, box-shadow;
+    outline: none;
+
+    &:focus-visible {
+        outline: 3px solid #3498db;
+        outline-offset: 4px;
+    }
+
+    // Active/Selected state using global classes (from styles.scss)
+    &.selected {
+        --selected-bg: #FF7AA2;
+        /* Darker soft pink when selected */
+        --selected-transform: scale(1.05);
+    }
+
+    // Hints
+    &.hint {
+        z-index: 10; // Keep it above others while glowing
+    }
+}

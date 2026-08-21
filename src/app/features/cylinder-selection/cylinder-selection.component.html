@@ -1,0 +1,68 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🔷" instruction="Silindire benzeyeni seçin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="main-container">
+
+                <!-- Cylinder reference -->
+                <div class="reference-area">
+                    <div class="cylinder-ref">
+                        <div class="cylinder-3d">
+                            <div class="cyl-top"></div>
+                            <div class="cyl-body"></div>
+                            <div class="cyl-bottom"></div>
+                        </div>
+                        <span class="ref-label">Silindir</span>
+                    </div>
+                </div>
+
+                <div class="options-grid">
+                    @for (option of options; track option.id) {
+                    <div class="shape-card hover" [class.selected]="selectedId === option.id"
+                        [class.shake]="option.isShaking"
+                        [class.error]="feedbackState === 'wrong' && selectedId === option.id"
+                        [class.correct]="feedbackState === 'correct' && selectedId === option.id"
+                        [class.hint]="showHint && option.isCorrect && feedbackState !== 'correct'"
+                        (click)="selectOption(option.id)">
+
+                        <div class="shape-container">
+                            <div class="shape-svg" [ngClass]="option.shape"></div>
+                        </div>
+                        <div class="shape-name">{{ option.name }}</div>
+                        <div class="checkbox">
+                            <i class="material-icons check-icon"
+                                *ngIf="selectedId === option.id && feedbackState !== 'wrong'">check</i>
+                            <i class="material-icons error-icon"
+                                *ngIf="selectedId === option.id && feedbackState === 'wrong'">close</i>
+                        </div>
+
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

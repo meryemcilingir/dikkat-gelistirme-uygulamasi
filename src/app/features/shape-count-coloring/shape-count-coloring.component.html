@@ -1,0 +1,77 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🎨"
+            instruction="Her sayı kadar şekilleri boyayın. Şekle tıklayarak boyayabilirsiniz.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="coloring-container">
+
+                @for (row of rows; track row.id; let rIdx = $index) {
+                <div class="count-row">
+                    <div class="target-badge">
+                        <span class="target-number">{{ row.targetCount }}</span>
+                    </div>
+
+                    <div class="shapes-strip">
+                        @for (selected of row.selectedMap; track $index; let sIdx = $index) {
+                        <div class="shape-cell"
+                             [class.filled]="selected"
+                             [class.row-triangle]="row.id === 1"
+                             [class.row-flower]="row.id === 2"
+                             [class.row-ball]="row.id === 3"
+                             (click)="toggleShape(rIdx, sIdx)">
+
+                            @if (row.id === 1) {
+                                <!-- Triangle -->
+                                <svg class="shape-svg" viewBox="0 0 40 40">
+                                    <polygon points="20,4 4,36 36,36"
+                                        [attr.fill]="selected ? '#4CAF50' : 'none'"
+                                        [attr.stroke]="selected ? '#388E3C' : '#4CAF50'"
+                                        stroke-width="2"/>
+                                </svg>
+                            }
+                            @if (row.id === 2) {
+                                <!-- Flower -->
+                                <span class="shape-emoji">{{ selected ? '🌸' : '✿' }}</span>
+                            }
+                            @if (row.id === 3) {
+                                <!-- Ball -->
+                                <span class="shape-emoji" [class.ball-colored]="selected">⚽</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="count-indicator" [class.match]="row.selectedCount === row.targetCount"
+                         [class.over]="row.selectedCount > row.targetCount">
+                        {{ row.selectedCount }}/{{ row.targetCount }}
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

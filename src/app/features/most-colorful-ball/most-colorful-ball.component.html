@@ -1,0 +1,123 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="⚽" instruction="En çok renge sahip olan top hangisidir? Yuvarlak içine alın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="outer-box">
+                <div class="balls-grid">
+                    @for (ball of balls; track ball.id) {
+                    <div class="ball-cell"
+                         (click)="selectBall(ball)"
+                         [class.selected]="ball.isSelected"
+                         [class.shake]="ball.isWrong"
+                         [class.hint]="showHint && ball.isCorrect && !ball.isSelected">
+
+                        <div class="selection-ring" [class.active]="ball.isSelected"></div>
+
+                        <!--
+                            Futbol topu – merkez pentagon + 5 petal yama
+                            Tüm yamalar clip-path ile daire içinde kalır.
+                            Seam çizgileri, şekillerin stroke'larından oluşur (ayrı line yok).
+
+                            Pentagon köşeleri (merkez:50,50  r:18):
+                              P0=( 50 , 32  ) @ 270°
+                              P1=( 67 , 44.5) @ 342°
+                              P2=( 60.6, 64.6) @  54°
+                              P3=( 39.4, 64.6) @ 126°
+                              P4=( 33 , 44.5) @ 198°
+
+                            Dış edge noktaları (top çemberi r:46, aynı açılar):
+                              E0=( 50 ,  4  )
+                              E1=( 93.7, 35.8)
+                              E2=( 77  , 87.2)
+                              E3=( 23  , 87.2)
+                              E4=(  6.3, 35.8)
+                        -->
+                        <svg viewBox="0 0 100 100" class="ball-svg">
+                            <defs>
+                                <!-- Her topa özgü clip ve gradient id'si -->
+                                <clipPath [attr.id]="'bc' + ball.id">
+                                    <circle cx="50" cy="50" r="46"/>
+                                </clipPath>
+                                <radialGradient [attr.id]="'bg' + ball.id" cx="38%" cy="32%" r="60%">
+                                    <stop offset="0%"   stop-color="white" stop-opacity="0.55"/>
+                                    <stop offset="100%" stop-color="black" stop-opacity="0.10"/>
+                                </radialGradient>
+                            </defs>
+
+                            <!-- Temel daire -->
+                            <circle cx="50" cy="50" r="46" fill="#f8f8f5" stroke="#1a1a1a" stroke-width="2.2"/>
+
+                            <!-- Yamalar — clip ile daire sınırı içinde →  -->
+                            <g [attr.clip-path]="'url(#bc' + ball.id + ')'">
+
+                                <!-- Merkez pentagon -->
+                                <polygon
+                                    points="50,32 67,44.5 60.6,64.6 39.4,64.6 33,44.5"
+                                    [attr.fill]="getPatchColor(ball, 0)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+
+                                <!-- Petal 1 – üst sağ (P0→E0 arc E1→P1) -->
+                                <path
+                                    d="M50,32 L50,4 A46,46 0 0,1 93.7,35.8 L67,44.5 Z"
+                                    [attr.fill]="getPatchColor(ball, 1)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+
+                                <!-- Petal 2 – sağ (P1→E1 arc E2→P2) -->
+                                <path
+                                    d="M67,44.5 L93.7,35.8 A46,46 0 0,1 77,87.2 L60.6,64.6 Z"
+                                    [attr.fill]="getPatchColor(ball, 2)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+
+                                <!-- Petal 3 – alt (P2→E2 arc E3→P3) -->
+                                <path
+                                    d="M60.6,64.6 L77,87.2 A46,46 0 0,1 23,87.2 L39.4,64.6 Z"
+                                    [attr.fill]="getPatchColor(ball, 3)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+
+                                <!-- Petal 4 – sol (P3→E3 arc E4→P4) -->
+                                <path
+                                    d="M39.4,64.6 L23,87.2 A46,46 0 0,1 6.3,35.8 L33,44.5 Z"
+                                    [attr.fill]="getPatchColor(ball, 4)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+
+                                <!-- Petal 5 – üst sol (P4→E4 arc E0→P0) -->
+                                <path
+                                    d="M33,44.5 L6.3,35.8 A46,46 0 0,1 50,4 L50,32 Z"
+                                    [attr.fill]="getPatchColor(ball, 5)"
+                                    stroke="#1a1a1a" stroke-width="1.8"
+                                    stroke-linejoin="round"/>
+                            </g>
+
+                            <!-- Işıltı efekti (yayılı parlak nokta) -->
+                            <circle cx="50" cy="50" r="46"
+                                    [attr.fill]="'url(#bg' + ball.id + ')'"
+                                    stroke="none"/>
+                        </svg>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons (reset)="clearSelection()" (check)="checkAnswer()" [isCompleted]="isNextUnlocked" />
+    </div>
+</div>

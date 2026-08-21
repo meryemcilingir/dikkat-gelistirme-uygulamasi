@@ -1,0 +1,97 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-board {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 100%;
+    gap: clamp(10px, 4vw, 80px);
+    padding: clamp(10px, 2.5vw, 20px);
+    height: 100%;
+    align-items: center;
+
+    @include mobile {
+        gap: clamp(4px, 2vw, 16px);
+        padding: clamp(4px, 1.5vw, 10px);
+    }
+}
+
+.fruits-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 30px);
+    flex: 1;
+    min-width: 0;
+
+    @include mobile {
+        gap: clamp(6px, 1.5vw, 14px);
+    }
+}
+
+.fruit-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: clamp(6px, 1.5vw, 15px) clamp(6px, 1.5vw, 20px);
+    min-height: clamp(40px, 8vw, 80px);
+    border-radius: 20px;
+    background: transparent;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    user-select: none;
+
+    &.matched {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+        filter: grayscale(0.5);
+    }
+
+    @include mobile {
+        padding: clamp(4px, 1vw, 8px) clamp(4px, 1vw, 10px);
+        min-height: clamp(32px, 7vw, 50px);
+        border-radius: 14px;
+    }
+}
+
+.left-column .fruit-group {
+    justify-content: flex-start;
+}
+
+.right-column .fruit-group {
+    justify-content: flex-end;
+}
+
+.fruit-icon {
+    font-size: clamp(1.2rem, 3.2vw, 2.8rem);
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    margin-right: clamp(-8px, -1vw, -3px);
+    flex-shrink: 1;
+
+    @include small-mobile {
+        font-size: clamp(1rem, 2.8vw, 1.6rem);
+        margin-right: clamp(-5px, -0.8vw, -2px);
+    }
+}
+
+.right-column .fruit-icon {
+    margin-right: 0;
+    margin-left: clamp(-8px, -1vw, -3px);
+
+    @include small-mobile {
+        margin-left: clamp(-5px, -0.8vw, -2px);
+    }
+}
+
+.left-column .fruit-icon:last-child {
+    margin-right: 0;
+}
+
+.right-column .fruit-icon:first-child {
+    margin-left: 0;
+}

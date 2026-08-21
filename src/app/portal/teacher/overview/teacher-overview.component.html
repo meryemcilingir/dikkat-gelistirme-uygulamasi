@@ -1,0 +1,208 @@
+<div class="page-header">
+    <div>
+        <h1>Genel Bakış</h1>
+        <p class="page-subtitle">Öğrencilerinizin sınav performansı ve müdahale gereken alanlar</p>
+    </div>
+</div>
+
+<div class="empty" *ngIf="loading()">Yükleniyor...</div>
+
+<div class="dashboard" *ngIf="!loading() && overview() as o">
+    <div class="kpi-strip card-animate-in">
+        <div class="kpi-cell clickable" (click)="viewStudents()">
+            <div class="kpi-icon"><app-portal-icon name="users" [size]="16"></app-portal-icon></div>
+            <div class="kpi-body">
+                <span class="kpi-label">Toplam Öğrencim</span>
+                <span class="kpi-value">{{ o.studentCount }}</span>
+                <span class="kpi-context">{{ o.activeStudentCount }} aktif</span>
+            </div>
+        </div>
+        <div class="kpi-cell">
+            <div class="kpi-icon"><app-portal-icon name="clipboard-check" [size]="16"></app-portal-icon></div>
+            <div class="kpi-body">
+                <span class="kpi-label">Tamamlayan</span>
+                <span class="kpi-value">{{ o.examSummary.completed }}</span>
+            </div>
+        </div>
+        <div class="kpi-cell">
+            <div class="kpi-icon"><app-portal-icon name="trend-up" [size]="16"></app-portal-icon></div>
+            <div class="kpi-body">
+                <span class="kpi-label">Devam Eden</span>
+                <span class="kpi-value">{{ o.examSummary.inProgress }}</span>
+            </div>
+        </div>
+        <div class="kpi-cell">
+            <div class="kpi-icon"><app-portal-icon name="chart" [size]="16"></app-portal-icon></div>
+            <div class="kpi-body">
+                <span class="kpi-label">Ortalama Başarı</span>
+                <span class="kpi-value">{{ o.examSummary.avgScore !== null ? (o.examSummary.avgScore + '%') : '—' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dikkat Gerektiren Öğrenciler (%65) / Sınav Durumu (%35) -->
+    <div class="dash-row">
+        <div class="col-8 panel-card dash-card card-animate-in">
+            <div class="panel-title">Dikkat Gerektiren Öğrenciler</div>
+            <div class="panel-card-body">
+                <div class="empty-state" *ngIf="!attentionStudents().length">
+                    <p class="empty-title">Şu anda dikkat gerektiren öğrenci yok</p>
+                    <p class="empty-subtitle">Düşük başarılı, yarım kalmış veya hiç başlamamış öğrenciler burada listelenecek.</p>
+                </div>
+                <div class="action-list" *ngIf="attentionStudents().length">
+                    <button class="action-item" [class]="attentionSeverity(s)" *ngFor="let s of attentionStudents()" (click)="openStudent(s)">
+                        <span class="action-icon">{{ s.exam.status === 'Assigned' ? '!' : (s.exam.status === 'InProgress' ? '⏱' : '↓') }}</span>
+                        <span class="action-text">{{ s.firstName }} {{ s.lastName }}</span>
+                        <span class="action-count" style="font-size:0.82rem;">{{ attentionReason(s) }}</span>
+                        <span class="action-chevron">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4 panel-card dash-card card-animate-in">
+            <div class="panel-title">Sınav Durumu</div>
+            <div class="panel-card-body">
+                <div class="segmented-bar">
+                    <div class="segment completed" [style.flex-basis.%]="segmentPct(o.examSummary.completed)"></div>
+                    <div class="segment in-progress" [style.flex-basis.%]="segmentPct(o.examSummary.inProgress)"></div>
+                    <div class="segment not-started" [style.flex-basis.%]="segmentPct(o.examSummary.notStarted)"></div>
+                </div>
+                <div class="segmented-legend">
+                    <div class="segmented-legend-row">
+                        <span class="dot completed"></span>
+                        <span class="legend-label">Tamamlandı</span>
+                        <span class="legend-value">{{ o.examSummary.completed }}</span>
+                    </div>
+                    <div class="segmented-legend-row">
+                        <span class="dot in-progress"></span>
+                        <span class="legend-label">Devam Ediyor</span>
+                        <span class="legend-value">{{ o.examSummary.inProgress }}</span>
+                    </div>
+                    <div class="segmented-legend-row">
+                        <span class="dot not-started"></span>
+                        <span class="legend-label">Başlamadı</span>
+                        <span class="legend-value">{{ o.examSummary.notStarted }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Başarı Dağılımı (%50) / En Çok Zorlanılan Kategoriler (%50) -->
+    <div class="dash-row">
+        <div class="col-6 panel-card dash-card card-animate-in">
+            <div class="panel-title">Öğrencilerimin Başarı Dağılımı</div>
+            <div class="panel-card-body">
+                <ng-container *ngIf="o.examSummary.completed > 0; else noScores">
+                    <div class="column-chart">
+                        <div class="column-chart-col">
+                            <span class="column-chart-count">{{ o.scoreDistribution.range0_25 }}</span>
+                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
+                            <span class="column-chart-label">0–25</span>
+                        </div>
+                        <div class="column-chart-col">
+                            <span class="column-chart-count">{{ o.scoreDistribution.range26_50 }}</span>
+                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
+                            <span class="column-chart-label">26–50</span>
+                        </div>
+                        <div class="column-chart-col">
+                            <span class="column-chart-count">{{ o.scoreDistribution.range51_75 }}</span>
+                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
+                            <span class="column-chart-label">51–75</span>
+                        </div>
+                        <div class="column-chart-col">
+                            <span class="column-chart-count">{{ o.scoreDistribution.range76_100 }}</span>
+                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
+                            <span class="column-chart-label">76–100</span>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noScores>
+                    <div class="empty-state">
+                        <p class="empty-title">Henüz tamamlanmış sınav bulunmuyor</p>
+                        <p class="empty-subtitle">Öğrenciniz sınavı tamamladığında başarı dağılımı burada görünecek.</p>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="col-6 panel-card dash-card card-animate-in">
+            <div class="panel-title panel-title-row">
+                <span>En Çok Zorlanılan Kategoriler</span>
+                <button class="link-btn" (click)="openQuestion()">Tüm Analizi Gör →</button>
+            </div>
+            <div class="panel-card-body">
+                <div class="empty-state" *ngIf="!categories().length">
+                    <p class="empty-title">Henüz veri yok</p>
+                    <p class="empty-subtitle">İlk sınavlar tamamlandığında kategori analizi burada görünecek.</p>
+                </div>
+                <div class="hbar-list compact" *ngIf="categories().length">
+                    <div class="hbar-row" *ngFor="let c of categories()" (click)="openQuestion()">
+                        <div class="hbar-top">
+                            <span class="hbar-label">{{ c.category }}</span>
+                            <span class="hbar-value neutral">{{ c.totalAnswered ? ('%' + c.avgCorrectRate) : 'veri yok' }}</span>
+                        </div>
+                        <div class="hbar-track" *ngIf="c.totalAnswered">
+                            <div class="hbar-fill accent" [style.width.%]="categoryBarWidth(c.avgCorrectRate)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Tamamlanan Sınavlar -->
+    <div class="panel-card dash-card card-animate-in">
+        <div class="panel-title">Son Tamamlanan Sınavlar</div>
+        <div class="panel-card-body">
+            <div class="empty-state" *ngIf="!completedExams().length">
+                <p class="empty-title">Henüz tamamlanan sınav yok</p>
+                <p class="empty-subtitle">Öğrenciniz sınavı tamamladığında burada listelenecek.</p>
+            </div>
+
+            <ng-container *ngIf="completedExams().length">
+                <!-- Masaüstü: premium tablo -->
+                <div class="table-scroll bare desktop-only">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Öğrenci</th>
+                                <th>Sonuç</th>
+                                <th>Toplam Sınav Süresi</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let s of completedExams()" class="row-clickable" (click)="openStudent(s)">
+                                <td>{{ s.firstName }} {{ s.lastName }}</td>
+                                <td>{{ s.exam.finalScore ?? '—' }}%</td>
+                                <td>{{ formatDuration(s.exam.totalTimeSeconds) }}</td>
+                                <td class="actions-cell">
+                                    <button class="link-btn review" (click)="openStudent(s); $event.stopPropagation()">İncele</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobil: kart listesi -->
+                <div class="entity-card-list mobile-only">
+                    <div class="entity-card" *ngFor="let s of completedExams()" (click)="openStudent(s)">
+                        <div class="entity-card-head">
+                            <div class="entity-card-name">{{ s.firstName }} {{ s.lastName }}</div>
+                            <span class="entity-card-username">{{ s.exam.finalScore ?? '—' }}%</span>
+                        </div>
+                        <div class="entity-card-stats">
+                            <div class="entity-card-stat">
+                                <span class="stat-label">Süre</span>
+                                <span class="stat-value">{{ formatDuration(s.exam.totalTimeSeconds) }}</span>
+                            </div>
+                        </div>
+                        <button class="entity-card-action" (click)="openStudent(s); $event.stopPropagation()">İncele &rarr;</button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

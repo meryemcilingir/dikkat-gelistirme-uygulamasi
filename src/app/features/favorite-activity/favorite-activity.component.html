@@ -1,0 +1,42 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Aşağıda çocukların yaptığı etkinliklerden en sevdiğinizi işaretleyiniz.'"
+      [icons]="'👧🧒👦'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="activities-container">
+        @for (act of activities; track act.id) {
+          <div class="activity-card"
+               [class.selected]="selectedId === act.id"
+               [class.completed]="isCompleted && selectedId === act.id"
+               (click)="selectActivity(act.id)">
+            <div class="activity-scene">
+              <span class="activity-emoji">{{ act.emoji }}</span>
+            </div>
+            <div class="activity-label">{{ act.label }}</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

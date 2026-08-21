@@ -1,0 +1,64 @@
+<!-- Traffic Sign Matching Component -->
+<div class="page-frame">
+
+    <!-- Yönerge Alanı -->
+        <div class="frame-top">
+        <app-activity-header icons="🚦" instruction="Aynı trafik işaretlerini eşleştir."></app-activity-header>
+    </div>
+
+    <!-- Oyun Alanı -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="matching-board">
+
+                <!-- Carts Column 1 (Left) -->
+                <div class="column">
+                    @for (sign of orderedLeftSigns; track sign.id) {
+                    <button class="sign-card" [class.selected]="selectedLeftId === sign.id"
+                        [class.paired]="isItemPaired(sign.id, 'left')"
+                        [class.correct]="hasChecked && getPairTargetByItemId(sign.id, 'left')?.isCorrect"
+                        [class.wrong]="hasChecked && getPairTargetByItemId(sign.id, 'left')?.isCorrect === false"
+                        [class.shake]="hasChecked && getPairTargetByItemId(sign.id, 'left')?.isCorrect === false"
+                        (click)="selectLeft(sign.id)" [attr.aria-label]="'Sol trafik işareti'"
+                        [attr.aria-pressed]="selectedLeftId === sign.id">
+                        <span class="emoji">{{ sign.icon }}</span>
+                    </button>
+                    }
+                </div>
+
+                <!-- Carts Column 2 (Right) -->
+                <div class="column">
+                    @for (sign of orderedRightSigns; track sign.id) {
+                    <button class="sign-card" [class.selected]="selectedRightId === sign.id"
+                        [class.paired]="isItemPaired(sign.id, 'right')"
+                        [class.correct]="hasChecked && getPairTargetByItemId(sign.id, 'right')?.isCorrect"
+                        [class.wrong]="hasChecked && getPairTargetByItemId(sign.id, 'right')?.isCorrect === false"
+                        [class.shake]="hasChecked && getPairTargetByItemId(sign.id, 'right')?.isCorrect === false"
+                        (click)="selectRight(sign.id)" [attr.aria-label]="'Sağ trafik işareti'"
+                        [attr.aria-pressed]="selectedRightId === sign.id">
+                        <span class="emoji">{{ sign.icon }}</span>
+                    </button>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- Action Butonları ve Geri Bildirim -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

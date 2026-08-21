@@ -1,0 +1,190 @@
+// ============================================================
+// Number Sequence – Bileşen Stilleri
+// Layout kuralları: styles.scss | Değişkenler: styles/_design-tokens.scss
+// Kağıt kart + washi bant estetiği
+// ============================================================
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+
+@keyframes popIn {
+    0% {
+        transform: scale(.8);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+// ── Yerel Renkler ─────────────────────────────────────────
+$color-error-bg: #fff3f0;
+$color-error-tx: #e55039;
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Soru Izgarası ─────────────────────────────────────────
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: clamp(10px, 2vw, 20px) clamp(14px, 3vw, 40px);
+    justify-items: center;
+    align-items: center;
+    max-width: 100%;
+
+    @include mobile {
+        grid-template-columns: 1fr; // mobilde tek sütun
+        gap: clamp(10px, 2.5vw, 20px);
+        width: 100%;
+    }
+}
+
+.question-group {
+    display: flex;
+    align-items: center;
+    gap: clamp(3px, 0.8vw, 6px);
+    max-width: 100%;
+
+    @include mobile {
+        // Kartların eşit genişlikte olması ve satıra sığması
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+// ── Kartlar ───────────────────────────────────────────────
+.card {
+    @include flex-center;
+    width: clamp(60px, 14vw, 105px);
+    height: clamp(60px, 14vw, 105px);
+    background: #fff;
+    border-radius: clamp(12px, 2.5vw, 20px);
+    @include card-shadow($color-nav, .13);
+    position: relative;
+    flex-shrink: 1;   // mobilde küçülebilsin
+    min-width: 48px;  // dokunma hedefi minimum
+
+    @include mobile {
+        // Mobilde kartlar esnek boyutlu — satıra 3 kart sığdır
+        width: clamp(48px, 22vw, 85px);
+        height: clamp(48px, 22vw, 85px);
+    }
+
+    @include small-mobile {
+        width: clamp(44px, 20vw, 70px);
+        height: clamp(44px, 20vw, 70px);
+    }
+}
+
+.input-card {
+    transition: background .2s;
+
+    &.show-hint {
+        .number-input::placeholder {
+            color: rgba($color-nav, 0.6);
+            font-weight: 900;
+            opacity: 1;
+        }
+    }
+
+    &.error {
+        background: $color-error-bg;
+        animation: shakeAnim .45s ease;
+
+        .number-input {
+            color: $color-error-tx;
+        }
+    }
+}
+
+.number-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 2rem);
+    font-weight: 900;
+    color: $color-text;
+    padding: 0;
+    border-radius: 16px;
+    cursor: text;
+    transition: color .2s;
+
+    &::placeholder {
+        color: #ccc;
+        font-weight: 700;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    &[type=number] {
+        appearance: textfield;
+    }
+}
+
+// ── Merkez Kart (washi bant) ──────────────────────────────
+.center-card {
+    background: #f0f4f8;
+    width: clamp(66px, 15vw, 115px);
+    height: clamp(66px, 15vw, 115px);
+
+    @include mobile {
+        width: clamp(52px, 24vw, 90px);
+        height: clamp(52px, 24vw, 90px);
+    }
+
+    @include small-mobile {
+        width: clamp(48px, 22vw, 75px);
+        height: clamp(48px, 22vw, 75px);
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -7px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: clamp(16px, 3.5vw, 30px);
+        height: clamp(4px, 0.8vw, 8px);
+        background: var(--tape-color, #79d9b8);
+        border-radius: 3px;
+        opacity: .85;
+    }
+}
+
+.center-number {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+    font-weight: 900;
+    color: $color-text;
+}

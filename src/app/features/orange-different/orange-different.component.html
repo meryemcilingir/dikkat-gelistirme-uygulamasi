@@ -1,0 +1,56 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons=""
+            instruction="Farklı olan portakal hangisidir? Yuvarlak içine alın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="oranges-grid">
+                @for (orange of oranges; track orange.id) {
+                <div class="orange-wrapper hover"
+                    [class.selected]="selectedId === orange.id"
+                    [class.shake]="orange.isShaking"
+                    [class.hint]="isHint(orange)"
+                    (click)="onSelect(orange.id)">
+
+                    <!-- Portakal SVG -->
+                    <svg viewBox="0 0 120 120" class="orange-svg" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Gövde -->
+                        <circle cx="60" cy="65" r="50" fill="#e8892a" />
+                        <!-- Alt koyu band (hacim) -->
+                        <ellipse cx="60" cy="110" rx="40" ry="10" fill="#c96a10" opacity="0.45" />
+                        <!-- Highlight -->
+                        <ellipse cx="44" cy="48" rx="14" ry="10" fill="rgba(255,255,255,0.22)" />
+                        <!-- Sap -->
+                        <rect x="57" y="10" width="6" height="16" rx="3" fill="#4a7c3f" />
+                        <!-- Yaprak -->
+                        <ellipse cx="68" cy="14" rx="10" ry="5" fill="#5a9e4f" transform="rotate(-25 68 14)" />
+
+                        <!-- Farklı portakal: koyu lekeler -->
+                        @if (orange.isDifferent) {
+                        <ellipse cx="42" cy="72" rx="12" ry="10" fill="#2d1a06" opacity="0.55" />
+                        <ellipse cx="56" cy="84" rx="8" ry="7" fill="#2d1a06" opacity="0.45" />
+                        <ellipse cx="35" cy="60" rx="6" ry="5" fill="#2d1a06" opacity="0.38" />
+                        }
+                    </svg>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

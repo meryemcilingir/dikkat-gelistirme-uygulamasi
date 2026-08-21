@@ -1,0 +1,129 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.game-content {
+    overflow-y: auto !important;
+    padding: clamp(10px, 2vh, 20px) 0;
+    width: 100%;
+}
+
+.sets-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 1vh, 10px);
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.size-set {
+    background: #fff;
+    border-radius: clamp(10px, 1.5vw, 16px);
+    padding: clamp(6px, 1vh, 10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1.5px solid #edf0f7;
+    border-top: 3px solid var(--set-color);
+}
+
+.items-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.item-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(4px, 0.8vh, 8px);
+    flex: 1;
+
+    .visual {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fb;
+        border-radius: 12px;
+        transition: all 0.3s;
+
+        .emoji {
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        &.small {
+            width: clamp(30px, 6vw, 45px);
+            height: clamp(30px, 6vw, 45px);
+            .emoji { font-size: 1.2rem; }
+        }
+
+        &.medium {
+            width: clamp(45px, 10vw, 65px);
+            height: clamp(45px, 10vw, 65px);
+            .emoji { font-size: 2rem; }
+        }
+
+        &.large {
+            width: clamp(65px, 14vw, 90px);
+            height: clamp(65px, 14vw, 90px);
+            .emoji { font-size: 3rem; }
+        }
+    }
+}
+
+.rank-input {
+    width: clamp(30px, 5vh, 38px);
+    height: clamp(30px, 5vh, 38px);
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: 8px;
+    border: 2.5px solid #e0e6f0;
+    background: white;
+    color: #455a64;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: var(--set-color);
+        background: #f1f4f9;
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--set-color) 15%, transparent);
+    }
+
+    &.correct {
+        border-color: #50b875;
+        background: #edf9f3;
+        color: #50b875;
+    }
+
+    &.wrong {
+        border-color: #e55039;
+        background: #fff3f0;
+        color: #e55039;
+        animation: shakeAnim 0.4s ease;
+    }
+}
+
+@include mobile {
+    .items-row {
+        gap: 10px;
+    }
+}

@@ -1,0 +1,9 @@
+<div class="confirm-backdrop" [class.portal-modal]="auth.currentUser()?.role !== 'student'" *ngIf="auth.confirmingLogout()" (click)="cancel()">
+    <div class="confirm-card" (click)="$event.stopPropagation()">
+        <p class="question">Çıkış yapmak istediğinize emin misiniz?</p>
+        <div class="actions">
+            <button class="btn cancel" (click)="cancel()">İptal</button>
+            <button class="btn confirm" (click)="confirm()">Çıkış Yap</button>
+        </div>
+    </div>
+</div>

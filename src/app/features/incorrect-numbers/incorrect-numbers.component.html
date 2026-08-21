@@ -1,0 +1,45 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+    <app-activity-header icons="🧠 💡 🧩" instruction="Doğru yazılmamış sayıları işaretleyin."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <!-- Sol Ok -->
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <!-- Oyun İçeriği -->
+        <div class="game-content">
+            <div class="interaction-card">
+                <div class="number-grid">
+                    @for (num of numbers; track num.id) {
+                    <button class="number-btn" [class.selected]="num.isSelected" [class.hint-add]="isHintAdd(num)"
+                        [class.hint-remove]="isHintRemove(num)" (click)="toggleSelection(num)"
+                        [attr.aria-label]="'Sayı ' + num.value" [attr.aria-pressed]="num.isSelected">
+                        <span [class.flipped]="num.isFlipped" [style.color]="num.color">
+                            {{ num.value }}
+                        </span>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Ok -->
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            [attr.aria-label]="isNextUnlocked ? 'Sonraki etkinlik' : 'Önce doğru sayıları seçmelisiniz'">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelections()" (check)="checkAnswers()" />
+    </div>
+
+</div>

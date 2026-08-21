@@ -1,0 +1,64 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="📐" instruction="Geometrik sıranın aynısını aşağıda bulup işaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="geometric-layout">
+                
+                <!-- Target sequence in the center -->
+                <div class="target-container">
+                    <div class="sequence-strip target-strip">
+                        @for (item of targetSequence; track $index) {
+                            <span class="shape-item" [class]="item.colorClass">{{ item.char }}</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="options-grid">
+                    @for (option of options; track option.id) {
+                        <div class="option-card" 
+                             [class.selected]="selectedOptionId === option.id"
+                             [class.hint-pulse]="isHintCorrect(option.id)"
+                             (click)="selectOption(option.id)">
+                            
+                            <div class="sequence-strip">
+                                @for (item of option.items; track $index) {
+                                    <span class="shape-item" [class]="item.colorClass">{{ item.char }}</span>
+                                }
+                            </div>
+                            
+                            <div class="checkbox" [class.checked]="selectedOptionId === option.id">
+                                @if (selectedOptionId === option.id) {
+                                    <span class="material-icons">check</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

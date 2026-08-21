@@ -1,0 +1,83 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+    <app-activity-header icons="🔡" instruction="En baştaki &quot;e&quot;den başlayarak &quot;e&quot; harflerini izleyin. Ortaya çıkan şekli işaretleyin."></app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="interaction-card">
+
+                <!-- Letter grid -->
+                <div class="grid-section">
+                    <div class="letter-grid">
+                        @for (row of grid; track $index; let rIdx = $index) {
+                        @for (cell of row; track $index; let cIdx = $index) {
+                        <div class="grid-cell" [class.path-cell]="isPathCell(rIdx, cIdx)">
+                            {{ cell }}
+                        </div>
+                        }
+                        }
+                    </div>
+                </div>
+
+                <!-- Shape options -->
+                <div class="options-row">
+                    @for (opt of options; track opt.id) {
+                    <button class="shape-option" [class.selected]="selectedId === opt.id" [class.shake]="opt.isShaking"
+                        [class.hint]="showHint && opt.isCorrect && selectedId === null" (click)="selectOption(opt.id)"
+                        [attr.aria-label]="'Şekil seçeneği ' + opt.id" [attr.aria-pressed]="selectedId === opt.id">
+
+                        <!-- Option 1: L-bracket left (wrong) -->
+                        @if (opt.shape === 'arrow-left') {
+                        <svg width="70" height="70" viewBox="0 0 70 70">
+                            <polyline points="15,10 15,60 55,60" fill="none" stroke="#8a9ab0" stroke-width="5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        }
+
+                        <!-- Option 2: angular 7-shape — diagonal down then straight (CORRECT) -->
+                        @if (opt.shape === 'stair-right') {
+                        <svg width="70" height="70" viewBox="0 0 70 70">
+                            <polyline points="10,12 50,35 50,65" fill="none" stroke="#8a9ab0" stroke-width="5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        }
+
+                        <!-- Option 3: reverse bracket / corner right (wrong) -->
+                        @if (opt.shape === 'bracket-right') {
+                        <svg width="70" height="70" viewBox="0 0 70 70">
+                            <polyline points="15,10 55,10 55,60" fill="none" stroke="#8a9ab0" stroke-width="5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        }
+
+                        <div class="checkbox" [class.selected]="selectedId === opt.id">
+                            @if (selectedId === opt.id) {
+                            <span class="material-icons check-icon">check</span>
+                            }
+                        </div>
+                    </button>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

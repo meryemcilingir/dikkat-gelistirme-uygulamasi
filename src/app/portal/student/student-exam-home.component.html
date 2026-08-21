@@ -1,0 +1,34 @@
+<div class="exam-home">
+    <div class="topbar-actions">
+        <button class="logout-btn" (click)="logout()">Çıkış Yap</button>
+    </div>
+
+    <div class="hero-card" *ngIf="!loading()">
+        <ng-container *ngIf="status() !== 'Completed'; else completedTpl">
+            <h1>Merhaba {{ firstName }}!</h1>
+
+            <ng-container [ngSwitch]="status()">
+                <p class="subtitle" *ngSwitchCase="'Assigned'">Sınavım hazır, başlayabilirsin!</p>
+                <p class="subtitle" *ngSwitchCase="'InProgress'">Kaldığın yerden devam edebilirsin.</p>
+            </ng-container>
+
+            <div class="progress-wrap" *ngIf="status() !== 'Assigned'">
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="(currentIndex() / total()) * 100"></div>
+                </div>
+                <span class="progress-label">Soru {{ currentIndex() }} / {{ total() }}</span>
+            </div>
+
+            <button class="big-btn" (click)="start()">
+                <span *ngIf="status() === 'Assigned'">Başla</span>
+                <span *ngIf="status() === 'InProgress'">Devam Et</span>
+            </button>
+        </ng-container>
+
+        <ng-template #completedTpl>
+            <h1>Tebrikler {{ firstName }}!</h1>
+            <p class="subtitle">Testi bitirdin.</p>
+            <p class="subtitle">Sonucun öğretmen tarafından değerlendirilecek.</p>
+        </ng-template>
+    </div>
+</div>

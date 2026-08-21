@@ -1,0 +1,71 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="✏️"
+            instruction="Çocukların kalemlerini bulun ve eşleyin. Önce bir çocuğa, sonra doğru kaleme tıklayın.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="matching-container">
+
+                <!-- Left: Children with clues -->
+                <div class="children-column">
+                    @for (child of children; track child.id) {
+                    <div class="child-card"
+                         [class.active]="selectedChildId === child.id"
+                         [class.matched]="child.assignedPencilId !== null"
+                         [class.correct]="feedbackState === 'correct' && child.assignedPencilId === child.correctPencilId"
+                         [class.error]="feedbackState === 'wrong' && child.assignedPencilId !== null && child.assignedPencilId !== child.correctPencilId"
+                         (click)="selectChild(child.id)">
+                        <div class="child-avatar">{{ child.emoji }}</div>
+                        <div class="child-info">
+                            <span class="child-name">{{ child.name }}</span>
+                            <span class="child-clue">{{ child.clue }}</span>
+                        </div>
+                        @if (getPencilForChild(child.id); as pencil) {
+                        <div class="assigned-pencil-mini" [style.background]="pencil.color"></div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Right: Pencils -->
+                <div class="pencils-column">
+                    @for (pencil of pencils; track pencil.id) {
+                    <div class="pencil-row"
+                         [class.used]="isPencilAssigned(pencil.id)"
+                         [class.hint]="showHint && !isPencilAssigned(pencil.id)"
+                         (click)="assignPencil(pencil.id)">
+                        <div class="pencil-body" [style.width.%]="pencil.lengthPx">
+                            <div class="pencil-tip"></div>
+                            <div class="pencil-shaft" [style.background]="pencil.color"></div>
+                            <div class="pencil-eraser"></div>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

@@ -1,0 +1,398 @@
+@use 'sass:color';
+@use './styles/design-tokens' as *;
+@use './styles/responsive' as *;
+@use './styles/global-states';
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+// Tüm scrollbar'ları gizle — uygulama tam ekran, scroll gerekmez
+*::-webkit-scrollbar {
+    display: none;
+}
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: $color-bg;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    // Öğretmen inceleme modunda (bkz. app.ts) — çevredeki nötr zemin, öğrenci
+    // sınavının pastel arka planı yerine; içerik viewport'tan uzunsa kaydırılabilir.
+    &.review-active {
+        background: #f6f7f9;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+app-root {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+// Yönlendirilen sayfanın tam ekran ve esnek olmasını sağlar (overlay ve router tagleri hariç)
+app-root> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
+    display: flex !important;
+    width: 100% !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: $color-bg !important;
+    overflow: hidden !important;
+
+    @include mobile {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+    }
+
+    @include tablet {
+        overflow: hidden !important;
+    }
+}
+
+// Öğretmen inceleme modunda (bkz. app.scss :host.review-active) yönlendirilen
+// soru component'i kendi iç flex/ortalama davranışını ve business logic'ini
+// aynen korur — yalnızca üstteki grid'in "question" hücresine yerleşir
+// (ikinci bir kopya oluşturulmaz), ve öğrenci sınavındaki canlı pastel/mavi
+// arka plan yerine öğretmen incelemesine uygun daha nötr bir zemin + makul
+// bir iç boşluk alır (yalnızca inceleme modunda; öğrenci ekranı değişmez).
+app-root.review-active> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
+    grid-area: question;
+    background: #eef1f5 !important;
+    padding: clamp(16px, 3vw, 32px) !important;
+    // Header ve Önceki/Sonraki navigasyonu her zaman görünür kalsın diye dış
+    // konteyner viewport'a sabitlendi (bkz. app.scss); yalnızca soru burada,
+    // gerekirse KENDİ içinde kayar — component'in kendisi büyütülmez.
+    overflow-y: auto !important;
+
+    @include tablet {
+        overflow-y: auto !important;
+    }
+}
+
+// Başlık elementleri font-family'yi body'den miras alsın
+// (tarayıcı default'u override etmemesi için)
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: inherit;
+    font-weight: inherit;
+}
+
+
+// ══════════════════════════════════════════════════════════
+// SHARED ACTIVITY FRAME LAYOUT
+// Her etkinlikte aynı dış çerçeve yapısı.
+// ══════════════════════════════════════════════════════════
+
+// Ana kapsayıcı – ekran ortasında
+.page-frame {
+    width: min(1024px, 100vw);
+    height: min(740px, 100vh);
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden; // yatay taşmayı kesin olarak engelle
+
+    @include mobile {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    @include tablet {
+        width: 100vw;
+        height: min(100vh, 100dvh);
+    }
+}
+
+// Üst alan – yönerge metni
+// padding = dış padding(8px) + nav-btn(50px) + gap(10px) = 68px
+// → instruction-card, game-content ile aynı yatay hizaya gelir
+.frame-top {
+    min-height: clamp(60px, 10vh, 100px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(6px, 1.5vw, 10px) clamp(12px, 5vw, 68px);
+    overflow: visible;
+    z-index: 10;
+}
+
+// Orta alan – oyun içeriği + nav okları, kalan tüm boşluk
+.frame-middle {
+    flex: 1;
+    min-height: 0; // flex-shrink'in çalışması için
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(4px, 1vw, 10px);
+    padding: 0 clamp(4px, 1vw, 8px);
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;  // yatay taşma engelle
+        overflow-y: visible; // dikey büyümeye izin ver
+        padding: 0;          // ok butonları için daha fazla alan
+        gap: 0;
+    }
+
+    @include tablet {
+        overflow-y: auto;
+        scrollbar-width: none;           // Firefox
+        -ms-overflow-style: none;        // IE/Edge
+        &::-webkit-scrollbar {           // Chrome/Safari
+            display: none;
+        }
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// SHARED NAV BUTTONS
+// Tüm etkinliklerde sol/sağ gezinme okları – tek kaynak
+// Genişlik değişirse frame-top padding da buna göre güncelle:
+//   padding = dış(8px) + nav-btn(50px) + gap(10px) = 68px
+// ══════════════════════════════════════════════════════════
+.nav-btn {
+    display: none !important;
+    width: clamp(36px, 6vw, 50px);
+    height: clamp(36px, 6vw, 50px);
+    border-radius: 50%;
+    border: none;
+    background: #5b9bd5;
+    color: #fff;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(91, 155, 213, .3);
+    transition: background .2s, transform .1s;
+
+    &:hover {
+        background: #4a8ac4;
+    }
+
+    &:active {
+        transform: translateY(2px);
+        box-shadow: none;
+    }
+
+    &.locked {
+        background: #c8d8e8;
+        color: #a8bccf;
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: .6;
+        box-shadow: none;
+    }
+
+    @include mobile {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    @include small-mobile {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+}
+
+
+// Oyun içeriği – orta alanı yatayda doldurur, taşmaz
+.game-content {
+    flex: 1;
+    min-width: 0;   // flex çocuğunun küçülmesine izin ver
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    max-width: 100%;
+
+    @include mobile {
+        overflow-x: hidden;  // sağa taşmayı engelle
+        overflow-y: visible; // dikey büyümeye izin ver
+        height: auto;
+        min-height: 0;
+    }
+}
+
+// Alt alan – butonlar + geri bildirim, kesinlikle sabit 120px
+.frame-bottom {
+    height: clamp(70px, 10vh, 100px);
+    max-height: 100px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 1vw, 10px);
+    padding: 0 clamp(8px, 2vw, 16px);
+    overflow: hidden;
+
+    @include mobile {
+        height: auto;
+        max-height: none;
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// SHARED INSTRUCTION CARD
+// Tüm etkinliklerde üst yönerge kartı – tek kaynak gerçek
+// ══════════════════════════════════════════════════════════
+
+.instruction-card {
+    background: #ffffff;
+    border-radius: clamp(24px, 5vw, 50px); // pill şekli
+    // Alt turuncu gölge – cartoon efekti
+    box-shadow:
+        0 4px 0 #ffe5ce, // kalın turuncu alt çizgi
+        0 8px 18px rgba(255, 166, 35, .18); // hafif halo
+    padding: clamp(8px, 1.5vw, 12px) clamp(14px, 3vw, 28px);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: clamp(8px, 1.5vw, 14px);
+    width: 100%;
+}
+
+// İkon (emoji) – sabit boyut, küçülmez
+.instruction-icon,
+.instruction-icons {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    flex-shrink: 0;
+}
+
+// Metin
+.instruction-text {
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.6rem);
+    font-weight: 900;
+    color: #3a3a5c;
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+
+    // pattern-matching h1'i doğrudan .instruction-text içine koyuyor
+    h1 {
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        color: inherit;
+        margin: 0;
+        line-height: inherit;
+    }
+}
+
+
+// ══════════════════════════════════════════════════════════
+// SHARED ACTION BUTTONS
+// Alt alanda bulunan Temizle, Kontrol Et, Tekrar Dene vb. butonları
+// ══════════════════════════════════════════════════════════
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(8px, 1.5vw, 12px);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 1vw, 10px);
+    width: clamp(140px, 22vw, 200px);
+    padding: clamp(10px, 1.5vw, 14px) 0;
+    border-radius: 40px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s, box-shadow 0.15s;
+
+    &:active {
+        transform: translateY(3px);
+        box-shadow: none !important;
+    }
+
+    // Material Icons ikon boyutu buton içinde
+    .material-icons {
+        font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+        line-height: 1;
+    }
+}
+
+// Baştan Başla + Yeniden Başla (Mavi) – ikisi aynı görsel
+.btn-clear,
+.btn-restart {
+    background: $color-primary;
+    color: #fff;
+    @include btn-shadow($color-primary);
+
+    &:hover {
+        background: color.adjust($color-primary, $lightness: -6%);
+    }
+}
+
+// Kontrol Et (Yeşil)
+.btn-check {
+    background: $color-success;
+    color: #fff;
+    @include btn-shadow($color-success);
+
+    &:hover {
+        background: color.adjust($color-success, $lightness: -6%);
+    }
+
+    // Oyun tamamlanınca disabled – soluk gri
+    &:disabled {
+        background: #c8d5e0;
+        color: #9ab0c0;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+}

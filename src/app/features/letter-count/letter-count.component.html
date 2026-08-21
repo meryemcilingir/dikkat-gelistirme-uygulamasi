@@ -1,0 +1,69 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🔍"
+            instruction="Belirtilen karakterden kaç tane olduğunu sayın ve doğru sayıyı işaretleyin.">
+        </app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="questions-list">
+
+                @for (q of questions; track q.id) {
+                <div class="question-block">
+                    
+                    <div class="target-indicator" [style.--q-color]="q.color">
+                        <span class="label">Hedef:</span>
+                        <span class="target-char">{{ q.target }}</span>
+                    </div>
+
+                    <div class="content-row">
+                        <!-- Harf Grubu -->
+                        <div class="letter-grid">
+                            @for (char of q.letters; track $index) {
+                            <div class="char-cell" [class.highlight]="char === q.target && feedbackState === 'correct'">
+                                {{ char }}
+                            </div>
+                            }
+                        </div>
+
+                        <!-- Seçenekler -->
+                        <div class="options-group">
+                            @for (opt of q.options; track opt) {
+                            <button class="option-btn"
+                                [class.selected]="q.selectedAnswer === opt"
+                                [class.correct]="feedbackState === 'correct' && q.selectedAnswer === opt"
+                                [class.wrong]="feedbackState === 'wrong' && q.selectedAnswer === opt && opt !== q.answer"
+                                [class.hint]="showHint && opt === q.answer && feedbackState !== 'correct'"
+                                [style.--q-color]="q.color"
+                                (click)="selectAnswer(q, opt)">
+                                {{ opt }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked"
+            (click)="goNext()" aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearAll()" (check)="checkAnswers()" />
+    </div>
+
+</div>

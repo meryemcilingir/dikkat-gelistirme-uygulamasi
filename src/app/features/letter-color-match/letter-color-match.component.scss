@@ -1,0 +1,99 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    padding: clamp(4px, 1.5vw, 12px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 2vw, 20px);
+    width: 100%;
+    max-width: 720px;
+}
+
+// ── Harfler 4x2 grid ─────────────────────────────────────
+.letters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: clamp(4px, 1vw, 10px);
+    width: 100%;
+}
+
+.letter-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px dashed #c0c0c0 !important;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    overflow: hidden;
+}
+
+.letter-char {
+    font-size: clamp(40px, 10vw, 90px);
+    font-weight: 900;
+    font-family: 'Arial Rounded MT Bold', 'Comic Sans MS', sans-serif;
+    line-height: 1;
+    user-select: none;
+    -webkit-text-stroke: 2px #333;
+    color: transparent;
+    transition: color 0.25s, -webkit-text-stroke 0.25s;
+}
+
+// ── Renk paleti ──────────────────────────────────────────
+.palette {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 16px);
+    padding: clamp(6px, 1.2vw, 12px) clamp(10px, 2vw, 18px);
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+}
+
+.palette-label {
+    font-size: clamp(12px, 1.8vw, 16px);
+    font-weight: 600;
+    color: #555;
+}
+
+.palette-colors {
+    display: flex;
+    gap: clamp(6px, 1.2vw, 12px);
+}
+
+.color-btn {
+    width: clamp(32px, 5vw, 44px);
+    height: clamp(32px, 5vw, 44px);
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, outline 0.15s;
+    padding: 0;
+    outline: 3px solid transparent;
+    outline-offset: 2px;
+
+    &:hover:not(.active) {
+        transform: scale(1.1);
+    }
+
+    &.active {
+        outline-color: #333;
+        transform: scale(1.15);
+    }
+}

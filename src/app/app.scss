@@ -1,0 +1,48 @@
+// Öğretmen inceleme modu kapalıyken bu host'a hiçbir şey eklenmez —
+// app-root zaten styles.scss'te `display:block; width:100%; height:100%`
+// olarak tanımlı, hiçbir sayfa (öğrenci sınavı dahil) etkilenmez. Yalnızca
+// ReviewModeService.active() true olduğunda (bkz. app.ts host binding),
+// tüm viewport genişliğini kaplayan bir workspace: üstte header, altta ana
+// soru alanı + sağda "Soru İnceleme" paneli, panelin altında Önceki/Sonraki.
+//
+// Header ve navigasyon HER ZAMAN görünür kalsın diye (kullanıcı aşağı
+// scroll etmeden erişebilsin) dış konteyner tam viewport yüksekliğinde
+// sabitlenir (height:100vh, overflow:hidden); yalnızca soru hücresi kendi
+// içinde kaydırılabilir (bkz. styles.scss'teki review-active override'ı) —
+// bu sayede soru component'i "viewport'u doldurmak için" zorla
+// büyütülmez, sadece gerekirse KENDİ içinde scroll olur.
+:host.review-active {
+    display: grid;
+    // ~%75/%25 sütun oranı — panel en az 300px, en çok ~420px (çok geniş
+    // ekranlarda aşırı büyümesin diye), aradaki her genişlikte konteynerin %25'i.
+    grid-template-columns: minmax(0, 1fr) minmax(300px, min(25%, 420px));
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "header   header"
+        "question panel"
+        "question nav";
+    height: 100vh;
+    width: 100%;
+    background: #f6f7f9;
+    overflow: hidden;
+}
+
+// Tablet/mobilde tek sütun — burada sabit viewport yüksekliği/iç scroll yerine
+// sayfanın kendisi doğal olarak kayar (küçük ekranda hepsini tek satırda
+// sabitlemek okunabilirliği bozar); navigasyon yine soru içeriğinin hemen
+// altında kalır, sayfanın en altına düşmez.
+@media (max-width: 900px) {
+    :host.review-active {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+        grid-template-areas:
+            "header"
+            "question"
+            "panel"
+            "nav";
+        max-width: 100%;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+}

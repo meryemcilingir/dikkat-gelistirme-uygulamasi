@@ -1,0 +1,96 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 3vw, 30px);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.target-box-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.target-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: clamp(8px, 1.5vw, 15px);
+    border: 3px solid #4caf50;
+    padding: clamp(10px, 2vw, 15px) clamp(14px, 3vw, 25px);
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    width: 100%;
+}
+
+.option-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: clamp(14px, 2.5vw, 24px) clamp(10px, 2vw, 16px);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    width: clamp(140px, 30vw, 240px);
+    min-height: clamp(80px, 15vw, 120px);
+    overflow: hidden;
+
+    &:focus-visible {
+        outline: 3px solid $color-primary;
+        outline-offset: -3px;
+    }
+}
+
+.shapes-container {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 1.2vw, 10px);
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.shape {
+    width: clamp(40px, 11vw, 80px);
+    height: clamp(40px, 11vw, 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 1;
+    filter: drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.3));
+
+    svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+}
+
+.target-green {
+    color: #4caf50;
+}
+
+.shadow-gray {
+    color: #bdbdbd;
+}

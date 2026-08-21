@@ -1,0 +1,54 @@
+<div class="page-frame">
+
+  <!-- ÜSTTE: ActivityHeader bileşeni -->
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Kutu içindeki sıralamaya dikkat edin. Kuralı bozan kutuyu seçin.'"
+      [icons]="'🍉🍓🍌'">
+    </app-activity-header>
+  </div>
+
+  <!-- ORTADA: Oyun içeriği + navigasyon okları -->
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="columns-container">
+        @for (col of columns; track col.id; let i = $index) {
+          <div class="column-card"
+               [class.selected]="selectedId === col.id"
+               [class.shake]="col.isShaking"
+               [class.locked]="isCompleted"
+               (click)="selectColumn(col.id)">
+            
+            <div class="fruit-column" [class]="'border-style-' + (i % 5)">
+              @for (fruit of col.fruits; track $index) {
+                <div class="fruit-item">{{ fruit }}</div>
+              }
+            </div>
+
+            <div class="star-icon">
+              <span class="material-icons">star</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <!-- ALTTA: ActionButtons bileşeni -->
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<!-- Feedback popup — her sayfada olmalı -->
+<app-shared-feedback></app-shared-feedback>

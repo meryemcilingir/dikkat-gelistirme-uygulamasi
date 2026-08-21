@@ -1,0 +1,48 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🎯"
+            instruction="Sadece KIRMIZI ÜÇGENLERE tıkla. Hepsini bul!"></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="grid">
+                @for (c of cells; track c.id) {
+                <button class="cell"
+                    [class.selected]="c.isSelected"
+                    [disabled]="isSubmitted"
+                    (click)="onCellClick(c)">
+                    <svg viewBox="0 0 60 60" class="shape" [class.red]="c.color === 'red'"
+                        [class.blue]="c.color === 'blue'" [class.green]="c.color === 'green'">
+                        @if (c.shape === 'triangle') {
+                        <polygon points="30,8 55,52 5,52" fill="currentColor" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+                        }
+                        @if (c.shape === 'circle') {
+                        <circle cx="30" cy="30" r="22" fill="currentColor" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+                        }
+                        @if (c.shape === 'square') {
+                        <rect x="8" y="8" width="44" height="44" fill="currentColor" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" />
+                        }
+                    </svg>
+                    @if (c.isSelected) {
+                    <span class="check">✓</span>
+                    }
+                </button>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isSubmitted" [disabled]="!isSubmitted" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isSubmitted" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

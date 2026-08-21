@@ -1,0 +1,45 @@
+<!-- Ters Yöne Bakanı Bul – Odd Direction -->
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+    <div class="frame-top">
+        <app-activity-header icons="🐱 🧭 🐾"
+            instruction="Ters yöne bakan kediyi bulup işaretle."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik"><span
+                class="material-icons">arrow_back</span></button>
+
+        <div class="game-content">
+            <div class="cats-area">
+                @for (cat of cats; track cat.id) {
+                <div class="cat-card hover" [class.selected]="selectedId === cat.id" [class.shake]="cat.isShaking"
+                    [class.hint]="showHint && cat.isFlipped" (click)="selectCat(cat.id)"
+                    [attr.aria-label]="'Kedi ' + (cat.id + 1)" role="button" tabindex="0"
+                    (keydown.enter)="selectCat(cat.id)">
+                    <div class="cat-image-wrap">
+                        <img src="cat.png" alt="Kedi" class="cat-img" [class.flipped]="cat.isFlipped" />
+                    </div>
+                    <div class="check-box" [class.checked]="selectedId === cat.id">
+                        @if (selectedId === cat.id) { <span class="check-tick">✓</span> }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik"><span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="restartActivity()" (check)="checkAnswer()" />
+    </div>
+
+</div>

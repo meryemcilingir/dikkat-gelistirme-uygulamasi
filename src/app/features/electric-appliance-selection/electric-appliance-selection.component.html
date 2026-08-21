@@ -1,0 +1,42 @@
+<div class="page-frame">
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Elektrikle çalışan eşyaları işaretleyin.'"
+      [icons]="'⚡🔌'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="appliance-grid">
+        @for (item of items; track item.id) {
+          <div class="appliance-card"
+               [class.selected]="item.selected"
+               [class.correct]="isCompleted && item.isElectric"
+               (click)="toggleSelection(item)">
+            <div class="card-icon">{{ item.emoji }}</div>
+            <div class="card-label">{{ item.name }}</div>
+            <div class="checkbox-indicator">
+              <div class="check" *ngIf="item.selected">L</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+</div>
+
+<app-shared-feedback></app-shared-feedback>

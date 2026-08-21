@@ -1,0 +1,13 @@
+<div class="end-container">
+
+    <div class="topbar-actions">
+        <button class="logout-btn" (click)="logout()">Çıkış Yap</button>
+    </div>
+
+    <div class="hero-card">
+        <h1 class="title">Tebrikler {{ firstName }}!</h1>
+        <p class="subtitle">Testi bitirdin.</p>
+        <p class="subtitle" *ngIf="completed()">Sonucun öğretmen tarafından değerlendirilecek.</p>
+    </div>
+
+</div>

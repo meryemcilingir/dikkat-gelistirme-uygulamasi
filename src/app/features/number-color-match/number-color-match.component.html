@@ -1,0 +1,57 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🔵" instruction="Daireleri mora, yıldızları turuncuya boyayın. Nasıl bir görüntü çıkar? Aşağıdan bulun."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+
+            <!-- Referans matrisi -->
+            <div class="reference-container">
+                <div class="reference-matrix">
+                    @for (shape of referenceGrid; track $index) {
+                    <div class="matrix-cell">
+                        <div class="outline-shape" [ngClass]="shape"></div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="divider">
+                <span class="material-icons arrow-down">arrow_downward</span>
+            </div>
+
+            <!-- Seçenekler -->
+            <div class="options-container">
+                @for (opt of options; track opt.id) {
+                <button class="option-card hover"
+                    [class.selected]="selectedId === opt.id"
+                    [class.shake]="opt.isShaking"
+                    [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                    (click)="selectOption(opt.id)"
+                    [attr.aria-label]="'Renk seçeneği ' + opt.id"
+                    [attr.aria-pressed]="selectedId === opt.id">
+                    <div class="color-grid">
+                        @for (color of opt.colors; track $index) {
+                            <div class="color-dot" [ngClass]="color"></div>
+                        }
+                    </div>
+                </button>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()"></app-action-buttons>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: clamp(4px, 1.5vw, 12px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(8px, 2vw, 16px);
+    width: 100%;
+    max-width: 580px;
+    box-sizing: border-box;
+}
+
+.fruit-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(80px, 15vw, 130px);
+    border: 2px solid #a5d6a7;
+    border-radius: 10px;
+    background: #f1f8e9;
+    padding: clamp(6px, 1.2vw, 12px);
+    box-sizing: border-box;
+}
+
+.fruits-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: clamp(2px, 0.5vw, 5px);
+}
+
+.fruit-svg {
+    display: block;
+    width: clamp(18px, 3.5vw, 28px);
+    height: clamp(18px, 3.5vw, 28px);
+}
+
+.question-box {
+    flex-direction: column;
+    gap: clamp(4px, 1vw, 8px);
+    background: #fff9c4;
+    border-color: #f9a825;
+    border-style: dashed;
+}
+
+.question-mark {
+    font-size: clamp(20px, 4.5vw, 36px);
+    font-weight: 900;
+    color: #e53935;
+    line-height: 1;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ghost-answer {
+    position: absolute;
+    font-size: clamp(16px, 4vw, 28px);
+    font-weight: 700;
+    color: #2d1a06;
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+}
+
+.count-input {
+    width: clamp(36px, 7vw, 52px);
+    height: clamp(36px, 7vw, 52px);
+    font-size: clamp(18px, 4vw, 28px);
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #81c784;
+    border-radius: 8px;
+    background: transparent;
+    color: #1b5e20;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:focus { border-color: #388e3c; background: #fff; }
+
+    &.input-correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    &:disabled { opacity: 0.7; cursor: default; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-6px); }
+    75%       { transform: translateX(6px); }
+}
+
+.shake { animation: shake 0.5s; }

@@ -1,0 +1,117 @@
+@use './portal-tokens' as *;
+
+// ── Kompakt arama/filtre araç çubuğu: arama ~yarı genişlik solda,
+//    filtre/sıralama/sayfa kontrolleri sağda gruplu ──────────
+.toolbar-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+
+    .toolbar-search {
+        flex: 1 1 320px;
+        max-width: 420px;
+
+        input {
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 9px 14px;
+            border-radius: $p-radius-md;
+            border: 1px solid $p-border;
+            background: $p-surface;
+            outline: none;
+            color: $p-text;
+
+            &:focus { border-color: $p-accent; }
+        }
+    }
+
+    .toolbar-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+}
+
+// Araç çubuğundaki ve filtre popover'ındaki <select>'ler tarayıcı varsayılanıyla
+// çıplak görünüyordu (Filtreler butonu/arama kutusuyla aynı hizada değildi).
+// Aynı buton dilinde (border/radius/padding/font) tutarlı hale getiriyoruz.
+.toolbar-select select,
+.filter-popover select {
+    appearance: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $p-text-secondary;
+    padding: 8px 30px 8px 12px;
+    border-radius: $p-radius-md;
+    border: 1px solid $p-border;
+    background: $p-surface url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l7 7 7-7'/%3E%3C/svg%3E") no-repeat right 8px center;
+    background-size: 14px;
+    outline: none;
+    cursor: pointer;
+
+    &:focus { border-color: $p-accent; }
+}
+
+.filter-popover select {
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    .toolbar-compact {
+        flex-direction: column;
+        align-items: stretch;
+
+        .toolbar-search {
+            max-width: none;
+        }
+
+        .toolbar-controls {
+            margin-left: 0;
+            justify-content: flex-start;
+        }
+    }
+}
+
+// ── Filtre popover: buton yanında açılan hafif animasyonlu panel ──
+.filter-popover-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+@keyframes p-popover-in {
+    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 50;
+    min-width: 260px;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: p-popover-in 160ms ease-out;
+}
+
+@media (max-width: 480px) {
+    .filter-popover {
+        right: auto;
+        left: 0;
+        min-width: min(88vw, 300px);
+    }
+}

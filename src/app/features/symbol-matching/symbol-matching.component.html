@@ -1,0 +1,50 @@
+<!-- Benzer Sembolü Bul – Symbol Matching -->
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🔍" instruction="Ortadaki sembole benzer olanı bul ve ona dokun!"></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik"><span
+                class="material-icons">arrow_back</span></button>
+
+        <div class="game-content">
+            <!-- 440×440px sabit kanvas – tüm daireler buraya konumlanır -->
+            <div class="orbit-canvas">
+
+                <!-- Merkez Dairesi (etkileşime kapalı) -->
+                <div class="circle center-circle" [style.background]="center.bgColor" aria-label="Merkez sembol: hedef"
+                    role="img">
+                    <span class="symbol">{{ center.symbol }}</span>
+                </div>
+
+                <!-- Uydu Seçenekler -->
+                @for (opt of options; track opt.id) {
+                <button class="circle option-circle hover" [style.background]="opt.bgColor"
+                    [style.--selected-bg]="opt.bgColor" [style.top]="opt.top" [style.left]="opt.left"
+                    [class.selected]="selectedId === opt.id" [class.shake]="opt.isShaking"
+                    [class.hint]="showHint && opt.isCorrect" (click)="selectOption(opt.id)"
+                    [attr.aria-label]="'Seçenek: ' + opt.symbol" [attr.aria-pressed]="selectedId === opt.id">
+                    <span class="symbol">{{ opt.symbol }}</span>
+                </button>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik"><span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

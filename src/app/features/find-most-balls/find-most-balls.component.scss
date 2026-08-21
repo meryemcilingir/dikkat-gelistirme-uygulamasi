@@ -1,0 +1,119 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.groups-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: clamp(8px, 1.5vw, 15px);
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.group-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 20px);
+    width: 100%;
+    cursor: pointer;
+}
+
+.group-strip {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    border: 3px solid var(--group-color) !important;
+    border-radius: 0 80px 80px 0;
+    padding: clamp(6px, 1.2vw, 10px) 0;
+    min-height: clamp(60px, 14vw, 100px);
+    background-color: transparent;
+    transition: transform 0.2s, background-color 0.2s;
+    user-select: none;
+}
+
+.balls-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    gap: clamp(8px, 1.5vw, 15px);
+}
+
+.ball-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.layout-1 {
+    .ball-row {
+        justify-content: center;
+        gap: clamp(12px, 3vw, 25px);
+    }
+    .top-row { transform: translateX(-15px); }
+    .bottom-row { transform: translateX(15px); }
+}
+
+.layout-2 {
+    .ball-row {
+        justify-content: center;
+        gap: clamp(16px, 4vw, 35px);
+    }
+}
+
+.layout-3 {
+    .ball-row {
+        justify-content: center;
+        gap: clamp(10px, 2.5vw, 20px);
+    }
+    .bottom-row { transform: translateX(10px); }
+}
+
+.ball-wrapper {
+    width: clamp(32px, 7vw, 48px);
+    height: clamp(32px, 7vw, 48px);
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+
+    &.basket::before {
+        content: '🏀';
+        font-size: clamp(26px, 5.5vw, 38px);
+        line-height: clamp(32px, 7vw, 48px);
+        text-align: center;
+        display: block;
+    }
+
+    &.soccer::before {
+        content: '⚽';
+        font-size: clamp(26px, 5.5vw, 38px);
+        line-height: clamp(32px, 7vw, 48px);
+        text-align: center;
+        display: block;
+    }
+}
+
+.group-checkbox {
+    width: clamp(24px, 4.5vw, 32px);
+    height: clamp(24px, 4.5vw, 32px);
+    border: 3px solid #ccc;
+    background-color: #fff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) inset;
+
+    .material-icons {
+        font-size: clamp(14px, 3vw, 20px);
+    }
+}
+
+.group-row-wrapper:hover .group-checkbox {
+    border-color: #999;
+}

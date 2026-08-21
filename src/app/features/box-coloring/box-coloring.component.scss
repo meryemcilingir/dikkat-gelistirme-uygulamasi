@@ -1,0 +1,195 @@
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes boxFill {
+    0% {
+        transform: scale(0.95);
+        background-color: transparent;
+    }
+
+    50% {
+        transform: scale(1.05);
+        background-color: color.adjust(#e55039, $lightness: 10%);
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #e55039;
+    }
+}
+
+@keyframes boxHintPulse {
+
+    0%,
+    100% {
+        background-color: rgba(241, 196, 15, 0.1);
+        border-color: rgba(241, 196, 15, 0.4);
+    }
+
+    50% {
+        background-color: rgba(241, 196, 15, 0.35);
+        border-color: rgba(241, 196, 15, 1);
+    }
+}
+
+@keyframes hintShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-3px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+// ── Yerel Renkler ─────────────────────────────────────────
+$color-container-bg: #ffffff;
+$color-box-empty: #ffffff;
+$color-box-border: transparent;
+$color-box-fill: #e55039;
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+// ── Oyun İçeriği ──────────────────────────────────────────
+.interaction-card {
+    background: $color-container-bg;
+    border-radius: clamp(24px, 5vw, 50px);
+    padding: clamp(20px, 4vw, 40px) clamp(24px, 5vw, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 850px;
+    width: 95%;
+    margin: clamp(16px, 3vw, 40px) auto 0;
+    flex-shrink: 0;
+    min-height: fit-content;
+    @include card-shadow($color-nav, .12);
+    overflow: hidden;
+}
+
+.groups-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: clamp(8px, 2vw, 40px);
+    justify-content: center;
+    width: 100%;
+}
+
+.box-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 1vw, 16px);
+    transition: transform 0.3s ease;
+
+    &.error {
+        animation: hintShake 0.4s ease-in-out;
+
+        .group-label {
+            color: #e74c3c;
+        }
+    }
+}
+
+.columns-container {
+    display: flex;
+    flex-direction: row;
+    gap: clamp(2px, 0.5vw, 6px);
+}
+
+.box-column {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: clamp(2px, 0.5vw, 6px);
+}
+
+// ── Kutular ───────────────────────────────────────────────
+.paint-box {
+    width: clamp(16px, 4.5vw, 36px);
+    height: clamp(16px, 4.5vw, 36px);
+    background-color: $color-box-empty;
+    border: none;
+    border-radius: clamp(4px, 1vw, 10px);
+    @include card-shadow($color-nav, .12);
+    box-sizing: border-box;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    &.filled {
+        background-color: $color-box-fill;
+    }
+
+    &.interactive {
+        cursor: pointer;
+        padding: 0;
+        outline: none;
+
+        &:focus-visible {
+            outline: 2px solid #b0c4d8;
+            outline-offset: 2px;
+            z-index: 2;
+        }
+
+        &:hover:not(.filled) {
+            background-color: rgba($color-box-fill, 0.1);
+        }
+
+        &.filled {
+            animation: boxFill 0.25s ease forwards;
+        }
+
+        &.hint-remove {
+            animation: hintShake 0.4s ease-in-out infinite;
+            background-color: rgba($color-box-fill, 0.6) !important;
+        }
+
+        &.hint-add {
+            animation: boxHintPulse 1.2s ease-in-out infinite;
+        }
+    }
+}
+
+.box-group.example {
+    opacity: 0.9;
+
+    .paint-box.filled {
+        background-color: color.adjust($color-box-fill, $lightness: -5%);
+    }
+}
+
+// ── Etiket ────────────────────────────────────────────────
+.group-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-weight: 600;
+    color: #333;
+    margin-top: clamp(6px, 1.2vw, 10px);
+    transition: color 0.3s ease;
+}

@@ -1,0 +1,143 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: clamp(4px, 1.5vw, 12px) clamp(4px, 1vw, 8px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+// ── 3 sütun grid ─────────────────────────────────────────
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(6px, 1.5vw, 14px);
+    width: 100%;
+    max-width: 580px;
+    box-sizing: border-box;
+}
+
+// ── Tek kutucuk ──────────────────────────────────────────
+.apple-box {
+    display: flex;
+    flex-direction: row;
+    height: clamp(90px, 18vw, 150px);
+    border: 2px solid #b0977a;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #c8a882;
+
+    &.example {
+        border-color: #8b6e50;
+    }
+
+    &.correct {
+        border-color: #16a34a;
+    }
+
+}
+
+// ── Elma tarafı ──────────────────────────────────────────
+.apples-side {
+    flex: 1.2;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: clamp(1px, 0.5vw, 4px);
+    padding: clamp(4px, 1vw, 8px);
+    background: #b8906a;
+    border-right: 2px solid #8b6e50;
+}
+
+.apple {
+    font-size: clamp(12px, 2.8vw, 22px);
+    line-height: 1;
+    user-select: none;
+}
+
+// ── Cevap tarafı ─────────────────────────────────────────
+.answer-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #c8a882;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ghost-answer {
+    position: absolute;
+    font-size: clamp(16px, 4vw, 30px);
+    font-weight: 700;
+    color: #2d1a06;
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+}
+
+.example-answer {
+    background: #c8a882;
+}
+
+.example-num {
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 900;
+    color: #2d1a06;
+    font-family: 'Georgia', serif;
+    line-height: 1;
+}
+
+// ── Input ────────────────────────────────────────────────
+.count-input {
+    width: clamp(32px, 6vw, 52px);
+    height: clamp(32px, 6vw, 52px);
+    font-size: clamp(16px, 4vw, 30px);
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #8b6e50;
+    border-radius: 8px;
+    background: transparent;
+    color: #2d1a06;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+
+    /* Chrome/Safari number input arrows kaldır */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    &[type=number] { -moz-appearance: textfield; }
+
+    &:focus {
+        border-color: #6366f1;
+        background: #fff;
+    }
+
+    &.input-correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    &.input-wrong {
+        border-color: #dc2626;
+        background: #fee2e2;
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: default;
+    }
+}

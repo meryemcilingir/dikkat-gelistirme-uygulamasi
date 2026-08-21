@@ -1,0 +1,1861 @@
+@use 'sass:color';
+@use './portal-tokens' as *;
+
+// Global styles.scss, router'a giren her component'e
+// `display:flex; align-items:center; overflow:hidden !important` uyguluyor (etkinlik
+// ekranları tam ekran ortalansın diye). Panel sayfaları uzun listeler içerdiği için
+// bu kuralı burada geri alıyoruz; yoksa sayfa kaydırılamıyor.
+:host {
+    display: block !important;
+    width: 100%;
+    height: 100% !important;
+    overflow-y: auto !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.portal {
+    :focus-visible {
+        outline: 2px solid $p-accent;
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.001ms !important;
+            transition-duration: 0.001ms !important;
+        }
+    }
+}
+
+.portal {
+    width: 100%;
+    min-height: 100%;
+    background: $p-bg;
+    font-family: $p-font;
+    color: $p-text;
+}
+
+// ── Uygulama shell'i: sidebar + topbar + content ───────────
+.app-shell {
+    display: flex;
+    min-height: 100%;
+}
+
+.app-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: $p-surface;
+    border-right: 1px solid $p-border;
+    display: flex;
+    flex-direction: column;
+    padding: $p-space-4 $p-space-3;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: width 200ms ease;
+
+    &.collapsed {
+        width: 68px;
+        padding: $p-space-4 $p-space-2;
+        align-items: center;
+
+        .sidebar-brand {
+            padding: $p-space-2 0 $p-space-5;
+            justify-content: center;
+        }
+
+        .brand-text,
+        .sidebar-label,
+        .sidebar-link-label {
+            display: none;
+        }
+
+        nav {
+            width: 100%;
+        }
+
+        .sidebar-link {
+            justify-content: center;
+            padding: $p-space-2;
+        }
+
+        .sidebar-collapse-btn {
+            justify-content: center;
+        }
+    }
+}
+
+.app-sidebar nav {
+    flex: 1;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: $p-space-2;
+    padding: $p-space-2 $p-space-2 $p-space-5;
+
+    .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: $p-radius-sm;
+        background: $p-accent;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.25;
+
+        strong {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: $p-text;
+        }
+
+        span {
+            font-size: 0.72rem;
+            color: $p-text-muted;
+        }
+    }
+}
+
+.sidebar-section {
+    margin-bottom: $p-space-4;
+
+    .sidebar-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: $p-text-muted;
+        padding: 0 $p-space-2;
+        margin-bottom: $p-space-1;
+        text-transform: uppercase;
+    }
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: $p-space-2;
+    padding: $p-space-2 $p-space-2;
+    border-radius: $p-radius-sm;
+    color: $p-text-secondary;
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: background-color .12s, color .12s;
+
+    .sidebar-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.75;
+    }
+
+    &:hover {
+        background: $p-surface-muted;
+        color: $p-text;
+    }
+
+    &.active {
+        background: $p-accent-soft;
+        color: $p-accent;
+        font-weight: 700;
+
+        .sidebar-icon {
+            opacity: 1;
+        }
+    }
+}
+
+.sidebar-collapse-btn {
+    display: flex;
+    align-items: center;
+    gap: $p-space-2;
+    width: 100%;
+    margin-top: $p-space-3;
+    padding: $p-space-2;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-sm;
+    background: none;
+    color: $p-text-muted;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:hover {
+        background: $p-surface-muted;
+        color: $p-text-secondary;
+    }
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $p-space-4;
+    padding: $p-space-3 $p-space-5;
+    background: $p-surface;
+    border-bottom: 1px solid $p-border;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: $p-space-1;
+    font-size: 0.85rem;
+    color: $p-text-muted;
+    white-space: nowrap;
+
+    .crumb-current {
+        color: $p-text;
+        font-weight: 600;
+    }
+}
+
+.topbar-search {
+    flex: 1;
+    max-width: 360px;
+
+    input {
+        width: 100%;
+        font-family: inherit;
+        font-size: 0.85rem;
+        padding: $p-space-2 $p-space-3;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        background: $p-surface-muted;
+        outline: none;
+
+        &:focus {
+            border-color: $p-accent;
+            background: $p-surface;
+        }
+    }
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    position: relative;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-menu-trigger {
+    display: flex;
+    align-items: center;
+    gap: $p-space-2;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: $p-radius-md;
+    padding: $p-space-1 $p-space-2;
+    cursor: pointer;
+
+    &:hover {
+        background: $p-surface-muted;
+        border-color: $p-border;
+    }
+
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: $p-accent-soft;
+        color: $p-accent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+        text-align: left;
+
+        .user-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: $p-text;
+        }
+
+        .user-role {
+            font-size: 0.72rem;
+            color: $p-text-muted;
+        }
+    }
+}
+
+@keyframes p-dropdown-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 200px;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.1);
+    padding: $p-space-2;
+    z-index: 50;
+    animation: p-dropdown-in .12s ease-out;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: $p-space-2;
+        width: 100%;
+        background: none;
+        border: none;
+        text-align: left;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        padding: $p-space-2;
+        border-radius: $p-radius-sm;
+        cursor: pointer;
+
+        &:hover {
+            background: $p-surface-muted;
+            color: $p-text;
+        }
+
+        &.danger {
+            color: $p-danger;
+
+            &:hover {
+                background: $p-danger-soft;
+            }
+        }
+    }
+}
+
+.app-content {
+    flex: 1;
+    min-width: 0;
+    padding: clamp(20px, 2vw, 32px);
+    max-width: 1800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+// ── Sayfa başlığı ───────────────────────────────────────────
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $p-space-4;
+    margin-bottom: $p-space-5;
+    flex-wrap: wrap;
+
+    h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: $p-text;
+        margin: 0 0 2px;
+    }
+
+    .page-subtitle {
+        font-size: 0.85rem;
+        color: $p-text-muted;
+        margin: 0;
+    }
+}
+
+// Legacy .section-header (mevcut çoğu component'te kullanılıyor) — aynı dilde.
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $p-space-4;
+    flex-wrap: wrap;
+    gap: $p-space-2;
+
+    h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $p-text;
+        margin: 0;
+    }
+}
+
+.primary-btn {
+    background: $p-accent;
+    color: #fff;
+    border: none;
+    border-radius: $p-radius-md;
+    padding: $p-space-2 $p-space-4;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .12s, transform .08s;
+
+    &:hover {
+        background: color.adjust($p-accent, $lightness: -6%);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    &:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+}
+
+.secondary-btn {
+    background: $p-surface;
+    color: $p-text-secondary;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    padding: $p-space-2 $p-space-4;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+        border-color: $p-border-strong;
+        color: $p-text;
+    }
+}
+
+// ── KPI kartları ──────────────────────────────────────────
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: $p-space-4;
+    margin-bottom: $p-space-5;
+}
+
+.kpi-card {
+    @include p-card;
+    padding: $p-space-3 $p-space-4;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .kpi-label {
+        font-size: 0.74rem;
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+
+    .kpi-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: $p-text;
+        line-height: 1.2;
+    }
+
+    .kpi-delta {
+        font-size: 0.76rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        &.up { color: $p-success; }
+        &.down { color: $p-danger; }
+        &.neutral { color: $p-text-muted; }
+    }
+}
+
+// Eski .stat-cards (overview'da kullanılıyordu) — kpi diline eşlendi.
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: $p-space-4;
+    margin-bottom: $p-space-5;
+}
+
+.stat-card {
+    @include p-card;
+    padding: $p-space-4;
+    display: flex;
+    flex-direction: column;
+    gap: $p-space-1;
+    align-items: flex-start;
+    font-family: inherit;
+    width: 100%;
+    cursor: default;
+
+    .num {
+        font-size: 1.65rem;
+        font-weight: 700;
+        color: $p-text;
+    }
+
+    .label {
+        font-size: 0.78rem;
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+
+    &.clickable {
+        cursor: pointer;
+        transition: border-color .12s;
+
+        &:hover {
+            border-color: $p-accent;
+        }
+    }
+}
+
+// ── Analitik kart / panel ────────────────────────────────────
+.panel-card {
+    @include p-card;
+    padding: $p-space-4;
+    margin-bottom: $p-space-4;
+    display: flex;
+    flex-direction: column;
+}
+
+// grid-12 içinde eşleştirilmiş kartlar stretch ile eşit yükseklikte biter;
+// içerik miktarı farklıysa bu, kısa kalan tarafı boş bırakmak yerine dikeyde
+// ortalar (ör. Sınav Durumu, Dikkat Gerektirenler'in yanında).
+.panel-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.panel-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: $p-space-4;
+    margin-bottom: $p-space-4;
+}
+
+.panel-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: $p-text;
+    margin: 0 0 $p-space-1;
+}
+
+.panel-subtitle {
+    font-size: 0.76rem;
+    color: $p-text-muted;
+    margin: 0 0 $p-space-3;
+}
+
+// ── 12 kolonluk responsive grid (dashboard kompozisyonu için) ──
+.grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: $p-space-4;
+    align-items: stretch;
+    margin-bottom: $p-space-5;
+
+    > .span-8 { grid-column: span 8; }
+    > .span-7 { grid-column: span 7; }
+    > .span-6 { grid-column: span 6; }
+    > .span-5 { grid-column: span 5; }
+    > .span-4 { grid-column: span 4; }
+    > .span-12 { grid-column: span 12; }
+}
+
+@media (max-width: 860px) {
+    .grid-12 {
+        grid-template-columns: 1fr;
+
+        > [class*="span-"] { grid-column: span 1; }
+    }
+}
+
+// ── Section (kart olmayan doğal gruplama) ──────────────────
+.section {
+    margin-bottom: $p-space-5;
+}
+
+.section-divider {
+    border: none;
+    border-top: 1px solid $p-border;
+    margin: $p-space-5 0;
+}
+
+// ── Kompakt metrik şeridi (eşit KPI kutuları yerine) ────────
+.metric-strip {
+    display: flex;
+    flex-wrap: wrap;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    margin-bottom: $p-space-5;
+    overflow: hidden;
+}
+
+.metric-item {
+    flex: 1;
+    min-width: 150px;
+    padding: $p-space-3 $p-space-4;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-right: 1px solid $p-border;
+    cursor: default;
+
+    &:last-child { border-right: none; }
+
+    &.clickable {
+        cursor: pointer;
+        transition: background-color .12s;
+
+        &:hover { background: $p-surface-muted; }
+    }
+
+    .metric-label {
+        font-size: 0.72rem;
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+
+    .metric-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: $p-text;
+        line-height: 1.15;
+    }
+
+    .metric-context {
+        font-size: 0.76rem;
+        color: $p-text-secondary;
+        font-weight: 500;
+    }
+
+    .metric-delta {
+        font-size: 0.76rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+
+        &.up { color: $p-success; }
+        &.down { color: $p-danger; }
+        &.neutral { color: $p-text-muted; }
+    }
+}
+
+@media (max-width: 700px) {
+    .metric-item {
+        border-right: none;
+        border-bottom: 1px solid $p-border;
+
+        &:last-child { border-bottom: none; }
+    }
+}
+
+// ── Kompakt aksiyon listesi (Dikkat Gerektirenler vb.) ──────
+.action-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    overflow: hidden;
+    background: $p-surface;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    width: 100%;
+    padding: $p-space-3 $p-space-4;
+    border: none;
+    border-bottom: 1px solid $p-border;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color .12s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: $p-surface-muted; }
+
+    .action-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        background: $p-surface-muted;
+        color: $p-text-secondary;
+    }
+
+    .action-text {
+        flex: 1;
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: $p-text;
+    }
+
+    .action-count {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $p-text;
+        flex-shrink: 0;
+    }
+
+    .action-chevron {
+        color: $p-text-muted;
+        flex-shrink: 0;
+    }
+
+    &.danger .action-icon { background: $p-danger-soft; color: $p-danger; }
+    &.danger .action-count { color: $p-danger; }
+    &.warning .action-icon { background: $p-warning-soft; color: $p-warning; }
+    &.warning .action-count { color: $p-warning; }
+}
+
+// ── Segmentli durum çubuğu (tek bar, orantılı renkli dilimler) ──
+.segmented-bar {
+    display: flex;
+    height: 14px;
+    border-radius: $p-radius-sm;
+    overflow: hidden;
+    background: $p-surface-muted;
+    margin-bottom: $p-space-3;
+
+    .segment {
+        height: 100%;
+        transition: flex-basis .2s ease;
+
+        &.completed { background: $p-success; }
+        &.in-progress { background: $p-warning; }
+        &.not-started { background: $p-border-strong; }
+    }
+}
+
+.segmented-legend {
+    display: flex;
+    flex-direction: column;
+    gap: $p-space-1;
+}
+
+.segmented-legend-row {
+    display: flex;
+    align-items: center;
+    gap: $p-space-2;
+    padding: $p-space-1 0;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border-radius: $p-radius-sm;
+    transition: background-color .12s;
+
+    &:hover { background: $p-surface-muted; }
+
+    .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        &.completed { background: $p-success; }
+        &.in-progress { background: $p-warning; }
+        &.not-started { background: $p-border-strong; }
+    }
+
+    .legend-label {
+        flex: 1;
+        color: $p-text-secondary;
+        font-weight: 500;
+    }
+
+    .legend-value {
+        font-weight: 700;
+        color: $p-text;
+    }
+}
+
+// ── Dikey kolon grafiği (başarı dağılımı gibi bucket veriler) ──
+.column-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: $p-space-3;
+    height: 110px;
+    padding-top: $p-space-4;
+}
+
+.column-chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+    cursor: default;
+
+    .column-chart-count {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: $p-text;
+    }
+
+    .column-chart-bar {
+        width: 100%;
+        max-width: 40px;
+        background: $p-accent;
+        border-radius: 4px 4px 0 0;
+        min-height: 3px;
+        transition: height .2s ease;
+    }
+
+    .column-chart-label {
+        font-size: 0.72rem;
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+}
+
+// ── Inline SVG çizgi grafiği (gerçek zaman serisi verisi) ───
+.line-chart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+
+    .line-chart-grid {
+        stroke: $p-border;
+        stroke-width: 1;
+    }
+
+    .line-chart-path {
+        fill: none;
+        stroke: $p-accent;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .line-chart-area {
+        fill: $p-accent-soft;
+        opacity: 0.6;
+    }
+
+    .line-chart-dot {
+        fill: $p-accent;
+    }
+
+    .line-chart-label {
+        font-size: 9px;
+        fill: $p-text-muted;
+        font-family: $p-font;
+    }
+}
+
+// ── Yatay bar (soru/karşılaştırma sıralaması) ───────────────
+.hbar-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.hbar-list.compact .hbar-row {
+    padding: 6px 0;
+
+    .hbar-top { margin-bottom: 3px; font-size: 0.8rem; }
+    .hbar-track { height: 5px; }
+}
+
+.hbar-row {
+    position: relative;
+    padding: $p-space-2 0;
+    border-bottom: 1px solid $p-border;
+    cursor: pointer;
+
+    &:last-child { border-bottom: none; }
+    &:hover .hbar-track { background: $p-surface-muted; }
+
+    .hbar-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+
+        .hbar-label {
+            color: $p-text;
+            font-weight: 600;
+        }
+
+        .hbar-value {
+            color: $p-danger;
+            font-weight: 700;
+            flex-shrink: 0;
+
+            &.ok { color: $p-success; }
+            &.neutral { color: $p-text; }
+        }
+    }
+
+    .hbar-track {
+        height: 6px;
+        border-radius: 3px;
+        background: $p-surface-muted;
+        overflow: hidden;
+    }
+
+    .hbar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: $p-danger;
+
+        &.accent { background: $p-accent; }
+    }
+}
+
+// ── Son aktiviteler ──────────────────────────────────────────
+.activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-row {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    padding: $p-space-2 0;
+    border-bottom: 1px solid $p-border;
+    font-size: 0.84rem;
+
+    &:last-child { border-bottom: none; }
+
+    .activity-name {
+        flex: 1;
+        color: $p-text;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover { color: $p-accent; }
+    }
+
+    .activity-score {
+        font-weight: 700;
+        color: $p-text;
+        flex-shrink: 0;
+    }
+
+    .activity-time {
+        color: $p-text-muted;
+        font-size: 0.76rem;
+        flex-shrink: 0;
+        width: 76px;
+        text-align: right;
+    }
+}
+
+// ── Insight / uyarı bloğu (metin tabanlı, kart değil) ───────
+.insight-block {
+    display: flex;
+    gap: $p-space-3;
+    padding: $p-space-3 $p-space-4;
+    border-radius: $p-radius-md;
+    border-left: 3px solid $p-border-strong;
+    background: $p-surface-muted;
+    font-size: 0.84rem;
+    color: $p-text-secondary;
+    margin-bottom: $p-space-4;
+
+    &.warning { border-left-color: $p-warning; background: $p-warning-soft; color: color.adjust($p-warning, $lightness: -12%); }
+    &.danger { border-left-color: $p-danger; background: $p-danger-soft; color: color.adjust($p-danger, $lightness: -8%); }
+    &.info { border-left-color: $p-info; background: $p-info-soft; color: color.adjust($p-info, $lightness: -8%); }
+
+    strong { font-weight: 700; }
+}
+
+// ── Anlamlı boş durum ────────────────────────────────────────
+.empty-state {
+    text-align: center;
+    padding: $p-space-7 $p-space-4;
+    color: $p-text-muted;
+
+    .empty-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: $p-text-secondary;
+        margin: 0 0 4px;
+    }
+
+    .empty-subtitle {
+        font-size: 0.82rem;
+        margin: 0;
+    }
+}
+
+// ── Yükleniyor iskeleti (skeleton) ──────────────────────────
+@keyframes p-skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+.skeleton-row {
+    height: 14px;
+    border-radius: $p-radius-sm;
+    background: $p-surface-muted;
+    animation: p-skeleton-pulse 1.4s ease-in-out infinite;
+    margin: $p-space-2 0;
+
+    &.w-60 { width: 60%; }
+    &.w-40 { width: 40%; }
+    &.w-80 { width: 80%; }
+}
+
+.skeleton-table {
+    .skeleton-row {
+        height: 36px;
+        margin: 0 0 1px;
+        border-radius: 0;
+    }
+}
+
+// ── Sade bar chart ───────────────────────────────────────────
+.bar-chart-row {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    padding: 6px 0;
+    font-size: 0.8rem;
+
+    .bar-chart-label {
+        width: 90px;
+        flex-shrink: 0;
+        color: $p-text-secondary;
+        font-weight: 600;
+    }
+
+    .bar-chart-track {
+        flex: 1;
+        height: 8px;
+        background: $p-surface-muted;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .bar-chart-fill {
+        height: 100%;
+        background: $p-accent;
+        border-radius: 4px;
+    }
+
+    .bar-chart-value {
+        width: 36px;
+        flex-shrink: 0;
+        text-align: right;
+        font-weight: 700;
+        color: $p-text;
+    }
+}
+
+.ratio-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: $p-surface-muted;
+    margin: $p-space-2 0;
+
+    .ratio-correct { background: $p-success; }
+    .ratio-wrong { background: $p-danger; }
+}
+
+.ratio-legend {
+    display: flex;
+    gap: $p-space-4;
+    font-size: 0.78rem;
+    color: $p-text-secondary;
+
+    .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    .dot.correct { background: $p-success; }
+    .dot.wrong { background: $p-danger; }
+}
+
+// ── Sıralı liste (en çok zorlanılan sorular vb.) ─────────────
+.ranked-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.ranked-row {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    padding: $p-space-2 0;
+    border-bottom: 1px solid $p-border;
+    font-size: 0.84rem;
+
+    &:last-child { border-bottom: none; }
+
+    .rank-index {
+        width: 20px;
+        flex-shrink: 0;
+        color: $p-text-muted;
+        font-weight: 700;
+        font-size: 0.78rem;
+    }
+
+    .rank-label {
+        flex: 1;
+        color: $p-text;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover { color: $p-accent; }
+    }
+
+    .rank-value {
+        flex-shrink: 0;
+        font-weight: 700;
+        color: $p-danger;
+    }
+}
+
+.mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    th {
+        text-align: left;
+        padding: $p-space-2;
+        color: $p-text-muted;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border-bottom: 1px solid $p-border;
+    }
+
+    td {
+        padding: $p-space-2;
+        border-bottom: 1px solid $p-border;
+        color: $p-text;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr.row-clickable {
+        cursor: pointer;
+        transition: background-color .1s;
+
+        &:hover { background: $p-surface-muted; }
+    }
+}
+
+.create-form {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    padding: $p-space-4;
+    margin-bottom: $p-space-4;
+    display: flex;
+    flex-direction: column;
+    gap: $p-space-3;
+}
+
+.form-row {
+    display: flex;
+    gap: $p-space-4;
+    flex-wrap: wrap;
+
+    label {
+        flex: 1;
+        min-width: 180px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-weight: 600;
+        color: $p-text-secondary;
+        font-size: 0.82rem;
+    }
+
+    input,
+    select {
+        font-family: inherit;
+        font-size: 0.88rem;
+        padding: $p-space-2 $p-space-3;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        outline: none;
+
+        &:focus {
+            border-color: $p-accent;
+        }
+    }
+}
+
+.error {
+    background: $p-danger-soft;
+    color: $p-danger;
+    font-weight: 600;
+    padding: $p-space-2 $p-space-3;
+    border-radius: $p-radius-md;
+    font-size: 0.82rem;
+}
+
+.empty {
+    color: $p-text-muted;
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: $p-space-6 0;
+    text-align: center;
+}
+
+// Geniş tabloların mobil/tablette taşmadan yatay kaydırılabilmesi için.
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: $p-radius-lg;
+    border: 1px solid $p-border;
+    background: $p-surface;
+}
+
+.student-table,
+.teacher-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    background: $p-surface;
+
+    th,
+    td {
+        text-align: left;
+        padding: $p-space-3 $p-space-3;
+        border-bottom: 1px solid $p-border;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    th {
+        background: $p-surface-muted;
+        font-weight: 700;
+        color: $p-text-muted;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.04em;
+    }
+
+    tbody tr {
+        transition: background-color .1s;
+    }
+
+    tbody tr:hover {
+        background: $p-surface-muted;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.muted {
+    color: $p-text-muted;
+}
+
+.score-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 70px;
+}
+
+.rate-bar {
+    width: 100%;
+    height: 4px;
+    background: $p-surface-muted;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rate-bar-fill {
+    height: 100%;
+    background: $p-accent;
+    border-radius: 2px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: $p-radius-sm;
+    font-weight: 700;
+    font-size: 0.72rem;
+
+    &.Completed {
+        background: $p-success-soft;
+        color: $p-success;
+    }
+
+    &.InProgress {
+        background: $p-warning-soft;
+        color: $p-warning;
+    }
+
+    &.Assigned {
+        background: $p-surface-muted;
+        color: $p-text-muted;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: $p-space-1;
+    margin-bottom: $p-space-5;
+    border-bottom: 1px solid $p-border;
+
+    button,
+    a {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        padding: $p-space-2 $p-space-1;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: $p-text-muted;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+
+        &.active {
+            color: $p-accent;
+            border-bottom-color: $p-accent;
+        }
+    }
+}
+
+// ── Birincil işlem + "..." menü ───────────────────────────
+.actions-cell {
+    display: flex;
+    gap: $p-space-2;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.action-menu {
+    position: relative;
+}
+
+.action-menu-trigger {
+    width: 30px;
+    height: 30px;
+    border-radius: $p-radius-sm;
+    border: 1px solid $p-border;
+    background: $p-surface;
+    color: $p-text-secondary;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 700;
+
+    &:hover {
+        background: $p-surface-muted;
+        border-color: $p-border-strong;
+    }
+}
+
+.action-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    min-width: 170px;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
+    padding: $p-space-1;
+    z-index: 30;
+    animation: p-dropdown-in .12s ease-out;
+
+    button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        padding: $p-space-2;
+        border-radius: $p-radius-sm;
+        cursor: pointer;
+
+        &:hover {
+            background: $p-surface-muted;
+            color: $p-text;
+        }
+
+        &.danger {
+            color: $p-danger;
+
+            &:hover { background: $p-danger-soft; }
+        }
+    }
+}
+
+// Tablo içinde detaya götüren isim bağlantısı
+.row-link {
+    color: $p-accent;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.link-btn {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    color: $p-text-secondary;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: $p-radius-sm;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+        border-color: $p-border-strong;
+        color: $p-text;
+    }
+
+    &.review {
+        background: $p-accent;
+        border-color: $p-accent;
+        color: #fff;
+
+        &:hover {
+            background: color.adjust($p-accent, $lightness: -6%);
+        }
+    }
+
+    &.warn {
+        color: $p-warning;
+    }
+
+    &:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+}
+
+.ok { color: $p-success; font-weight: 700; }
+.bad { color: $p-danger; font-weight: 700; }
+.warn { color: $p-warning; font-weight: 700; }
+
+.form-title {
+    font-weight: 700;
+    color: $p-text;
+    font-size: 0.92rem;
+    margin: 0;
+}
+
+// ── Arama / filtre / sıralama araç çubuğu ─────────────────
+.filter-bar,
+.list-toolbar,
+.filter-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $p-space-3;
+    margin-bottom: $p-space-3;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    padding: $p-space-3;
+
+    input,
+    select {
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: $p-space-2 $p-space-3;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        outline: none;
+        color: $p-text;
+        background: $p-surface;
+
+        &:focus {
+            border-color: $p-accent;
+        }
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 180px;
+    }
+}
+
+.toolbar-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $p-text-muted;
+    white-space: nowrap;
+}
+
+.filter-toggle-btn {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    padding: $p-space-2 $p-space-3;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $p-text-secondary;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &.active {
+        background: $p-accent-soft;
+        border-color: $p-accent;
+        color: $p-accent;
+    }
+}
+
+.range-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $p-text-muted;
+
+    input {
+        width: 64px;
+    }
+
+    .dash {
+        color: $p-text-muted;
+    }
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $p-space-2;
+    margin-bottom: $p-space-3;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: $p-surface-muted;
+    border: 1px solid $p-border;
+    color: $p-text-secondary;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 4px 6px 4px 10px;
+    border-radius: 999px;
+
+    button {
+        background: none;
+        border: none;
+        color: $p-text-muted;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 2px 4px;
+
+        &:hover {
+            color: $p-text;
+        }
+    }
+}
+
+// ── Sıralanabilir tablo başlıkları ────────────────────────
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+
+    &:hover {
+        color: $p-accent;
+    }
+}
+
+// ── Sayfalama ─────────────────────────────────────────────
+.pager {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: $p-space-4;
+}
+
+.page-btn {
+    min-width: 32px;
+    padding: 6px 10px;
+    border-radius: $p-radius-sm;
+    border: 1px solid $p-border;
+    background: $p-surface;
+    color: $p-text-secondary;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    &:hover:not(:disabled):not(.active) {
+        border-color: $p-border-strong;
+        color: $p-text;
+    }
+
+    &.active {
+        background: $p-accent;
+        border-color: $p-accent;
+        color: #fff;
+    }
+
+    &:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+}
+
+.page-info {
+    margin-left: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $p-text-muted;
+}
+
+.link-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+// ── Geriye dönük uyum: eski .back-btn / .logout-btn kullanımları ──
+.back-btn,
+.logout-btn {
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-md;
+    padding: $p-space-2 $p-space-3;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: $p-text-secondary;
+    white-space: nowrap;
+
+    &:hover {
+        border-color: $p-border-strong;
+        color: $p-text;
+    }
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $p-space-3 $p-space-5;
+    background: $p-surface;
+    border-bottom: 1px solid $p-border;
+
+    .title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: $p-text;
+    }
+}
+
+.content {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: $p-space-5 $p-space-4 $p-space-6;
+}
+
+// ── Öğretmen/öğrenci detay özet kartı ──────────────────────
+.summary-card {
+    @include p-card;
+    padding: $p-space-5;
+    margin-bottom: $p-space-5;
+}
+
+.summary-head {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    margin-bottom: $p-space-4;
+
+    h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: $p-text;
+        margin: 0;
+    }
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: $p-space-4;
+
+    .label {
+        display: block;
+        font-size: 0.72rem;
+        color: $p-text-muted;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 2px;
+    }
+
+    .value {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $p-text;
+
+        &.correct { color: $p-success; }
+        &.wrong { color: $p-danger; }
+    }
+}
+
+@media (max-width: 900px) {
+    .app-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 60;
+        transform: translateX(-100%);
+        transition: transform .18s ease;
+
+        // Mobilde collapse kavramı yok — drawer her zaman tam genişlikte açılır.
+        &.collapsed {
+            width: 240px;
+            padding: $p-space-4 $p-space-3;
+            align-items: stretch;
+
+            .sidebar-brand { padding: $p-space-2 $p-space-2 $p-space-5; justify-content: flex-start; }
+            .brand-text, .sidebar-label, .sidebar-link-label { display: block; }
+            .sidebar-link { justify-content: flex-start; }
+        }
+
+        &.open {
+            transform: translateX(0);
+        }
+    }
+
+    // Gerçek tıklanabilir karartma katmanı — drawer açıkken dışarı dokununca kapanır.
+    // (Önceden yalnızca dev bir box-shadow ile görsel karartma yapılıyordu; bu bir
+    // DOM elemanı olmadığından tıklamayı yakalamıyor, drawer bu yüzden kapanmıyordu.)
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.35);
+        z-index: 55;
+        animation: p-sidebar-backdrop-in 200ms ease-out;
+    }
+
+    @keyframes p-sidebar-backdrop-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .sidebar-collapse-btn {
+        display: none;
+    }
+
+    .app-content {
+        padding: $p-space-4;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex !important;
+    }
+
+    // .sidebar-toggle'ın kendi z-index'i .app-topbar'ın (40) stacking context'i
+    // içinde hapsoluyor, bu yüzden drawer'ın (60) altında kalıp tıklanamaz hale
+    // geliyordu. Topbar'ı drawer'ın üstüne çıkarmak hamburger'ı her zaman
+    // dokunulabilir bırakır (drawer açıkken karartma yalnızca içerik üzerinde kalır).
+    .app-topbar {
+        z-index: 65;
+    }
+}
+
+.sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: $p-radius-md;
+    border: 1px solid $p-border;
+    background: $p-surface;
+    color: $p-text-secondary;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    // Drawer (z-index 60) açıkken bile hamburger'a tekrar dokunup kapatabilmek için.
+    z-index: 70;
+}

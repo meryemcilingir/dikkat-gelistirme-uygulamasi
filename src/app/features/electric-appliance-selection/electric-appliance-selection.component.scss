@@ -1,0 +1,85 @@
+.appliance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(15px, 2vw, 25px);
+  width: 100%;
+  padding: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.appliance-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 4px solid transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  position: relative;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  &.selected {
+    background: #f0f7ff;
+    border-color: #6ea9e0;
+    
+    .checkbox-indicator {
+      background: #6ea9e0;
+      border-color: #6ea9e0;
+    }
+  }
+
+  &.correct {
+    background: #f0fff4;
+    border-color: #67b391;
+
+    .checkbox-indicator {
+      background: #67b391;
+      border-color: #67b391;
+    }
+  }
+}
+
+.card-icon {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
+}
+
+.card-label {
+  font-weight: 700;
+  color: #3a3a5c;
+  font-size: 1rem;
+}
+
+.checkbox-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: all 0.2s;
+
+  .check {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    transform: rotate(45deg) scaleX(-1);
+    margin-bottom: 2px;
+  }
+}

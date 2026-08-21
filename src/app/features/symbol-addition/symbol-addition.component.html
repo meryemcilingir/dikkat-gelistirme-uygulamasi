@@ -1,0 +1,62 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="➕ 📐 🌷"
+            instruction="Görselleri say ve toplama işlemlerini yap."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="addition-container">
+                @for (row of rows; track row.id) {
+                <div class="addition-row">
+                    <div class="symbols-group">
+                        <div class="group-left">
+                            @for (s of getSymbols(row.leftCount); track $index) {
+                                <span class="symbol-item" [ngClass]="row.type">{{ row.symbol }}</span>
+                            }
+                        </div>
+                        <span class="plus-sign">+</span>
+                        <div class="group-right">
+                            @for (s of getSymbols(row.rightCount); track $index) {
+                                <span class="symbol-item" [ngClass]="row.type">{{ row.symbol }}</span>
+                            }
+                        </div>
+                    </div>
+                    <span class="equal-sign">=</span>
+                    <div class="input-wrap">
+                        <input type="number" 
+                               class="sum-input" 
+                               [(ngModel)]="row.userSum" 
+                               [class.correct]="feedbackState === 'correct'"
+                               [class.wrong]="feedbackState === 'wrong' && row.userSum !== row.correctSum"
+                               placeholder="?">
+                    </div>
+                </div>
+                <!-- Decorative divider like in image -->
+                @if (!$last) {
+                    <div class="row-divider"></div>
+                }
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="restartActivity()" (check)="checkAnswer()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

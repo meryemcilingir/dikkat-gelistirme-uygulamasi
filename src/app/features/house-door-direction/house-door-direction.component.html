@@ -1,0 +1,49 @@
+<div class="page-frame">
+
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'Hangi evin kapısı tam karşısına bakıyor?'"
+      [icons]="'🏠'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="house-panel">
+        <div class="house-grid">
+          @for (house of houses; track house.id) {
+            <div class="house-option"
+                 [class.selected]="selectedHouseId === house.id"
+                 [class.correct]="isCompleted && house.isCorrect"
+                 (click)="selectHouse(house.id)">
+              <div class="house-body" [style.backgroundColor]="house.color">
+                <div class="roof"></div>
+                <div class="windows">
+                  <div class="window"></div>
+                  <div class="window"></div>
+                </div>
+                <div class="door" [ngClass]="house.doorPosition"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

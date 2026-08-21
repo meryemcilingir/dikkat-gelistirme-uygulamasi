@@ -1,0 +1,57 @@
+<ng-container *ngIf="reviewMode.banner() as b">
+    <div class="review-lock-overlay"></div>
+
+    <header class="review-header">
+        <button class="back-link" (click)="exit()">← Sınav Özetine Dön</button>
+
+        <div class="header-student">
+            <strong>{{ b.studentName }}</strong>
+            <span class="muted">Sınav İncelemesi</span>
+        </div>
+
+        <div class="header-status">
+            <span class="q-index">Soru {{ b.questionIndex + 1 }} / {{ b.totalQuestions }}</span>
+            <span class="badge" *ngIf="b.answer as a" [class.correct]="a.isCorrect" [class.wrong]="!a.isCorrect">
+                {{ a.isCorrect ? 'Doğru' : 'Yanlış' }}
+            </span>
+            <span class="badge neutral" *ngIf="!b.answer">Cevaplanmadı</span>
+        </div>
+    </header>
+
+    <aside class="review-panel">
+        <div class="review-detail-card">
+            <div class="detail-card-head">
+                <h2>Soru İnceleme</h2>
+                <span class="badge" *ngIf="b.answer as a" [class.correct]="a.isCorrect" [class.wrong]="!a.isCorrect">
+                    {{ a.isCorrect ? 'Doğru' : 'Yanlış' }}
+                </span>
+                <span class="badge neutral" *ngIf="!b.answer">Cevaplanmadı</span>
+            </div>
+
+            <div class="panel-row" *ngIf="b.answer as a">
+                <span class="row-label">Harcanan Süre</span>
+                <span class="row-value">{{ formatDuration(a.timeSpentSeconds) }}</span>
+            </div>
+
+            <div class="panel-row" *ngIf="b.answer?.category as cat">
+                <span class="row-label">Kategori</span>
+                <span class="row-value">{{ cat }}</span>
+            </div>
+
+            <div class="panel-row">
+                <span class="row-label">Soru</span>
+                <span class="row-value">{{ b.questionIndex + 1 }} / {{ b.totalQuestions }}</span>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="(b.questionIndex + 1) / b.totalQuestions * 100"></div>
+            </div>
+        </div>
+    </aside>
+
+    <footer class="review-nav">
+        <button (click)="prev()" [disabled]="b.questionIndex === 0">← Önceki</button>
+        <span class="nav-index">{{ b.questionIndex + 1 }} / {{ b.totalQuestions }}</span>
+        <button (click)="next()" [disabled]="b.questionIndex >= b.totalQuestions - 1">Sonraki →</button>
+    </footer>
+</ng-container>

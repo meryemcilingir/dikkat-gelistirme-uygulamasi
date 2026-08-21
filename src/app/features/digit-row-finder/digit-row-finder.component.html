@@ -1,0 +1,42 @@
+<div class="page-frame">
+    <div class="frame-top">
+        <app-activity-header icons="🔎" instruction="Diğer satırlardan farklı olan rakam dizisini bulun ve tıklayın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="rows-container">
+                @for (row of rows; track row.id) {
+                <div class="digit-row hover"
+                    [style.color]="row.colorHex"
+                    [class.selected]="row.isSelected"
+                    [class.shake]="row.isShaking"
+                    [class.hint]="showHint && row.isCorrect && !row.isSelected"
+                    role="button" tabindex="0"
+                    (click)="selectRow(row.id)"
+                    (keydown.enter)="selectRow(row.id)"
+                    [attr.aria-label]="'Sıra ' + row.id">
+                    <div class="digits-wrapper">
+                        @for (d of row.digits; track $index) {
+                            <span class="digit">{{ d }}</span>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

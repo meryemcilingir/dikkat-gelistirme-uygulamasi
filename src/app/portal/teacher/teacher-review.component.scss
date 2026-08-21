@@ -1,0 +1,131 @@
+@use '../shared/portal' as *;
+@use '../shared/portal-tokens' as *;
+
+.review-page {
+    padding: $p-space-6 $p-space-6 $p-space-6;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.summary-card {
+    @include p-card;
+    margin-bottom: $p-space-5;
+
+    h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: $p-text;
+        margin-bottom: $p-space-4;
+    }
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: $p-space-4;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: $p-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $p-text;
+
+        &.correct { color: $p-success; }
+        &.wrong { color: $p-danger; }
+    }
+}
+
+.note {
+    margin-top: $p-space-4;
+    background: $p-warning-soft;
+    color: $p-warning;
+    font-weight: 600;
+    padding: $p-space-3 $p-space-4;
+    border-radius: $p-radius-md;
+    font-size: 0.85rem;
+}
+
+.questions-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $p-text;
+    margin-bottom: $p-space-3;
+}
+
+.question-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: $p-space-2;
+    margin-bottom: $p-space-4;
+}
+
+.q-cell {
+    aspect-ratio: 1;
+    border: none;
+    border-radius: $p-radius-sm;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: #fff;
+
+    &.unanswered {
+        background: $p-surface-muted;
+        color: $p-text-muted;
+        cursor: not-allowed;
+    }
+
+    &.correct { background: $p-success; }
+    &.wrong { background: $p-danger; }
+
+    &:hover:not(:disabled) {
+        opacity: 0.85;
+    }
+}
+
+.legend {
+    display: flex;
+    gap: $p-space-5;
+    font-weight: 600;
+    color: $p-text-secondary;
+    font-size: 0.82rem;
+
+    span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        display: inline-block;
+
+        &.correct { background: $p-success; }
+        &.wrong { background: $p-danger; }
+        &.unanswered { background: $p-surface-muted; border: 1px solid $p-border; }
+    }
+}
+
+.loading,
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $p-space-6;
+    font-weight: 600;
+    color: $p-text-secondary;
+}

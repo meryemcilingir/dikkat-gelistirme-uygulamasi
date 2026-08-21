@@ -1,0 +1,72 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🧩" instruction="Örüntüyü tamamlayın."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <!-- Pattern Display Area -->
+            <div class="target-container">
+                <div class="board-card" aria-label="Tamamlanması gereken örüntü">
+                    <div class="shape-sequence">
+                        @for (shape of givenPattern; track $index) {
+                        <div class="shape-block" [ngClass]="shape"></div>
+                        }
+                        <!-- Missing part: question marks or selected answer -->
+                        @if (selectedSequence && feedbackState === 'correct') {
+                        @for (shape of selectedSequence; track $index) {
+                        <div class="shape-block filled" [ngClass]="shape"></div>
+                        }
+                        } @else {
+                        @for (i of [1, 2]; track i) {
+                        <div class="shape-block placeholder">
+                            <span class="q-mark">?</span>
+                        </div>
+                        }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Grid Area -->
+            <div class="options-container">
+                <div class="options-grid">
+                    @for (opt of options; track opt.id) {
+                    <button class="option-card hover" [class.selected]="selectedId === opt.id"
+                        [class.shake]="opt.isShaking" [class.hint]="showHint && opt.isCorrect && selectedId === null"
+                        (click)="selectOption(opt.id)" [attr.aria-label]="'Seçenek ' + opt.id"
+                        [attr.aria-pressed]="selectedId === opt.id">
+
+                        <div class="shape-sequence">
+                            @for (shape of opt.sequence; track $index) {
+                            <div class="shape-block small" [ngClass]="shape"></div>
+                            }
+                        </div>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()"
+            (check)="checkAnswer()"></app-action-buttons>
+    </div>
+
+</div>

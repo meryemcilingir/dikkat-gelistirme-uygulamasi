@@ -1,0 +1,118 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.game-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    padding: clamp(4px, 1.5vw, 12px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.board {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 3vw, 32px);
+    width: 100%;
+    max-width: 780px;
+}
+
+// ── Sol referans ─────────────────────────────────────────
+.reference-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.reference-label {
+    font-size: clamp(11px, 1.6vw, 14px);
+    font-weight: 600;
+    color: #555;
+}
+
+.reference-box {
+    width: clamp(90px, 18vw, 150px);
+    aspect-ratio: 1 / 1;
+    background: #f4c998;
+    border: 3px solid #4a3020;
+    padding: clamp(4px, 0.8vw, 8px);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// ── 6 kutu (3 kolon × 2 satır) ───────────────────────────
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(6px, 1.5vw, 14px);
+    flex: 1;
+    max-width: 560px;
+}
+
+.option-box {
+    aspect-ratio: 1 / 1;
+    background: #f4c998;
+    border: 2px solid #4a3020;
+    padding: clamp(4px, 0.8vw, 8px);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+// ── Şekil SVG ────────────────────────────────────────────
+.shape-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.tri {
+    cursor: pointer;
+    transition: fill 0.2s;
+
+    // Hover animasyonu yok — sadece tıklayınca renk değişir
+
+    // Kilitli (önceden boyalı) üçgenler tıklanamaz
+    &.locked {
+        cursor: default;
+    }
+
+    // İpucu: eksik kalan üçgeni sarı vurgu ile göster
+    &.hint {
+        animation: triHintPulse 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes triHintPulse {
+    0%, 100% {
+        stroke: rgba(241, 196, 15, 1);
+        stroke-width: 2;
+    }
+    50% {
+        stroke: rgba(241, 196, 15, 1);
+        stroke-width: 4;
+    }
+}
+
+// ── Mobil ────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .board {
+        gap: 8px;
+    }
+    .reference-box {
+        width: clamp(70px, 22vw, 110px);
+    }
+    .options-grid {
+        gap: 4px;
+    }
+}

@@ -1,0 +1,45 @@
+<div class="page-frame">
+  <div class="frame-top">
+    <app-activity-header
+      [instruction]="'6 tane olan varlıkları seçin.'"
+      [icons]="'⭐6️⃣'">
+    </app-activity-header>
+  </div>
+
+  <div class="frame-middle">
+    <button class="nav-btn" (click)="prev()">&#9664;</button>
+
+    <div class="game-content">
+      <div class="count-grid">
+        @for (item of items; track item.id) {
+          <div class="count-card"
+               [class.selected]="selectedId === item.id"
+               [class.correct]="isCompleted && item.isCorrect"
+               (click)="selectItem(item.id)">
+            <div class="emoji-group">
+              @for (i of getRepeatArray(item.count); track $index) {
+                <span class="emoji-unit">{{ item.emoji }}</span>
+              }
+            </div>
+            <div class="item-meta">
+              {{ item.name }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button class="nav-btn" [class.locked]="!isCompleted" (click)="next()">&#9654;</button>
+  </div>
+
+  <div class="frame-bottom">
+    <app-action-buttons
+      [isCompleted]="isCompleted"
+      [checkAlwaysDisabled]="checkAlwaysDisabled"
+      (reset)="onReset()"
+      (check)="onCheck()">
+    </app-action-buttons>
+  </div>
+</div>
+
+<app-shared-feedback></app-shared-feedback>

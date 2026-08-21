@@ -1,0 +1,105 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  width: 100%;
+}
+
+.target-word {
+  display: flex;
+  gap: 15px;
+  padding: 20px 40px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+
+  .letter {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #333;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+
+    &.highlight {
+      color: $color-primary;
+    }
+  }
+}
+
+.options-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.option-card {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background: white;
+  border: 3px solid #eee;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+
+  .option-char {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #444;
+  }
+
+  &:hover:not(.locked) {
+    transform: translateY(-5px);
+    border-color: $color-primary;
+    box-shadow: 0 8px 15px rgba($color-primary, 0.1);
+  }
+
+  &.selected {
+    background: rgba($color-primary, 0.05);
+    border-color: $color-primary;
+    transform: scale(1.05);
+  }
+
+  &.locked {
+    cursor: default;
+    opacity: 0.9;
+  }
+
+  .check-mark {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: $color-primary;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+}
+
+@include mobile {
+  .target-word .letter {
+    font-size: 2rem;
+  }
+  .option-card {
+    width: 70px;
+    height: 70px;
+    .option-char {
+      font-size: 1.5rem;
+    }
+  }
+}

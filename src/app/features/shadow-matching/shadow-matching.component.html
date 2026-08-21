@@ -1,0 +1,91 @@
+<div class="page-frame">
+        <div class="frame-top">
+        <app-activity-header icons="🔍" instruction="Kutudaki şekillerin gölgesi hangisi olabilir? İşaretleyin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+
+            <!-- Target Box -->
+            <div class="target-box-container">
+                <div class="target-box">
+                    <div class="shape plus-thick target-green">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <path d="M35 15 h30 v20 h20 v30 h-20 v20 h-30 v-20 h-20 v-30 h20 z" fill="currentColor"
+                                stroke="#1b5e20" stroke-width="4" />
+                        </svg>
+                    </div>
+                    <div class="shape star target-green">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35"
+                                fill="currentColor" stroke="#1b5e20" stroke-width="4" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="options-grid">
+                @for (opt of options; track opt.id) {
+                <div class="option-card hover" [class.selected]="opt.isSelected" [class.shake]="opt.isShaking"
+                    [class.hint]="showHint && opt.isCorrect && !opt.isSelected" role="button" tabindex="0"
+                    (click)="selectOption(opt.id)" (keydown.enter)="selectOption(opt.id)">
+
+                    <div class="shapes-container">
+                        @for (shape of opt.shapes; track $index) {
+                        <div class="shape shadow-gray" [ngClass]="shape.type">
+                            @if (shape.type === 'plus-thick') {
+                            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                <path d="M35 15 h30 v20 h20 v30 h-20 v20 h-30 v-20 h-20 v-30 h20 z" fill="currentColor"
+                                    stroke="#757575" stroke-width="4" />
+                            </svg>
+                            }
+                            @if (shape.type === 'star') {
+                            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                <polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35"
+                                    fill="currentColor" stroke="#757575" stroke-width="4" />
+                            </svg>
+                            }
+                            @if (shape.type === 'cross') {
+                            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                <path
+                                    d="M20 20 L40 50 L20 80 L35 80 L50 55 L65 80 L80 80 L60 50 L80 20 L65 20 L50 45 L35 20 Z"
+                                    fill="currentColor" stroke="#757575" stroke-width="4" />
+                            </svg>
+                            }
+                            @if (shape.type === 'diamond') {
+                            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                <polygon points="50,10 90,50 50,90 10,50" fill="currentColor" stroke="#757575"
+                                    stroke-width="4" />
+                            </svg>
+                            }
+                            @if (shape.type === 'plus-thin') {
+                            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                <path d="M45 5 h10 v40 h40 v10 h-40 v40 h-10 v-40 h-40 v-10 h40 z" fill="currentColor"
+                                    stroke="#757575" stroke-width="4" />
+                            </svg>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                </div>
+                }
+            </div>
+
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+</div>

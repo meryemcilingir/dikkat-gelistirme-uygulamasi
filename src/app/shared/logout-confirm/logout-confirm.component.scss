@@ -1,0 +1,108 @@
+@use '../../../styles/design-tokens' as *;
+
+:host {
+    display: contents;
+}
+
+.confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: rgba(44, 44, 84, .55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.confirm-card {
+    background: #fff;
+    border-radius: 28px;
+    padding: clamp(24px, 5vw, 36px);
+    width: min(360px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+}
+
+.emoji {
+    font-size: 2.6rem;
+}
+
+.question {
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $color-heading;
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 40px;
+    border: none;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+
+    &.cancel {
+        background: $color-surface;
+        color: $color-text;
+    }
+
+    &.confirm {
+        background: #e0685a;
+        color: #fff;
+    }
+
+    &:active {
+        transform: translateY(2px);
+    }
+}
+
+@keyframes lc-modal-in {
+    from { opacity: 0; transform: scale(0.97) translateY(4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+// Admin/öğretmen paneli için sade, profesyonel varyant — öğrenci deneyimi değişmez.
+.portal-modal {
+    background: rgba(17, 24, 39, 0.45);
+    animation: lc-modal-in .14s ease-out;
+
+    .confirm-card {
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 16px 40px rgba(17, 24, 39, 0.18);
+        gap: 12px;
+    }
+
+    .question {
+        font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        padding: 10px 0;
+
+        &.confirm { background: #dc2626; }
+        &:active { transform: none; }
+    }
+}

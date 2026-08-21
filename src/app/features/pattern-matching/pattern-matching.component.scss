@@ -1,0 +1,203 @@
+// ============================================================
+// Pattern Matching – Bileşen Stilleri
+// Layout kuralları: styles.scss | Değişkenler: styles/_design-tokens.scss
+// ============================================================
+@use 'sass:color';
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+// ── Animasyonlar ───────────────────────────────────────────
+@keyframes popIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cellPop {
+  0% {
+    transform: scale(0.8);
+  }
+
+  60% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes hintPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 12px 4px rgba(241, 196, 15, 0.8);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes hintShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-3px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+// ── Yerel Renkler ─────────────────────────────────────────
+$color-cell: #3d4a5c; // hedef ve kullanıcı hücre rengi
+$color-accent-green: #4caf82; // kullanıcı grid kenarlığı
+
+// ── Host ──────────────────────────────────────────────────
+:host {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg;
+  overflow: hidden;
+
+  @include mobile {
+    overflow-x: hidden;
+        overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
+// ── Grid Satırı ───────────────────────────────────────────
+.grids-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 20px);
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 1vw, 8px);
+}
+
+.grid-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #7a8fa6;
+
+  &.user-label {
+    color: $color-accent-green;
+  }
+}
+
+.arrow-divider {
+  font-size: clamp(1.2rem, 2.5vw, 2.5rem);
+  color: #b0c4d8;
+  flex-shrink: 0;
+  user-select: none;
+
+  @include mobile {
+    transform: rotate(90deg);
+    margin: -5px 0;
+  }
+}
+
+// ── Grid ──────────────────────────────────────────────────
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(3px, 0.8vw, 7px);
+  padding: clamp(8px, 1.5vw, 14px);
+  border-radius: 16px;
+  background: #ffffff;
+  @include card-shadow($color-nav, .12);
+
+  &.target-grid {
+    border: 2px solid #d0dce8;
+  }
+
+  &.user-grid {
+    border: 2px solid $color-accent-green;
+    box-shadow: 0 4px 16px rgba($color-accent-green, .22);
+  }
+}
+
+// ── Hücre ─────────────────────────────────────────────────
+.cell {
+  width: clamp(32px, 8vw, 52px);
+  height: clamp(32px, 8vw, 52px);
+  border-radius: clamp(6px, 1vw, 9px);
+  background: #e8f0f8;
+  border: none;
+  cursor: default;
+  transition: background .15s, transform .1s;
+
+  &.filled {
+    background: $color-cell;
+  }
+
+  &.user-filled {
+    background: $color-cell;
+    cursor: pointer;
+    animation: cellPop .18s ease;
+
+    &:hover {
+      background: color.adjust($color-cell, $lightness: -8%);
+    }
+  }
+
+  &.hint-remove {
+    animation: hintShake 0.4s ease-in-out infinite;
+    opacity: 0.6;
+  }
+
+  &.hint-add {
+    animation: hintPulse 1.2s ease-in-out infinite;
+    background: rgba(241, 196, 15, 0.15);
+    border: 2px solid rgba(241, 196, 15, 0.8);
+  }
+}
+
+// Tıklanabilir hücreler
+button.cell {
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid $color-cell;
+    outline-offset: 2px;
+  }
+}

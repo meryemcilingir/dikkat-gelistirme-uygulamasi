@@ -1,0 +1,48 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🦷" instruction="Dişlerimiz için hangisini kullanırız?"></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="suitability-layout">
+                
+                <div class="options-container">
+                    @for (option of options; track option.id) {
+                        <div class="option-card"
+                             [class.selected]="selectedId === option.id"
+                             [class.shake]="option.isShaking"
+                             (click)="selectOption(option.id)">
+                            <div class="emoji-wrapper">
+                                <span class="emoji">{{ option.emoji }}</span>
+                            </div>
+                            <div class="radio-btn" [class.checked]="selectedId === option.id">
+                                <div class="inner-dot" *ngIf="selectedId === option.id"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isCompleted" [disabled]="!isCompleted" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isCompleted" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

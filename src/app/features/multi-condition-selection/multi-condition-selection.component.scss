@@ -1,0 +1,97 @@
+@use '../../../styles/design-tokens' as *;
+@use '../../../styles/responsive' as *;
+
+// ── Host (Global Full-Screen Layout) ──────────────────────
+:host {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: $color-bg;
+    overflow: hidden;
+
+    @include mobile {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+}
+
+.circle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(12px, 2.5vw, 32px);
+    padding: clamp(12px, 2.5vw, 24px);
+
+    // Make it responsive for smaller screens
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+.circle-item {
+    width: clamp(80px, 16vw, 120px);
+    height: clamp(80px, 16vw, 120px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    border-width: 0 !important;
+    /* Prevent the 3px solid transparent border from pushing content */
+    /* override .hover transparent border to fix gradient bleeding square bug */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform, box-shadow;
+    @include card-shadow();
+
+    // Define custom shadow and apply it directly when selected
+    --local-selected-shadow: 0 0 0 4px #3498db, 0 8px 24px rgba(0, 0, 0, 0.2);
+
+    &.selected {
+        box-shadow: var(--local-selected-shadow) !important;
+    }
+
+    // Base color classes mapped to radial gradients for a 3D feel
+    &.bg-green {
+        background: radial-gradient(circle at 30% 30%, #a8e063, #56ab2f);
+        --selected-bg: radial-gradient(circle at 30% 30%, #a8e063, #56ab2f);
+    }
+
+    &.bg-purple {
+        background: radial-gradient(circle at 30% 30%, #d4a5ff, #9b59b6);
+        --selected-bg: radial-gradient(circle at 30% 30%, #d4a5ff, #9b59b6);
+    }
+
+    // Number text styling
+    .number-text {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+        &.text-yellow {
+            color: #f1c40f;
+        }
+
+        &.text-blue {
+            color: #3498db;
+        }
+
+        &.text-pink {
+            color: #e84393;
+        }
+
+        &.text-grey {
+            color: #bdc3c7;
+        }
+    }
+}

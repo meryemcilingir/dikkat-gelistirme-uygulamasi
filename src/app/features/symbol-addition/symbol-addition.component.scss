@@ -1,0 +1,121 @@
+@use 'styles/design-tokens' as *;
+@use 'styles/responsive' as *;
+
+.addition-container {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(15px, 3vh, 30px);
+    width: 100%;
+    max-width: 700px;
+    background: #fff;
+    padding: clamp(20px, 4vw, 40px);
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.addition-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    @include mobile {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.symbols-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+.group-left,
+.group-right {
+    display: flex;
+    gap: 5px;
+}
+
+.symbol-item {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.2s;
+
+    &.triangle {
+        color: #e53935;
+    }
+
+    &.tulip {
+        font-size: clamp(2rem, 4.5vw, 3rem);
+    }
+
+    &.square {
+        color: #43a047;
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+    }
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+.plus-sign,
+.equal-sign {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #888;
+}
+
+.input-wrap {
+    width: 80px;
+}
+
+.sum-input {
+    width: 100%;
+    height: 60px;
+    border-radius: 12px;
+    border: 3px solid #f0f0f0;
+    background: #fdfdfd;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #333;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: #5D9CEC;
+        background: #fff;
+    }
+
+    &.correct {
+        border-color: #48cfad;
+        background: #f0fffb;
+        color: #37bc9b;
+    }
+
+    &.wrong {
+        border-color: #ed5565;
+        background: #fff5f6;
+        color: #da4453;
+    }
+
+    /* Remove arrows */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.row-divider {
+    height: 12px;
+    background-image: radial-gradient(#ffe0b2 2px, transparent 0);
+    background-size: 20px 20px;
+    background-position: center;
+    opacity: 0.6;
+}

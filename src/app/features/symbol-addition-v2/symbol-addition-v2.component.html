@@ -1,0 +1,64 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="➕" instruction="Aynı sembolleri sayarak toplayın ve sonucu yazın."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="prev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="addition-layout">
+                
+                @for (row of rows; track row.id) {
+                    <div class="addition-row">
+                        <!-- Left Group -->
+                        <div class="symbol-group">
+                            @for (s of getSymbols(row.leftCount); track $index) {
+                                <span class="symbol" [class]="row.type">{{ row.symbol }}</span>
+                            }
+                        </div>
+                        
+                        <div class="math-sign">+</div>
+                        
+                        <!-- Right Group -->
+                        <div class="symbol-group">
+                            @for (s of getSymbols(row.rightCount); track $index) {
+                                <span class="symbol" [class]="row.type">{{ row.symbol }}</span>
+                            }
+                        </div>
+                        
+                        <div class="math-sign">=</div>
+                        
+                        <!-- Input -->
+                        <div class="input-container" 
+                             [class.hint-pulse]="showHint && row.userSum !== null && row.userSum !== row.correctSum">
+                            <input type="number" 
+                                   [(ngModel)]="row.userSum" 
+                                   [class.correct]="feedbackState === 'correct'"
+                                   [class.wrong]="feedbackState === 'wrong' && row.userSum !== row.correctSum"
+                                   min="0" max="20">
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="next()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="onReset()" (check)="onCheck()" />
+    </div>
+
+</div>
+
+<app-shared-feedback></app-shared-feedback>

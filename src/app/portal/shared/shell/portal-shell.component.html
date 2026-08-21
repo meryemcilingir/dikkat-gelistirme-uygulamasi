@@ -1,0 +1,90 @@
+<div class="portal">
+    <div class="app-shell">
+        <div class="sidebar-backdrop" *ngIf="sidebarOpen()" (click)="toggleSidebar()"></div>
+
+        <aside class="app-sidebar" [class.open]="sidebarOpen()" [class.collapsed]="collapsed()">
+            <div class="sidebar-brand">
+                <div class="brand-mark">DG</div>
+                <div class="brand-text">
+                    <strong>Dikkat Geliştirme</strong>
+                    <span>{{ brandLabel }}</span>
+                </div>
+            </div>
+
+            <nav>
+                <div class="sidebar-section" *ngFor="let section of sections">
+                    <div class="sidebar-label">{{ section.label }}</div>
+                    <a
+                        *ngFor="let item of section.items"
+                        class="sidebar-link"
+                        [routerLink]="item.link"
+                        routerLinkActive="active"
+                        [attr.title]="collapsed() ? item.label : null"
+                    >
+                        <app-portal-icon class="sidebar-icon" [name]="item.icon" [size]="18"></app-portal-icon>
+                        <span class="sidebar-link-label">{{ item.label }}</span>
+                    </a>
+                </div>
+            </nav>
+
+            <button class="sidebar-collapse-btn" (click)="toggleCollapse()" [attr.title]="collapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'">
+                <app-portal-icon [name]="collapsed() ? 'panel-expand' : 'panel-collapse'" [size]="16"></app-portal-icon>
+                <span class="sidebar-link-label">Daralt</span>
+            </button>
+        </aside>
+
+        <div class="app-main">
+            <header class="app-topbar">
+                <button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Menü">
+                    <app-portal-icon name="menu" [size]="18"></app-portal-icon>
+                </button>
+
+                <div class="breadcrumb">
+                    <span>{{ brandLabel }}</span>
+                    <ng-container *ngIf="activeLabel">
+                        <span>›</span>
+                        <span class="crumb-current">{{ activeLabel }}</span>
+                    </ng-container>
+                </div>
+
+                <div class="topbar-search" *ngIf="searchLink">
+                    <input
+                        type="text"
+                        [(ngModel)]="searchTerm"
+                        (keydown.enter)="submitSearch()"
+                        [placeholder]="searchPlaceholder"
+                        maxlength="100"
+                    />
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="user-menu">
+                        <button class="user-menu-trigger" (click)="toggleUserMenu()">
+                            <span class="user-avatar">{{ userInitial }}</span>
+                            <span class="user-info">
+                                <span class="user-name">{{ userName }}</span>
+                                <span class="user-role">{{ userRole }}</span>
+                            </span>
+                            <app-portal-icon name="chevron-down" [size]="14"></app-portal-icon>
+                        </button>
+
+                        <div class="user-menu-dropdown" *ngIf="userMenuOpen()">
+                            <button (click)="onChangePassword()">
+                                <app-portal-icon name="key" [size]="16"></app-portal-icon>
+                                Şifremi Değiştir
+                            </button>
+                            <button class="danger" (click)="onLogout()">
+                                <app-portal-icon name="logout" [size]="16"></app-portal-icon>
+                                Çıkış Yap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="app-content">
+                <router-outlet></router-outlet>
+            </main>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="page-frame">
+
+    <div class="frame-top">
+        <app-activity-header icons="🏫" instruction="Hangi meslek okulda çalışır? Doğru mesleği seçin."></app-activity-header>
+    </div>
+
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="profession-container">
+
+                <div class="profession-grid">
+                    @for (option of options; track option.id) {
+                    <div class="profession-card"
+                         [class.selected]="selectedId === option.id"
+                         [class.correct]="feedbackState === 'correct' && selectedId === option.id"
+                         [class.error]="feedbackState === 'wrong' && selectedId === option.id"
+                         [class.shake]="option.isShaking"
+                         [class.hint]="showHint && option.isCorrect && feedbackState !== 'correct'"
+                         (click)="selectOption(option.id)">
+
+                        <div class="profession-icon-area">
+                            <span class="profession-emoji">{{ option.emoji }}</span>
+                        </div>
+
+                        <div class="profession-name">{{ option.name }}</div>
+
+                        <div class="checkbox" [class.checked]="selectedId === option.id">
+                            @if (selectedId === option.id && feedbackState !== 'wrong') {
+                            <span class="material-icons check-icon">check</span>
+                            }
+                            @if (selectedId === option.id && feedbackState === 'wrong') {
+                            <span class="material-icons error-icon">close</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isNextUnlocked" (reset)="clearSelection()" (check)="checkAnswer()" />
+    </div>
+
+</div>

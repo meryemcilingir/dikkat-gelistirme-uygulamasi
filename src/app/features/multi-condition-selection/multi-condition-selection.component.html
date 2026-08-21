@@ -1,0 +1,49 @@
+<div class="page-frame">
+
+    <!-- ── Yönerge (sabit 80px) ─────────────────────────── -->
+        <div class="frame-top">
+        <app-activity-header icons="🎯" instruction="Yeşil dairenin içindeki sarı 3'leri bulun ve işaretleyin."></app-activity-header>
+    </div>
+
+    <!-- ── Oyun Alanı (flex-grow) ─────────────────────────── -->
+    <div class="frame-middle">
+
+        <button class="nav-btn" (click)="goPrev()" aria-label="Önceki etkinlik">
+            <span class="material-icons">arrow_back</span>
+        </button>
+
+        <div class="game-content">
+            <div class="circle-grid">
+                <div *ngFor="let option of options" class="circle-item hover" [ngClass]="{
+                        'bg-green': option.circleColor === 'green',
+                        'bg-purple': option.circleColor === 'purple',
+                        'selected': option.isSelected,
+                        'shake': option.isShaking,
+                        'hint': showHint && option.isCorrect && !option.isSelected
+                    }" (click)="toggleSelection(option)">
+                    <!-- Number Text -->
+                    <span class="number-text" [ngClass]="{
+                            'text-yellow': option.numberColor === 'yellow',
+                            'text-blue': option.numberColor === 'blue',
+                            'text-pink': option.numberColor === 'pink',
+                            'text-grey': option.numberColor === 'grey'
+                        }">
+                        {{ option.number }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" [class.locked]="!isNextUnlocked" [disabled]="!isNextUnlocked" (click)="goNext()"
+            aria-label="Sonraki etkinlik">
+            <span class="material-icons">arrow_forward</span>
+        </button>
+
+    </div>
+
+    <!-- ── Butonlar + Geri Bildirim (sabit 120px) ─────────── -->
+    <div class="frame-bottom">
+        <app-action-buttons [isCompleted]="isCompleted" (reset)="onReset()" (check)="onCheck()"></app-action-buttons>
+    </div>
+
+</div>

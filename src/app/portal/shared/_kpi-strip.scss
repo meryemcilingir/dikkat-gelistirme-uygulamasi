@@ -1,0 +1,97 @@
+@use './portal-tokens' as *;
+
+// ── Sayfa içerik kapsayıcısı: dashboard'la aynı max-width ───
+.dashboard {
+    max-width: 1360px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+// ── KPI şeridi: tek container, eşit kolonlar, sade ikon ─────
+.kpi-strip {
+    display: flex;
+    background: $p-surface;
+    border: 1px solid $p-border;
+    border-radius: $p-radius-lg;
+    margin-bottom: 22px;
+    overflow: hidden;
+}
+
+.kpi-cell {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px 22px;
+    border-right: 1px solid $p-border;
+    cursor: default;
+
+    &:last-child { border-right: none; }
+
+    &.clickable {
+        cursor: pointer;
+        transition: background-color 160ms ease;
+
+        &:hover { background: $p-surface-muted; }
+    }
+}
+
+.kpi-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: $p-radius-md;
+    background: $p-accent-soft;
+    color: $p-accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kpi-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: $p-text-muted;
+}
+
+.kpi-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: $p-text;
+    line-height: 1.2;
+}
+
+.kpi-context {
+    font-size: 0.76rem;
+    color: $p-text-secondary;
+    font-weight: 500;
+}
+
+@media (max-width: 860px) {
+    .kpi-strip {
+        flex-wrap: wrap;
+    }
+
+    .kpi-cell {
+        flex: 1 1 50%;
+        border-bottom: 1px solid $p-border;
+
+        &:nth-child(2n) { border-right: none; }
+        &:nth-last-child(-n+2) { border-bottom: none; }
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-cell {
+        flex: 1 1 100%;
+        border-right: none;
+    }
+}

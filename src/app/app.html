@@ -1,0 +1,14 @@
+<!-- Etkinlik sayfaları router tarafından yönetilir. router-outlet burada,
+     hiçbir sarmalayıcı div olmadan, orijinal haliyle kalır — yönlendirilen
+     soru component'i her zaman app-root'un DOĞRUDAN çocuğu olarak render
+     edilir (bkz. styles.scss'teki `app-root > :not(...)` kuralı). Öğretmen
+     inceleme modu (ReviewModeService.active()) yalnızca app-root'un host
+     sınıfını (.review-active, bkz. app.ts/app.scss) değiştirir; bu, aynı
+     yönlendirilen component'i ikinci kez oluşturmadan 72/28 grid'e yerleştirir. -->
+<router-outlet />
+<app-shared-feedback />
+<app-review-banner />
+<app-session-bar />
+<app-exam-submit-overlay />
+<app-logout-confirm />
+<app-change-password />
