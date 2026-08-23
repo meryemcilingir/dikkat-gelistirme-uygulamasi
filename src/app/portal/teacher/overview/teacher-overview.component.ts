@@ -83,11 +83,11 @@ export class TeacherOverviewComponent implements OnInit {
         return 'Başlamadı';
     }
 
-    /** "72/150 · Devam ediyor" / "%28 · Düşük sonuç" / "Başlamadı" — öğrenci burada neden listeleniyor. */
+    /** "72/150 · Devam ediyor" / "24/150 · Düşük sonuç" / "Başlamadı" — öğrenci burada neden listeleniyor. */
     attentionReason(s: StudentWithExam): string {
         if (s.exam.status === 'Assigned') return 'Başlamadı';
         if (s.exam.status === 'InProgress') return `${s.exam.answered}/${s.exam.total} · Devam ediyor`;
-        return `%${s.exam.finalScore} · Düşük sonuç`;
+        return `${s.exam.correctCount}/${s.exam.total} · Düşük sonuç`;
     }
 
     /** Düşük sonuçla tamamlayanlar daha acil (danger); henüz başlamamış/yarım kalanlar (warning). */
@@ -106,6 +106,11 @@ export class TeacherOverviewComponent implements OnInit {
 
     viewStudents(): void {
         this.router.navigate(['/teacher/students']);
+    }
+
+    /** Başarı dağılımı grafiğindeki bir sütuna tıklanınca o puan aralığındaki öğrencilere gider. */
+    viewStudentsByScore(min: number, max: number): void {
+        this.router.navigate(['/teacher/students'], { queryParams: { scoreMin: min, scoreMax: max } });
     }
 
     openQuestion(): void {

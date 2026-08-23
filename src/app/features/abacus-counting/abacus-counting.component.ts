@@ -7,6 +7,7 @@ import { FeedbackService } from '../../core/services/feedback.service';
 import { HintService } from '../../core/services/hint.service';
 import { ActionButtonsComponent } from '../../shared/action-buttons/action-buttons.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { NumericOnlyDirective } from '../../shared/numeric-only.directive';
 
 export interface AbacusQuestion {
     id: number;
@@ -36,7 +37,7 @@ const INITIAL_QUESTIONS: Omit<AbacusQuestion, 'input' | 'hasError'>[] = [
 @Component({
     selector: 'app-abacus-counting',
     standalone: true,
-    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent],
+    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent, NumericOnlyDirective],
     templateUrl: './abacus-counting.component.html',
     styleUrl: './abacus-counting.component.scss'
 })

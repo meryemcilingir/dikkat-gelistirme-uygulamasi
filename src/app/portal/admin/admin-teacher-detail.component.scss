@@ -1,1 +1,15 @@
 @use '../shared/portal' as *;
+
+// "Öğrencilerinin En Çok Zorlandığı Alanlar" / "Dikkat Gerektiren Öğrenciler"
+// veri arttıkça sınırsız uzamasın diye sabit yükseklikte, kendi scrollbar'ında.
+.scroll-list {
+    max-height: 340px;
+    overflow-y: auto;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+    }
+}

@@ -1,6 +1,9 @@
 <ng-container *ngIf="examSession.submitting()">
     <!-- Tam sayfayı kaplayan görünmez katman: altındaki doğru/yanlış görselini
-         (renkler, işaretler) öğrenciye göstermeden tıklamaları da engeller. -->
+         (renkler, işaretler) öğrenciye göstermeden tıklamaları da engeller.
+         Sınav soruları artık uygulama açılışında preload edildiği için
+         (bkz. ExamPreloadStrategy) bir sonraki soru neredeyse anında hazır —
+         bu yüzden burada ayrıca bir yükleniyor göstergesine gerek yok. -->
     <div class="submit-blocker"></div>
 
     <!-- Sağ üstte beliren, kısa süre sonra kaybolan küçük bildirim. -->

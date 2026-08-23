@@ -1,4 +1,4 @@
-<div class="page-header">
+<div class="page-header" *ngIf="!embedded">
     <div>
         <h1>Soru Analizi</h1>
         <p class="page-subtitle">150 sorunun kategori ve öğrenci bazında başarı istatistikleri.</p>
@@ -27,8 +27,8 @@
     <div class="grid-12" *ngIf="topHardest().length">
         <div class="span-6 panel-card">
             <div class="panel-title">En Çok Zorlanılan Sorular</div>
-            <div class="panel-subtitle">En yüksek yanlış oranına sahip ilk 5 soru</div>
-            <div class="hbar-list">
+            <div class="panel-subtitle">Yanlış oranına göre azalan sırada</div>
+            <div class="hbar-list scroll-list">
                 <div class="hbar-row" *ngFor="let q of topHardest()" (click)="openDetail(q)">
                     <div class="hbar-top">
                         <span class="hbar-label">Soru {{ (q.questionIndex ?? 0) + 1 }} — {{ title(q.questionId) }}</span>
@@ -42,27 +42,29 @@
         <div class="span-6 panel-card" *ngIf="r.categories.length">
             <div class="panel-title">Kategori Bazlı Başarı</div>
             <div class="panel-subtitle">Soru sayısı ve ortalama başarıya göre</div>
-            <table class="mini-table">
-                <thead>
-                    <tr>
-                        <th>Kategori</th>
-                        <th>Soru</th>
-                        <th>Başarı</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let c of r.categories">
-                        <td>{{ c.category }}</td>
-                        <td>{{ c.questionCount }}</td>
-                        <td>
-                            <div class="score-cell">
-                                <span>%{{ c.avgCorrectRate }}</span>
-                                <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="c.avgCorrectRate"></div></div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="scroll-list">
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Kategori</th>
+                            <th>Soru</th>
+                            <th>Başarı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of r.categories">
+                            <td>{{ c.category }}</td>
+                            <td>{{ c.questionCount }}</td>
+                            <td>
+                                <div class="score-cell">
+                                    <span>%{{ c.avgCorrectRate }}</span>
+                                    <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="c.avgCorrectRate"></div></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

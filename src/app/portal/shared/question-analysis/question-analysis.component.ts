@@ -33,6 +33,9 @@ export class QuestionAnalysisComponent implements OnInit {
     /** 'teacher' → kendi öğrencileri; 'admin' → sistem geneli. */
     @Input() scope: 'teacher' | 'admin' = 'teacher';
 
+    /** Başka bir sayfanın sekmesi içinde gösteriliyorsa kendi sayfa başlığını çizmez. */
+    @Input() embedded = false;
+
     private teacherApi = inject(TeacherService);
     private adminApi = inject(AdminService);
     private router = inject(Router);
@@ -49,13 +52,13 @@ export class QuestionAnalysisComponent implements OnInit {
     readonly topHardest = signal<QuestionStat[]>([]);
 
     query: QuestionStatsQuery = {
-        page: 1, pageSize: PAGE_SIZE, sortBy: 'wrongCount', sortDirection: 'desc',
+        page: 1, pageSize: PAGE_SIZE, sortBy: 'questionIndex', sortDirection: 'asc',
     };
 
     async ngOnInit(): Promise<void> {
         const [, hardest] = await Promise.all([
             this.reload(1),
-            this.api().getQuestionStats({ page: 1, pageSize: 5, sortBy: 'wrongCount', sortDirection: 'desc' }),
+            this.api().getQuestionStats({ page: 1, pageSize: 150, sortBy: 'wrongCount', sortDirection: 'desc' }),
         ]);
         this.topHardest.set(hardest.items.filter(q => q.answered > 0));
     }

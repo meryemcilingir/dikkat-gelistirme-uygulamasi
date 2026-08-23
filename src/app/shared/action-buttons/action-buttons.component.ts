@@ -6,6 +6,7 @@ import { ExamSessionService } from '../../core/services/exam-session.service';
 import { HintService } from '../../core/services/hint.service';
 import { GameStateService } from '../../core/services/game-state.service';
 import { ReviewModeService } from '../../core/services/review-mode.service';
+import { QuestionPreviewService } from '../../core/services/question-preview.service';
 
 /**
  * ActionButtonsComponent – Tüm etkinlik sayfalarında ortak kullanılan
@@ -20,6 +21,9 @@ import { ReviewModeService } from '../../core/services/review-mode.service';
  * göre tetiklenir (checkAlwaysDisabled etkinliklerde bu buton hiç gösterilmediği
  * için o tür etkinliklerde ilerleme yalnızca doğru tamamlanınca olur — bkz. altta).
  *
+ * Admin panelinden "Sınavda Gör" ile açılan önizlemede (QuestionPreviewService.active())
+ * bu butonlar hiç gösterilmez — o mod yalnızca sorunun görünümünü incelemek içindir.
+ *
  * @Input  isCompleted         – true ise Kontrol Et disabled olur
  * @Input  checkAlwaysDisabled – shade-sorting gibi otomatik kontrollü
  *                               sayfalarda Kontrol Et daima disabled
@@ -31,7 +35,7 @@ import { ReviewModeService } from '../../core/services/review-mode.service';
     standalone: true,
     imports: [CommonModule],
     template: `
-        <div class="action-buttons" *ngIf="!reviewMode.active()">
+        <div class="action-buttons" *ngIf="!reviewMode.active() && !preview.active()">
             <button
                 *ngIf="!isStudent"
                 class="btn btn-clear"
@@ -57,6 +61,7 @@ export class ActionButtonsComponent {
     private gameStateService = inject(GameStateService);
     examSession = inject(ExamSessionService);
     reviewMode = inject(ReviewModeService);
+    preview = inject(QuestionPreviewService);
 
     /** Oyun tamamlandığında Kontrol Et kilitlenir */
     @Input() isCompleted = false;

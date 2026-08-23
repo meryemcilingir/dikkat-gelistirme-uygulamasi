@@ -1,26 +1,9 @@
 @use '../../shared/portal' as *;
-@use '../../shared/portal-tokens' as *;
-@use '../../shared/kpi-strip' as *;
-@use '../../shared/toolbar-compact' as *;
-@use '../../shared/premium-table' as *;
-@use '../../shared/entity-card' as *;
+@use '../../shared/mobile-sheet' as *;
 
 // ══════════════════════════════════════════════════════════
-// Öğretmenler — Genel Bakış'la aynı design system (dashboard/kpi-strip/
-// toolbar-compact/premium-table/entity-card paylaşılan partial'lardan).
-// Bu dosya yalnızca sayfaya özel masaüstü/mobil görünürlük anahtarlarını içerir.
+// Öğretmenler — Öğrenciler sekmesiyle birebir aynı design system
+// (metric-strip/list-toolbar/responsive tablo + mobil bottom sheet).
 // ══════════════════════════════════════════════════════════
-
-.desktop-only {
-    @media (max-width: 640px) {
-        display: none;
-    }
-}
-
-.mobile-only {
-    display: none;
-
-    @media (max-width: 640px) {
-        display: flex;
-    }
-}
+@include p-responsive-row-list;
+@include p-mobile-sheet;

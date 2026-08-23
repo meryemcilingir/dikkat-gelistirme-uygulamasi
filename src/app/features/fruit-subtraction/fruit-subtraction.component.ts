@@ -7,6 +7,7 @@ import { FeedbackService } from '../../core/services/feedback.service';
 import { HintService } from '../../core/services/hint.service';
 import { ActionButtonsComponent } from '../../shared/action-buttons/action-buttons.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { NumericOnlyDirective } from '../../shared/numeric-only.directive';
 
 export interface SubtractionProblem {
     id: number;
@@ -30,7 +31,7 @@ const ID = 'fruit-subtraction';
 @Component({
     selector: 'app-fruit-subtraction',
     standalone: true,
-    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent],
+    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent, NumericOnlyDirective],
     templateUrl: './fruit-subtraction.component.html',
     styleUrl: './fruit-subtraction.component.scss'
 })

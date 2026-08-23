@@ -4,33 +4,33 @@
 
         <aside class="app-sidebar" [class.open]="sidebarOpen()" [class.collapsed]="collapsed()">
             <div class="sidebar-brand">
-                <div class="brand-mark">DG</div>
-                <div class="brand-text">
-                    <strong>Dikkat Geliştirme</strong>
-                    <span>{{ brandLabel }}</span>
+                <div class="brand-identity">
+                    <div class="brand-mark">DG</div>
+                    <div class="brand-text">
+                        <strong>Dikkat Geliştirme</strong>
+                        <span>{{ brandLabel }}</span>
+                    </div>
                 </div>
+                <button class="sidebar-hamburger" (click)="onHamburgerClick()" [attr.aria-label]="collapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'">
+                    <app-portal-icon name="menu" [size]="18"></app-portal-icon>
+                </button>
             </div>
 
             <nav>
                 <div class="sidebar-section" *ngFor="let section of sections">
-                    <div class="sidebar-label">{{ section.label }}</div>
+                    <div class="sidebar-label" *ngIf="section.label">{{ section.label }}</div>
                     <a
                         *ngFor="let item of section.items"
                         class="sidebar-link"
                         [routerLink]="item.link"
                         routerLinkActive="active"
-                        [attr.title]="collapsed() ? item.label : null"
                     >
                         <app-portal-icon class="sidebar-icon" [name]="item.icon" [size]="18"></app-portal-icon>
                         <span class="sidebar-link-label">{{ item.label }}</span>
+                        <span class="sidebar-tooltip">{{ item.label }}</span>
                     </a>
                 </div>
             </nav>
-
-            <button class="sidebar-collapse-btn" (click)="toggleCollapse()" [attr.title]="collapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'">
-                <app-portal-icon [name]="collapsed() ? 'panel-expand' : 'panel-collapse'" [size]="16"></app-portal-icon>
-                <span class="sidebar-link-label">Daralt</span>
-            </button>
         </aside>
 
         <div class="app-main">
@@ -83,7 +83,9 @@
             </header>
 
             <main class="app-content">
-                <router-outlet></router-outlet>
+                <div class="app-content-inner">
+                    <router-outlet></router-outlet>
+                </div>
             </main>
         </div>
     </div>

@@ -5,8 +5,11 @@
         <button class="back-link" (click)="exit()">← Sınav Özetine Dön</button>
 
         <div class="header-student">
-            <strong>{{ b.studentName }}</strong>
-            <span class="muted">Sınav İncelemesi</span>
+            <span class="student-avatar">{{ initials(b.studentName) }}</span>
+            <span class="header-student-text">
+                <strong>{{ b.studentName }}</strong>
+                <span class="muted">Sınav İncelemesi</span>
+            </span>
         </div>
 
         <div class="header-status">

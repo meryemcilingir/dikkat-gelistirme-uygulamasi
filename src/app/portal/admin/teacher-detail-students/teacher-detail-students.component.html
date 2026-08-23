@@ -90,7 +90,7 @@
                 <td class="bad">{{ s.exam.wrongCount ?? 0 }}</td>
                 <td>
                     <div class="score-cell">
-                        <span>{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+                        <span>{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
                         <div class="rate-bar" *ngIf="s.exam.correctRate !== null && s.exam.correctRate !== undefined">
                             <div class="rate-bar-fill" [style.width.%]="s.exam.correctRate"></div>
                         </div>

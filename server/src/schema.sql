@@ -54,3 +54,35 @@ CREATE TABLE IF NOT EXISTS answers (
 ALTER TABLE answers ADD COLUMN IF NOT EXISTS time_spent_seconds INT;
 
 CREATE INDEX IF NOT EXISTS idx_answers_attempt ON answers(exam_attempt_id);
+
+-- Öğrencinin kişisel soru sırası — oluşturulduğu andaki aktif sorulardan
+-- hesaplanıp burada donar (bkz. db.js createExamAttemptForStudent). NULL ise
+-- (mevcut/eski kayıtlar) sabit EXAM_QUESTIONS listesi kullanılır — davranış
+-- hiç değişmez. Bir soru sonradan pasifleştirilse bile zaten başlamış bir
+-- öğrencinin sırası bozulmaz.
+ALTER TABLE exam_attempts ADD COLUMN IF NOT EXISTS question_list JSONB;
+
+-- Sınav Yönetimi ekranındaki kategori yönetimi için gerçek, düzenlenebilir
+-- kategori kayıtları (önceden yalnızca anahtar-kelime eşlemesiyle anlık
+-- hesaplanıyordu — bkz. questionCategories.js, o hâlâ fallback olarak durur).
+CREATE TABLE IF NOT EXISTS categories (
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 150 gerçek sorunun (ve admin tarafından eklenen taslak soruların) yönetici
+-- panelinden düzenlenebilen metadata'sı. Sorunun kendi interaktif içeriği
+-- (görsel/mantık) hâlâ src/app/features altındaki component'ten gelir —
+-- burada yalnızca kategori ataması, aktif/pasif durumu ve görünen başlık tutulur.
+CREATE TABLE IF NOT EXISTS question_meta (
+    question_id TEXT PRIMARY KEY,
+    category_id UUID REFERENCES categories(id),
+    active BOOLEAN NOT NULL DEFAULT true,
+    is_draft BOOLEAN NOT NULL DEFAULT false,
+    title TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_question_meta_category ON question_meta(category_id);

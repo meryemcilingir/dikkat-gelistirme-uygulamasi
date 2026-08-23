@@ -19,7 +19,7 @@ export interface QuestionCategoryStat {
 export interface QuestionStatsQuery {
     page?: number;
     pageSize?: number;
-    sortBy?: 'wrongCount' | 'correctCount' | 'correctRate';
+    sortBy?: 'questionIndex' | 'wrongCount' | 'correctCount' | 'correctRate';
     sortDirection?: 'asc' | 'desc';
     /** Yalnızca admin: belirli bir öğretmenle sınırlamak için (opsiyonel). */
     teacherId?: string;

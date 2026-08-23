@@ -35,4 +35,14 @@ export class ReviewBannerComponent {
         if (mins === 0) return `${secs} sn`;
         return `${mins} dk ${secs} sn`;
     }
+
+    /** Header avatarı için "Ece Öztürk" → "EÖ". */
+    initials(name: string): string {
+        return name
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) => part.charAt(0).toUpperCase())
+            .join('');
+    }
 }

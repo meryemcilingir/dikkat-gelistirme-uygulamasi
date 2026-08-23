@@ -4,6 +4,16 @@ const bcrypt = require('bcryptjs');
 const { v4: uuid } = require('uuid');
 const { pool } = require('./pool');
 const { categorize } = require('./questionCategories');
+const { EXAM_QUESTIONS } = require('./examQuestions');
+const { questionTitle } = require('./questionTitles');
+
+// Sınav Yönetimi'nde admin tarafından yeniden adlandırılabilir/silinebilir kategoriler
+// için ilk tohum verisi — questionCategories.js'teki kural adlarıyla birebir aynı,
+// böylece mevcut soru analizi ("Diğer" dışındaki) kategorileriyle tutarlı başlar.
+const SEED_CATEGORY_NAMES = [
+    'Desen', 'Eşleştirme', 'Sayma', 'Toplama / Çıkarma', 'Farklıyı Bulma',
+    'Sıralama', 'Renklendirme', 'Harf', 'Şekil', 'Yön / Konum', 'Izgara / Çizim', 'Genel Kültür',
+];
 
 // ══════════════════════════════════════════════════════════
 // PostgreSQL tabanlı veri katmanı.
@@ -15,6 +25,25 @@ const { categorize } = require('./questionCategories');
 async function migrate() {
     const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
     await pool.query(schema);
+    await seedCategories();
+}
+
+/**
+ * Yalnızca tablo TAMAMEN boşsa (ilk kurulum) tohumlar — her sunucu yeniden
+ * başlatmasında çalışmaz. Aksi hâlde admin bir kategoriyi yeniden adlandırıp
+ * sunucu yeniden başlatıldığında, eski isimle yeni (boş) bir kategori satırı
+ * sessizce yeniden oluşurdu (kategoriler artık tamamen admin tarafından
+ * yönetiliyor — bkz. Sınav Yönetimi → Kategoriler).
+ */
+async function seedCategories() {
+    const { rows } = await pool.query('SELECT COUNT(*)::int AS count FROM categories');
+    if (rows[0].count > 0) return;
+    for (const name of SEED_CATEGORY_NAMES) {
+        await pool.query(
+            'INSERT INTO categories (id, name) VALUES ($1, $2) ON CONFLICT (name) DO NOTHING',
+            [uuid(), name]
+        );
+    }
 }
 
 // ── Eşleme yardımcıları (snake_case DB satırı → camelCase JS nesnesi) ────
@@ -48,7 +77,13 @@ function mapExamAttempt(row) {
         finalScore: row.final_score,
         correctCount: row.correct_count,
         wrongCount: row.wrong_count,
+        questionList: row.question_list,
     };
+}
+
+/** Bir sınav denemesinin gerçek soru sırası: kişisel liste donmuşsa o, yoksa (eski kayıtlar) sabit 150 liste. */
+function questionsForAttempt(attempt) {
+    return attempt.questionList && attempt.questionList.length ? attempt.questionList : EXAM_QUESTIONS;
 }
 
 function mapAnswer(row) {
@@ -160,12 +195,24 @@ async function seedAdmin() {
 
 // ── Sınav denemeleri / cevaplar ───────────────────────────
 
-async function createExamAttemptForStudent(studentId) {
+/** Şu an geçerli aktif soru listesi: pasifleştirilmiş sorular EXAM_QUESTIONS'tan çıkarılır. */
+async function getActiveExamQuestionIds() {
     const { rows } = await pool.query(
-        `INSERT INTO exam_attempts (id, student_id, status, total_questions, current_index)
-         VALUES ($1, $2, 'Assigned', 150, 0)
+        `SELECT question_id FROM question_meta WHERE active = false AND is_draft = false`
+    );
+    const inactive = new Set(rows.map(r => r.question_id));
+    const active = EXAM_QUESTIONS.filter(id => !inactive.has(id));
+    // Güvenlik: hepsi pasifleştirilmiş olsa bile sınav boş kalmasın diye tam listeye dön.
+    return active.length ? active : EXAM_QUESTIONS;
+}
+
+async function createExamAttemptForStudent(studentId) {
+    const activeIds = await getActiveExamQuestionIds();
+    const { rows } = await pool.query(
+        `INSERT INTO exam_attempts (id, student_id, status, total_questions, current_index, question_list)
+         VALUES ($1, $2, 'Assigned', $3, 0, $4::jsonb)
          RETURNING *`,
-        [uuid(), studentId]
+        [uuid(), studentId, activeIds.length, JSON.stringify(activeIds)]
     );
     return mapExamAttempt(rows[0]);
 }
@@ -585,7 +632,8 @@ async function getOverviewStats(teacherId = null) {
     }
 
     const { rows: activityRows } = await pool.query(
-        `SELECT s.id AS student_id, s.first_name, s.last_name, ea.completed_at, ea.final_score
+        `SELECT s.id AS student_id, s.first_name, s.last_name, ea.completed_at, ea.final_score,
+                ea.correct_count, ea.total_questions
          FROM exam_attempts ea
          JOIN users s ON s.id = ea.student_id
          WHERE ea.status = 'Completed' ${examTeacherFilter}
@@ -619,6 +667,8 @@ async function getOverviewStats(teacherId = null) {
             lastName: r.last_name,
             completedAt: r.completed_at,
             finalScore: r.final_score,
+            correctCount: r.correct_count,
+            totalQuestions: r.total_questions,
         })),
     };
     if (!teacherId) {
@@ -646,6 +696,7 @@ async function studentsOfTeacher(teacherId) {
 // ══════════════════════════════════════════════════════════
 
 const QUESTION_STATS_SORT_KEYS = {
+    questionIndex: 'questionIndex',
     wrongCount: 'wrong',
     correctCount: 'correct',
     correctRate: 'correctRate',
@@ -711,7 +762,7 @@ async function getQuestionStats({ teacherId, sortBy, sortDirection, page, pageSi
         }))
         .sort((a, b) => b.avgCorrectRate - a.avgCorrectRate);
 
-    const sortKey = QUESTION_STATS_SORT_KEYS[sortBy] || 'wrong';
+    const sortKey = QUESTION_STATS_SORT_KEYS[sortBy] || 'questionIndex';
     const ascending = sortDirection === 'asc';
     items.sort((a, b) => ascending ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey]);
 
@@ -779,6 +830,319 @@ async function getQuestionDetail({ questionId, teacherId }) {
     };
 }
 
+// ══════════════════════════════════════════════════════════
+// SINAV YÖNETİMİ — Sorular / Kategoriler sekmeleri.
+// "Soru Analizi" (getQuestionStats/getQuestionDetail, yukarıda) TAMAMEN
+// AYRI ve değişmedi — bu bölüm yönetici tarafından düzenlenebilir metadata
+// (kategori ataması, aktif/pasif, taslak soru) için. Sorunun kendi
+// interaktif içeriği src/app/features altındaki component'ten gelir;
+// burada asla üretilmez/değiştirilmez.
+// ══════════════════════════════════════════════════════════
+
+function mapCategoryRow(row) {
+    return { id: row.id, name: row.name };
+}
+
+async function listCategories() {
+    const { rows: catRows } = await pool.query('SELECT id, name FROM categories ORDER BY name ASC');
+    const { rows: metaRows } = await pool.query(
+        `SELECT question_id, category_id FROM question_meta WHERE is_draft = false AND category_id IS NOT NULL`
+    );
+    const overrideByQuestion = new Map(metaRows.map(r => [r.question_id, r.category_id]));
+    const aggregates = await fetchQuestionAggregates(null);
+    const aggByQuestion = new Map(aggregates.map(a => [a.questionId, a]));
+
+    // Her gerçek soru için nihai kategori: override varsa o, yoksa anahtar-kelime eşlemesi.
+    const countByCategoryId = new Map();
+    const answeredByCategoryId = new Map();
+    const correctByCategoryId = new Map();
+    const nameToId = new Map(catRows.map(c => [c.name, c.id]));
+
+    for (const questionId of EXAM_QUESTIONS) {
+        const overrideId = overrideByQuestion.get(questionId);
+        const resolvedId = overrideId || nameToId.get(categorize(questionId)) || null;
+        if (!resolvedId) continue;
+        countByCategoryId.set(resolvedId, (countByCategoryId.get(resolvedId) || 0) + 1);
+        const agg = aggByQuestion.get(questionId);
+        if (agg) {
+            answeredByCategoryId.set(resolvedId, (answeredByCategoryId.get(resolvedId) || 0) + agg.answered);
+            correctByCategoryId.set(resolvedId, (correctByCategoryId.get(resolvedId) || 0) + agg.correct);
+        }
+    }
+
+    return catRows.map(c => {
+        const answered = answeredByCategoryId.get(c.id) || 0;
+        const correct = correctByCategoryId.get(c.id) || 0;
+        return {
+            id: c.id,
+            name: c.name,
+            questionCount: countByCategoryId.get(c.id) || 0,
+            avgCorrectRate: answered ? Math.round((correct / answered) * 100) : null,
+        };
+    });
+}
+
+async function createCategory(name) {
+    const { rows } = await pool.query(
+        'INSERT INTO categories (id, name) VALUES ($1, $2) RETURNING id, name',
+        [uuid(), name]
+    );
+    return mapCategoryRow(rows[0]);
+}
+
+/**
+ * Bir kategori adı değişmeden önce, o kategoriye HENÜZ açık bir override
+ * OLMADAN (yalnızca anahtar-kelime eşlemesiyle) bağlı gerçek soruları,
+ * kategori satırına açıkça sabitler (question_meta'ya yazar). Böylece isim
+ * değişse bile bu sorular yanlışlıkla "Diğer"e düşmez — categorize()'ın
+ * ürettiği ESKİ isim artık hiçbir kategori satırıyla eşleşmeyeceği için bu
+ * adım rename'den ÖNCE, eski isimle yapılmalıdır.
+ */
+async function pinImplicitQuestionsToCategory(categoryId, currentName) {
+    const metaMap = await getQuestionMetaMap();
+    for (const questionId of EXAM_QUESTIONS) {
+        const meta = metaMap.get(questionId);
+        if (meta?.categoryId) continue; // zaten açık bir ataması var, dokunma
+        if (categorize(questionId) !== currentName) continue;
+        await pool.query(
+            `INSERT INTO question_meta (question_id, category_id, active, is_draft)
+             VALUES ($1, $2, true, false)
+             ON CONFLICT (question_id) DO UPDATE SET category_id = EXCLUDED.category_id, updated_at = now()`,
+            [questionId, categoryId]
+        );
+    }
+}
+
+async function renameCategory(id, name) {
+    const { rows: currentRows } = await pool.query('SELECT name FROM categories WHERE id = $1', [id]);
+    if (!currentRows[0]) return null;
+    await pinImplicitQuestionsToCategory(id, currentRows[0].name);
+
+    const { rows } = await pool.query(
+        'UPDATE categories SET name = $2 WHERE id = $1 RETURNING id, name',
+        [id, name]
+    );
+    return rows[0] ? mapCategoryRow(rows[0]) : null;
+}
+
+/**
+ * Bir kategoriye bağlı GERÇEK soru sayısı — listCategories ile aynı çözümleme:
+ * açık atama (question_meta.category_id) varsa o, yoksa anahtar-kelime eşlemesi
+ * (categorize) kategori ADIYLA eşleşiyorsa o soru da bu kategoriye sayılır.
+ * Yalnızca açık atamalara bakmak yanıltıcıdır: varsayılan durumda question_meta
+ * boştur, dolayısıyla ekranda "9 soru" görünen bir kategori silinebilir hâle gelirdi.
+ */
+async function questionCountForCategory(categoryId, categoryName) {
+    const metaMap = await getQuestionMetaMap();
+    let count = 0;
+    for (const questionId of EXAM_QUESTIONS) {
+        const explicitId = metaMap.get(questionId)?.categoryId;
+        if (explicitId) {
+            if (explicitId === categoryId) count++;
+        } else if (categorize(questionId) === categoryName) {
+            count++;
+        }
+    }
+    // Taslak sorular gerçek soru listesinde yer almaz; onların açık ataması da sayılır.
+    for (const meta of metaMap.values()) {
+        if (meta.isDraft && meta.categoryId === categoryId) count++;
+    }
+    return count;
+}
+
+/** Kategoriye bağlı soru varsa (açık ya da örtük) silmeyi reddeder. */
+async function deleteCategory(id) {
+    const { rows } = await pool.query('SELECT name FROM categories WHERE id = $1', [id]);
+    if (!rows[0]) return;
+
+    if (await questionCountForCategory(id, rows[0].name) > 0) {
+        const err = new Error('Bu kategoriye atanmış sorular var — önce onları başka bir kategoriye taşıyın.');
+        err.code = 'CATEGORY_IN_USE';
+        throw err;
+    }
+    await pool.query('DELETE FROM categories WHERE id = $1', [id]);
+}
+
+async function getQuestionMetaMap() {
+    const { rows } = await pool.query(
+        `SELECT qm.question_id, qm.category_id, qm.active, qm.is_draft, qm.title, c.name AS category_name
+         FROM question_meta qm
+         LEFT JOIN categories c ON c.id = qm.category_id`
+    );
+    return new Map(rows.map(r => [r.question_id, {
+        questionId: r.question_id,
+        categoryId: r.category_id,
+        categoryName: r.category_name,
+        active: r.active,
+        isDraft: r.is_draft,
+        title: r.title,
+    }]));
+}
+
+/** Gerçek 150 soru + taslak sorular; her biri için metadata + istatistik birleştirilmiş liste (bellek içi filtre/sırala/sayfala — veri seti küçük). */
+async function listAdminQuestions({ search, categoryId, active, sortBy, sortDirection, page, pageSize }) {
+    const metaMap = await getQuestionMetaMap();
+    // Filtre, listedeki "category" (görünen ad, açık atama YOKSA anahtar-kelime
+    // eşlemesinden gelir) ile eşleşmeli — yalnızca categoryId'ye bakmak, hiç
+    // düzenlenmemiş sorularda (çoğunluk) her zaman boş sonuç verirdi.
+    let categoryName = null;
+    if (categoryId) {
+        const { rows } = await pool.query('SELECT name FROM categories WHERE id = $1', [categoryId]);
+        categoryName = rows[0]?.name ?? null;
+    }
+    const aggregates = await fetchQuestionAggregates(null);
+    const aggByQuestion = new Map(aggregates.map(a => [a.questionId, a]));
+
+    const items = [];
+    EXAM_QUESTIONS.forEach((questionId, index) => {
+        const meta = metaMap.get(questionId);
+        const agg = aggByQuestion.get(questionId);
+        items.push({
+            questionId,
+            questionIndex: index,
+            title: meta?.title || questionTitle(questionId),
+            category: meta?.categoryName || categorize(questionId),
+            categoryId: meta?.categoryId || null,
+            active: meta?.active !== false,
+            isDraft: false,
+            answered: agg?.answered || 0,
+            correctRate: agg ? agg.correctRate : null,
+        });
+    });
+    for (const meta of metaMap.values()) {
+        if (!meta.isDraft) continue;
+        items.push({
+            questionId: meta.questionId,
+            questionIndex: null,
+            title: meta.title || meta.questionId,
+            category: meta.categoryName || 'Diğer',
+            categoryId: meta.categoryId || null,
+            active: false,
+            isDraft: true,
+            answered: 0,
+            correctRate: null,
+        });
+    }
+
+    let filtered = items;
+    if (search) {
+        const q = String(search).toLowerCase();
+        filtered = filtered.filter(it => it.title.toLowerCase().includes(q) || it.questionId.toLowerCase().includes(q));
+    }
+    if (categoryId) {
+        filtered = filtered.filter(it => it.category === categoryName);
+    }
+    if (active === 'active') filtered = filtered.filter(it => it.active && !it.isDraft);
+    else if (active === 'passive') filtered = filtered.filter(it => !it.active && !it.isDraft);
+    else if (active === 'draft') filtered = filtered.filter(it => it.isDraft);
+
+    const dir = sortDirection === 'desc' ? -1 : 1;
+    if (sortBy === 'correctRate') {
+        filtered.sort((a, b) => dir * ((a.correctRate ?? -1) - (b.correctRate ?? -1)));
+    } else if (sortBy === 'title') {
+        filtered.sort((a, b) => dir * a.title.localeCompare(b.title, 'tr'));
+    } else {
+        filtered.sort((a, b) => dir * ((a.questionIndex ?? 9999) - (b.questionIndex ?? 9999)));
+    }
+
+    const size = toIntParam(pageSize, 25, 1, 200);
+    const pageNum = toIntParam(page, 1, 1, Number.MAX_SAFE_INTEGER);
+    const total = filtered.length;
+    const totalPages = Math.max(Math.ceil(total / size), 1);
+    const offset = (pageNum - 1) * size;
+
+    return {
+        items: filtered.slice(offset, offset + size),
+        total,
+        page: pageNum,
+        pageSize: size,
+        totalPages,
+    };
+}
+
+async function getAdminQuestionDetail(questionId) {
+    const metaMap = await getQuestionMetaMap();
+    const meta = metaMap.get(questionId);
+    const isReal = EXAM_QUESTIONS.includes(questionId);
+    if (!isReal && !meta) return null;
+
+    const detail = await getQuestionDetail({ questionId, teacherId: null });
+    return {
+        questionId,
+        questionIndex: isReal ? EXAM_QUESTIONS.indexOf(questionId) : null,
+        title: meta?.title || (isReal ? questionTitle(questionId) : questionId),
+        category: meta?.categoryName || (isReal ? categorize(questionId) : 'Diğer'),
+        categoryId: meta?.categoryId || null,
+        active: isReal ? meta?.active !== false : false,
+        isDraft: !isReal,
+        answered: isReal ? detail.answered : 0,
+        correctRate: isReal ? detail.correctRate : null,
+        correct: isReal ? detail.correct : 0,
+        wrong: isReal ? detail.wrong : 0,
+        wrongStudents: isReal ? detail.wrongStudents : [],
+        correctStudents: isReal ? detail.correctStudents : [],
+    };
+}
+
+/** Gerçek bir sorunun (150'den biri) veya bir taslağın metadata'sını günceller. Taslaklar asla 'aktif' olamaz — canlı sınavda hiçbir zaman yer almazlar. */
+async function updateQuestionMeta(questionId, { categoryId, active, title }) {
+    const isReal = EXAM_QUESTIONS.includes(questionId);
+    const existing = (await getQuestionMetaMap()).get(questionId);
+    if (!isReal && !existing) {
+        const err = new Error('Soru bulunamadı.');
+        err.code = 'NOT_FOUND';
+        throw err;
+    }
+    const isDraft = existing ? existing.isDraft : false;
+    if (isDraft && active === true) {
+        const err = new Error('Taslak sorular canlı sınavda henüz yer alamaz — önce gerçek bir soru component\'i olarak eklenmesi gerekir.');
+        err.code = 'DRAFT_CANNOT_ACTIVATE';
+        throw err;
+    }
+
+    const nextCategoryId = categoryId !== undefined ? categoryId : (existing?.categoryId ?? null);
+    const nextActive = active !== undefined ? active : (existing ? existing.active : true);
+    const nextTitle = title !== undefined ? title : (existing?.title ?? null);
+
+    await pool.query(
+        `INSERT INTO question_meta (question_id, category_id, active, is_draft, title, updated_at)
+         VALUES ($1, $2, $3, $4, $5, now())
+         ON CONFLICT (question_id) DO UPDATE SET
+             category_id = EXCLUDED.category_id,
+             active = EXCLUDED.active,
+             title = EXCLUDED.title,
+             updated_at = now()`,
+        [questionId, nextCategoryId, nextActive, isDraft, nextTitle]
+    );
+
+    return getAdminQuestionDetail(questionId);
+}
+
+/** "+ Yeni Soru" — yalnızca bir metadata/taslak kaydı oluşturur; gerçek interaktif içerik
+ * (görsel/mantık) yoktur, bu yüzden asla sınava dahil edilmez (bkz. getActiveExamQuestionIds). */
+async function createDraftQuestion({ title, categoryId }) {
+    const questionId = `taslak-${uuid().slice(0, 8)}`;
+    await pool.query(
+        `INSERT INTO question_meta (question_id, category_id, active, is_draft, title)
+         VALUES ($1, $2, false, true, $3)`,
+        [questionId, categoryId || null, title]
+    );
+    return getAdminQuestionDetail(questionId);
+}
+
+async function deleteDraftQuestion(questionId) {
+    const { rows } = await pool.query(
+        'SELECT is_draft FROM question_meta WHERE question_id = $1',
+        [questionId]
+    );
+    if (!rows[0] || !rows[0].is_draft) {
+        const err = new Error('Yalnızca taslak sorular silinebilir — gerçek sorular yalnızca pasifleştirilebilir.');
+        err.code = 'NOT_DELETABLE';
+        throw err;
+    }
+    await pool.query('DELETE FROM question_meta WHERE question_id = $1', [questionId]);
+}
+
 module.exports = {
     pool,
     migrate,
@@ -801,4 +1165,14 @@ module.exports = {
     studentsOfTeacher,
     getQuestionStats,
     getQuestionDetail,
+    questionsForAttempt,
+    listCategories,
+    createCategory,
+    renameCategory,
+    deleteCategory,
+    listAdminQuestions,
+    getAdminQuestionDetail,
+    updateQuestionMeta,
+    createDraftQuestion,
+    deleteDraftQuestion,
 };

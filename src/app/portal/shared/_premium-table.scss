@@ -54,4 +54,14 @@
             color: $p-text-muted;
         }
     }
+
+    // Boş başlıklı işlem sütunu, tablo %100 genişlikte olduğu için kalan tüm
+    // boşluğu üstüne alıp butonları sağa doğru kaydırıyordu — sabit bir
+    // genişlik (buton grubuna yetecek kadar) vererek daraltılır, kalan
+    // boşluk isim sütununa gider (öğrenci tablosundakiyle aynı, dolu/kompakt
+    // görünüm). width:1% + nowrap kullanılmadı çünkü .actions-cell flex
+    // kapsayıcısı bu durumda büzülüp butonların komşu sütuna taşmasına yol açıyordu.
+    .col-actions {
+        width: 140px;
+    }
 }

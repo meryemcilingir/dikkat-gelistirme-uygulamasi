@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TeacherService } from '../../../core/services/teacher.service';
@@ -10,6 +10,7 @@ import { USER_FIELD_LIMITS, validateUserFields, validateEditFields, validateNewP
 import { STUDENT_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
 import { studentFilterChips, FilterChip } from '../../../core/models/list-filters';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
+import { FloatingMenuDirective } from '../../shared/floating-menu.directive';
 
 const PAGE_SIZE = 25;
 
@@ -20,13 +21,14 @@ const PAGE_SIZE = 25;
 @Component({
     selector: 'app-teacher-students',
     standalone: true,
-    imports: [CommonModule, FormsModule, PaginationComponent],
+    imports: [CommonModule, FormsModule, PaginationComponent, FloatingMenuDirective],
     templateUrl: './teacher-students.component.html',
     styleUrl: './teacher-students.component.scss',
 })
 export class TeacherStudentsComponent implements OnInit {
     private teacherApi = inject(TeacherService);
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
 
     readonly studentPage = signal<PagedResult<StudentWithExam> | null>(null);
     readonly loading = signal(true);
@@ -69,6 +71,14 @@ export class TeacherStudentsComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
+        /** Genel Bakış'taki başarı dağılımı grafiğinden bir sütuna tıklanıp gelindiyse, o puan aralığı URL'den okunur. */
+        const requestedScoreMin = this.route.snapshot.queryParamMap.get('scoreMin');
+        const requestedScoreMax = this.route.snapshot.queryParamMap.get('scoreMax');
+        if (requestedScoreMin || requestedScoreMax) {
+            if (requestedScoreMin) this.query.scoreMin = Number(requestedScoreMin);
+            if (requestedScoreMax) this.query.scoreMax = Number(requestedScoreMax);
+            this.query.status = 'Completed';
+        }
         await this.reload(1);
     }
 

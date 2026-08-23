@@ -1,34 +1,50 @@
 <div class="exam-home">
-    <div class="topbar-actions">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="topbar">
+        <div class="topbar-brand">
+            <span class="brand-mark">DG</span>
+            <span class="brand-name">Dikkat Geliştirme</span>
+        </div>
         <button class="logout-btn" (click)="logout()">Çıkış Yap</button>
     </div>
 
-    <div class="hero-card" *ngIf="!loading()">
-        <ng-container *ngIf="status() !== 'Completed'; else completedTpl">
-            <h1>Merhaba {{ firstName }}!</h1>
+    <ng-container *ngIf="!loading()">
+        <!-- ── Dashboard: "Sınavlarım" tek kart ── -->
+        <div class="dashboard-wrap" *ngIf="!showInfo()">
+            <h1 class="greeting">Merhaba {{ firstName }}!</h1>
+            <h2 class="section-title">Sınavlarım</h2>
 
-            <ng-container [ngSwitch]="status()">
-                <p class="subtitle" *ngSwitchCase="'Assigned'">Sınavım hazır, başlayabilirsin!</p>
-                <p class="subtitle" *ngSwitchCase="'InProgress'">Kaldığın yerden devam edebilirsin.</p>
-            </ng-container>
+            <button class="exam-card" (click)="openInfo()">
+                <span class="exam-card-icon">📝</span>
+                <span class="exam-card-body">
+                    <span class="exam-card-title">Dikkat Geliştirme Testi</span>
+                    <span class="exam-card-status" [class]="status()">{{ statusLabel }}</span>
+                    <div class="progress-wrap" *ngIf="status() === 'InProgress'">
+                        <div class="progress-bar"><div class="progress-fill" [style.width.%]="progressPct"></div></div>
+                        <span class="progress-label">Soru {{ currentIndex() }} / {{ total() }}</span>
+                    </div>
+                </span>
+                <span class="exam-card-arrow">→</span>
+            </button>
+        </div>
 
-            <div class="progress-wrap" *ngIf="status() !== 'Assigned'">
-                <div class="progress-bar">
-                    <div class="progress-fill" [style.width.%]="(currentIndex() / total()) * 100"></div>
-                </div>
-                <span class="progress-label">Soru {{ currentIndex() }} / {{ total() }}</span>
-            </div>
-
+        <!-- ── Sınava girmeden önce bilgi kartı ── -->
+        <div class="info-card" *ngIf="showInfo()">
+            <button class="back-link" (click)="closeInfo()">← Geri</button>
+            <span class="info-emoji">🧠</span>
+            <h1>Dikkat Geliştirme Testi</h1>
+            <ul class="info-list">
+                <li>Toplam {{ total() }} soru var.</li>
+                <li>Her soruyu dikkatlice oku ve işaretle — cevabın otomatik kaydedilip bir sonrakine geçer.</li>
+                <li>Bir kez işaretledikten sonra geri dönüp değiştiremezsin.</li>
+            </ul>
             <button class="big-btn" (click)="start()">
                 <span *ngIf="status() === 'Assigned'">Başla</span>
                 <span *ngIf="status() === 'InProgress'">Devam Et</span>
             </button>
-        </ng-container>
-
-        <ng-template #completedTpl>
-            <h1>Tebrikler {{ firstName }}!</h1>
-            <p class="subtitle">Testi bitirdin.</p>
-            <p class="subtitle">Sonucun öğretmen tarafından değerlendirilecek.</p>
-        </ng-template>
-    </div>
+        </div>
+    </ng-container>
 </div>

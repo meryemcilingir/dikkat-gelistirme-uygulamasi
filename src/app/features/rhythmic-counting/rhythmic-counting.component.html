@@ -22,7 +22,7 @@
 
                 <!-- Input Alanları (Boş Daireler) -->
                 @if (item.isMissing) {
-                <input #answerInput type="text" inputmode="numeric" maxlength="2" class="circle input-circle"
+                <input #answerInput type="text" inputmode="numeric" maxlength="2" appNumericOnly class="circle input-circle"
                     [class.show-hint]="showHints && item.userInput === null" [class.shake]="item.isShaking"
                     [class.error]="item.isError" [style.background-color]="isNextUnlocked ? row.color : 'transparent'"
                     [style.color]="item.isError ? '#e55039' : (isNextUnlocked ? 'white' : row.color)"

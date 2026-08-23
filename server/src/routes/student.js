@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('../db');
 const { authenticate, requireRole } = require('../auth');
-const { EXAM_QUESTIONS } = require('../examQuestions');
 const { scoreForAttempt } = require('../scoring');
 const { asyncHandler } = require('../asyncHandler');
 
@@ -18,7 +17,7 @@ router.get('/exam', asyncHandler(async (req, res) => {
         isCorrect: a.isCorrect,
         score: a.score,
     }));
-    res.json({ attempt, questions: EXAM_QUESTIONS, answers });
+    res.json({ attempt, questions: db.questionsForAttempt(attempt), answers });
 }));
 
 router.post('/exam/answer', asyncHandler(async (req, res) => {

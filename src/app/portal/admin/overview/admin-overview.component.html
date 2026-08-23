@@ -46,7 +46,7 @@
 
     <!-- B — Dikkat Gerektirenler / C — Sınav Durumu -->
     <div class="dash-row">
-        <div class="col-7 panel-card dash-card" *ngIf="hasAttentionItems">
+        <div class="col-6 panel-card dash-card" *ngIf="hasAttentionItems">
             <div class="panel-title">Dikkat Gerektirenler</div>
             <div class="panel-card-body action-list">
                 <button class="action-item danger" *ngIf="o.examSummary.notStarted > 0" (click)="viewStudents('Assigned')">
@@ -75,7 +75,7 @@
                 </button>
             </div>
         </div>
-        <div class="col-7 panel-card dash-card" *ngIf="!hasAttentionItems">
+        <div class="col-6 panel-card dash-card" *ngIf="!hasAttentionItems">
             <div class="panel-title">Dikkat Gerektirenler</div>
             <div class="panel-card-body">
                 <div class="insight-block info" style="margin-bottom: 0;">
@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        <div class="col-5 panel-card dash-card">
+        <div class="col-6 panel-card dash-card">
             <div class="panel-title">Sınav Durumu</div>
             <div class="panel-card-body">
                 <div class="segmented-bar">
@@ -121,22 +121,22 @@
             <div class="panel-card-body">
                 <ng-container *ngIf="o.examSummary.completed > 0; else noScores">
                     <div class="column-chart">
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(0, 25)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range0_25 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
                             <span class="column-chart-label">0–25</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(26, 50)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range26_50 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
                             <span class="column-chart-label">26–50</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(51, 75)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range51_75 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
                             <span class="column-chart-label">51–75</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(76, 100)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range76_100 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
                             <span class="column-chart-label">76–100</span>
@@ -179,7 +179,7 @@
 
     <!-- F — Öğretmen Durumu / H — Son Aktiviteler -->
     <div class="dash-row">
-        <div class="col-7 panel-card dash-card">
+        <div class="col-6 panel-card dash-card">
             <div class="panel-title">Öğretmen Durumu</div>
             <div class="panel-card-body">
                 <div class="empty-state" *ngIf="!teacherSummary().length">
@@ -211,7 +211,7 @@
             </div>
         </div>
 
-        <div class="col-5 panel-card dash-card">
+        <div class="col-6 panel-card dash-card">
             <div class="panel-title">Son Aktiviteler</div>
             <div class="panel-card-body">
                 <div class="empty-state" *ngIf="!o.recentActivity.length">
@@ -225,7 +225,7 @@
                             <span class="activity-feed-title"><strong>{{ a.firstName }} {{ a.lastName }}</strong> sınavı tamamladı</span>
                             <span class="activity-feed-time">{{ timeAgo(a.completedAt) }}</span>
                         </span>
-                        <span class="activity-feed-score">{{ a.finalScore ?? '—' }}%</span>
+                        <span class="activity-feed-score">{{ a.correctCount }} / {{ a.totalQuestions }}</span>
                     </div>
                 </div>
             </div>

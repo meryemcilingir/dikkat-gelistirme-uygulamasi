@@ -6,6 +6,7 @@ import { FeedbackService } from '../../core/services/feedback.service';
 import { HintService } from '../../core/services/hint.service';
 import { ActionButtonsComponent } from '../../shared/action-buttons/action-buttons.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { NumericOnlyDirective } from '../../shared/numeric-only.directive';
 
 export interface MathRow {
   id: number;
@@ -26,7 +27,7 @@ const ID = 'count-and-add';
 @Component({
   selector: 'app-count-and-add',
   standalone: true,
-  imports: [CommonModule, ActionButtonsComponent, ActivityHeaderComponent],
+  imports: [CommonModule, ActionButtonsComponent, ActivityHeaderComponent, NumericOnlyDirective],
   templateUrl: './count-and-add.component.html',
   styleUrl: './count-and-add.component.scss'
 })

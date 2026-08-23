@@ -9,18 +9,20 @@ import { AppUser, PagedResult, TeacherQuery, TeacherWithCount } from '../../../c
 import { USER_FIELD_LIMITS, validateUserFields, validateEditFields, validateNewPassword } from '../../../core/models/user-limits';
 import { TEACHER_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
-import { PortalIconComponent } from '../../shared/icon/portal-icon.component';
+import { FloatingMenuDirective } from '../../shared/floating-menu.directive';
 
 const PAGE_SIZE = 25;
 
 /**
  * Yönetici paneli — Öğretmenler sekmesi. Kendi listesini, formlarını ve
  * sayfalamasını kendi yönetir; Öğrenciler/Genel Bakış sekmelerinden bağımsızdır.
+ * Görünüm ve mobil davranış (metric-strip/list-toolbar/responsive tablo +
+ * bottom sheet) kasıtlı olarak Öğrenciler sekmesiyle birebir aynıdır.
  */
 @Component({
     selector: 'app-admin-teachers',
     standalone: true,
-    imports: [CommonModule, FormsModule, PaginationComponent, PortalIconComponent],
+    imports: [CommonModule, FormsModule, PaginationComponent, FloatingMenuDirective],
     templateUrl: './admin-teachers.component.html',
     styleUrl: './admin-teachers.component.scss',
 })
@@ -102,8 +104,7 @@ export class AdminTeachersComponent implements OnInit {
         return this.query.sortDirection === 'asc' ? '▲' : '▼';
     }
 
-    toggleFilters(event: MouseEvent): void {
-        event.stopPropagation();
+    toggleFilters(): void {
         this.showFilters.update(v => !v);
     }
 
@@ -138,7 +139,6 @@ export class AdminTeachersComponent implements OnInit {
     @HostListener('document:click')
     closeMenu(): void {
         this.openMenuId.set(null);
-        this.showFilters.set(false);
     }
 
     private closePanels(): void {
@@ -250,5 +250,25 @@ export class AdminTeachersComponent implements OnInit {
         } finally {
             this.resetSaving.set(false);
         }
+    }
+
+    // ── Mobil: satıra dokununca açılan detay bottom sheet'i ────
+    // Masaüstünde davranış hiç değişmesin diye yalnızca mobil genişlikte tetiklenir.
+    readonly selectedTeacher = signal<TeacherWithCount | null>(null);
+
+    openTeacherSheet(t: TeacherWithCount): void {
+        if (window.innerWidth > 640) return;
+        this.selectedTeacher.set(t);
+    }
+
+    closeTeacherSheet(): void {
+        this.selectedTeacher.set(null);
+    }
+
+    goToDetailFromSheet(): void {
+        const t = this.selectedTeacher();
+        if (!t) return;
+        this.closeTeacherSheet();
+        this.openDetail(t);
     }
 }

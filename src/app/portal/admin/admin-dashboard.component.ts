@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { PortalShellComponent, ShellNavSection } from '../shared/shell/portal-shell.component';
+import { ADMIN_NAV_SECTIONS } from '../shared/portal-nav.config';
 
 /**
  * Yönetici paneli kabuğu — sidebar + topbar için ortak <app-portal-shell>
@@ -21,24 +22,7 @@ export class AdminDashboardComponent {
 
     readonly userName = `${this.auth.currentUser()?.firstName ?? ''} ${this.auth.currentUser()?.lastName ?? ''}`.trim();
 
-    readonly sections: ShellNavSection[] = [
-        { label: 'Genel', items: [{ label: 'Genel Bakış', icon: 'grid', link: '/admin/overview' }] },
-        {
-            label: 'Yönetim',
-            items: [
-                { label: 'Öğretmenler', icon: 'users', link: '/admin/teachers' },
-                { label: 'Öğrenciler', icon: 'user', link: '/admin/students' },
-                { label: 'Sınav Yönetimi', icon: 'clipboard-check', link: '/admin/exams' },
-            ],
-        },
-        {
-            label: 'Analitik',
-            items: [
-                { label: 'Soru Analizi', icon: 'chart', link: '/admin/questions' },
-            ],
-        },
-        { label: 'Sistem', items: [{ label: 'Ayarlar', icon: 'settings', link: '/admin/settings' }] },
-    ];
+    readonly sections: ShellNavSection[] = ADMIN_NAV_SECTIONS;
 
     openChangePassword(): void {
         this.auth.openChangePassword();

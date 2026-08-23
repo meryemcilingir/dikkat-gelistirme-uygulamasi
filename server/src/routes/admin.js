@@ -2,7 +2,6 @@ const express = require('express');
 const db = require('../db');
 const { authenticate, requireRole, publicUser } = require('../auth');
 const { validateUserFields, validatePartialUserFields } = require('../validate');
-const { EXAM_QUESTIONS } = require('../examQuestions');
 const { categorize } = require('../questionCategories');
 const { asyncHandler } = require('../asyncHandler');
 
@@ -118,7 +117,7 @@ router.get('/students/:id/exam', asyncHandler(async (req, res) => {
     res.json({
         student: publicUser(student),
         attempt,
-        questions: EXAM_QUESTIONS,
+        questions: db.questionsForAttempt(attempt),
         answers: answers.map(a => ({ ...a, category: categorize(a.questionId) })),
     });
 }));
@@ -145,6 +144,103 @@ router.get('/question-stats/:questionId', asyncHandler(async (req, res) => {
     const { teacherId } = req.query;
     const detail = await db.getQuestionDetail({ questionId: req.params.questionId, teacherId: teacherId || null });
     res.json(detail);
+}));
+
+// ── Sınav Yönetimi: Sorular ────────────────────────────────
+// Not: "Soru Analizi" (yukarıdaki question-stats) tamamen ayrı, salt-okunur
+// bir analitik ekranı — burası yönetici tarafından düzenlenebilir metadata
+// (kategori ataması, aktif/pasif, taslak soru) için.
+
+router.get('/questions', asyncHandler(async (req, res) => {
+    const { search, categoryId, active, sortBy, sortDirection, page, pageSize } = req.query;
+    const result = await db.listAdminQuestions({ search, categoryId, active, sortBy, sortDirection, page, pageSize });
+    res.json(result);
+}));
+
+router.get('/questions/:id', asyncHandler(async (req, res) => {
+    const detail = await db.getAdminQuestionDetail(req.params.id);
+    if (!detail) return res.status(404).json({ error: 'Soru bulunamadı.' });
+    res.json(detail);
+}));
+
+router.post('/questions', asyncHandler(async (req, res) => {
+    const { title, categoryId } = req.body || {};
+    if (typeof title !== 'string' || title.trim().length < 3 || title.trim().length > 100) {
+        return res.status(400).json({ error: 'Başlık 3-100 karakter olmalıdır.' });
+    }
+    const created = await db.createDraftQuestion({ title: title.trim(), categoryId: categoryId || null });
+    res.status(201).json(created);
+}));
+
+router.patch('/questions/:id', asyncHandler(async (req, res) => {
+    const { categoryId, active, title } = req.body || {};
+    if (title !== undefined && (typeof title !== 'string' || title.trim().length < 3 || title.trim().length > 100)) {
+        return res.status(400).json({ error: 'Başlık 3-100 karakter olmalıdır.' });
+    }
+    try {
+        const updated = await db.updateQuestionMeta(req.params.id, {
+            categoryId, active, title: title !== undefined ? title.trim() : undefined,
+        });
+        res.json(updated);
+    } catch (err) {
+        if (err.code === 'NOT_FOUND') return res.status(404).json({ error: err.message });
+        if (err.code === 'DRAFT_CANNOT_ACTIVATE') return res.status(400).json({ error: err.message });
+        throw err;
+    }
+}));
+
+router.delete('/questions/:id', asyncHandler(async (req, res) => {
+    try {
+        await db.deleteDraftQuestion(req.params.id);
+        res.status(204).end();
+    } catch (err) {
+        if (err.code === 'NOT_DELETABLE') return res.status(400).json({ error: err.message });
+        throw err;
+    }
+}));
+
+// ── Sınav Yönetimi: Kategoriler ─────────────────────────────
+
+router.get('/categories', asyncHandler(async (req, res) => {
+    res.json(await db.listCategories());
+}));
+
+router.post('/categories', asyncHandler(async (req, res) => {
+    const { name } = req.body || {};
+    if (typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 40) {
+        return res.status(400).json({ error: 'Kategori adı 2-40 karakter olmalıdır.' });
+    }
+    try {
+        res.status(201).json(await db.createCategory(name.trim()));
+    } catch (err) {
+        if (err.code === '23505') return res.status(409).json({ error: 'Bu isimde bir kategori zaten var.' });
+        throw err;
+    }
+}));
+
+router.patch('/categories/:id', asyncHandler(async (req, res) => {
+    const { name } = req.body || {};
+    if (typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 40) {
+        return res.status(400).json({ error: 'Kategori adı 2-40 karakter olmalıdır.' });
+    }
+    try {
+        const updated = await db.renameCategory(req.params.id, name.trim());
+        if (!updated) return res.status(404).json({ error: 'Kategori bulunamadı.' });
+        res.json(updated);
+    } catch (err) {
+        if (err.code === '23505') return res.status(409).json({ error: 'Bu isimde bir kategori zaten var.' });
+        throw err;
+    }
+}));
+
+router.delete('/categories/:id', asyncHandler(async (req, res) => {
+    try {
+        await db.deleteCategory(req.params.id);
+        res.status(204).end();
+    } catch (err) {
+        if (err.code === 'CATEGORY_IN_USE') return res.status(409).json({ error: err.message });
+        throw err;
+    }
 }));
 
 module.exports = router;

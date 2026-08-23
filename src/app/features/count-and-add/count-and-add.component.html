@@ -32,7 +32,7 @@
                 <div class="math-sign">=</div>
 
                 <!-- Answer Input -->
-                <input type="text" inputmode="numeric" maxlength="2" class="answer-input hover"
+                <input type="text" inputmode="numeric" maxlength="2" appNumericOnly class="answer-input hover"
                     [class.show-hint]="showHints && userAnswers[row.id] === null" [class.error]="row.isError"
                     [class.shake]="row.isShaking" [value]="userAnswers[row.id] !== null ? userAnswers[row.id] : ''"
                     [placeholder]="(showHints && userAnswers[row.id] === null) ? row.target : ''"

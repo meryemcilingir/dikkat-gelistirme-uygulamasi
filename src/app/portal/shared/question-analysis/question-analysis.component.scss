@@ -4,6 +4,21 @@
     margin-bottom: 20px;
 }
 
+// ── "En Çok Zorlanılan Sorular" / "Kategori Bazlı Başarı" panelleri artık
+// sabit ilk-5'e kesmek yerine tamamını listeler; taşmayı burada tutuyoruz
+// ki iki panelin yüksekliği birbirine göre bozulmasın.
+.scroll-list {
+    max-height: 340px;
+    overflow-y: auto;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+    }
+}
+
 .row-clickable {
     cursor: pointer;
 

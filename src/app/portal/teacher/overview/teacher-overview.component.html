@@ -42,7 +42,7 @@
 
     <!-- Dikkat Gerektiren Öğrenciler (%65) / Sınav Durumu (%35) -->
     <div class="dash-row">
-        <div class="col-8 panel-card dash-card card-animate-in">
+        <div class="col-6 panel-card dash-card card-animate-in">
             <div class="panel-title">Dikkat Gerektiren Öğrenciler</div>
             <div class="panel-card-body">
                 <div class="empty-state" *ngIf="!attentionStudents().length">
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div class="col-4 panel-card dash-card card-animate-in">
+        <div class="col-6 panel-card dash-card card-animate-in">
             <div class="panel-title">Sınav Durumu</div>
             <div class="panel-card-body">
                 <div class="segmented-bar">
@@ -96,22 +96,22 @@
             <div class="panel-card-body">
                 <ng-container *ngIf="o.examSummary.completed > 0; else noScores">
                     <div class="column-chart">
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(0, 25)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range0_25 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
                             <span class="column-chart-label">0–25</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(26, 50)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range26_50 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
                             <span class="column-chart-label">26–50</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(51, 75)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range51_75 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
                             <span class="column-chart-label">51–75</span>
                         </div>
-                        <div class="column-chart-col">
+                        <div class="column-chart-col clickable" (click)="viewStudentsByScore(76, 100)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range76_100 }}</span>
                             <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
                             <span class="column-chart-label">76–100</span>
@@ -176,7 +176,7 @@
                         <tbody>
                             <tr *ngFor="let s of completedExams()" class="row-clickable" (click)="openStudent(s)">
                                 <td>{{ s.firstName }} {{ s.lastName }}</td>
-                                <td>{{ s.exam.finalScore ?? '—' }}%</td>
+                                <td>{{ s.exam.correctCount }} / {{ s.exam.total }}</td>
                                 <td>{{ formatDuration(s.exam.totalTimeSeconds) }}</td>
                                 <td class="actions-cell">
                                     <button class="link-btn review" (click)="openStudent(s); $event.stopPropagation()">İncele</button>
@@ -191,7 +191,7 @@
                     <div class="entity-card" *ngFor="let s of completedExams()" (click)="openStudent(s)">
                         <div class="entity-card-head">
                             <div class="entity-card-name">{{ s.firstName }} {{ s.lastName }}</div>
-                            <span class="entity-card-username">{{ s.exam.finalScore ?? '—' }}%</span>
+                            <span class="entity-card-username">{{ s.exam.correctCount }} / {{ s.exam.total }}</span>
                         </div>
                         <div class="entity-card-stats">
                             <div class="entity-card-stat">

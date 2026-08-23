@@ -142,7 +142,7 @@
                 <td class="col-dy"><span class="ok">{{ s.exam.correctCount ?? 0 }}</span> / <span class="bad">{{ s.exam.wrongCount ?? 0 }}</span></td>
                 <td class="col-score">
                     <div class="score-cell">
-                        <span>{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+                        <span>{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
                         <div class="rate-bar" *ngIf="s.exam.correctRate !== null && s.exam.correctRate !== undefined">
                             <div class="rate-bar-fill" [style.width.%]="s.exam.correctRate"></div>
                         </div>
@@ -152,7 +152,7 @@
                     <button class="link-btn review" (click)="openReview(s.id); $event.stopPropagation()">İncele</button>
                     <div class="action-menu">
                         <button class="action-menu-trigger" (click)="toggleMenu(s.id, $event)" aria-label="Diğer işlemler">⋯</button>
-                        <div class="action-menu-dropdown" *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
+                        <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
                             <button (click)="startEdit(s); closeMenu()">Düzenle</button>
                             <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
                         </div>
@@ -186,7 +186,7 @@
             </div>
             <div>
                 <span class="label">Puan</span>
-                <span class="value">{{ s.exam.status === 'Completed' ? (s.exam.finalScore + ' / 100') : '—' }}</span>
+                <span class="value">{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
             </div>
             <div>
                 <span class="label">Doğru</span>

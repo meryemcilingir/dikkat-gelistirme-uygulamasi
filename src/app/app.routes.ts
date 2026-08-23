@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard, studentExamGuard } from './core/guards/auth.guard';
 
-const examRoutes: Routes = [
+// `.map(...)` her satırı preload=true olarak işaretler — bkz. ExamPreloadStrategy:
+// bu 150+ küçük soru chunk'ı uygulama açılır açılmaz arkaplanda indirilir, böylece
+// öğrenci bir sonraki soruya geçerken chunk indirme gecikmesi/boşluğu yaşanmaz.
+const examRoutesRaw: Routes = [
     { path: 'pattern', loadComponent: () => import('./features/pattern-matching/pattern-matching.component').then(m => m.PatternMatchingComponent) },
     { path: 'odd-direction', loadComponent: () => import('./features/odd-direction/odd-direction.component').then(m => m.OddDirectionComponent) },
     { path: 'shade-sorting', loadComponent: () => import('./features/shade-sorting/shade-sorting.component').then(m => m.ShadeSortingComponent) },
@@ -155,6 +158,8 @@ const examRoutes: Routes = [
     { path: 'end', loadComponent: () => import('./features/end-page/end-page.component').then(m => m.EndPageComponent) },
 ];
 
+export const examRoutes: Routes = examRoutesRaw.map(r => ({ ...r, data: { ...r.data, preload: true } }));
+
 export const routes: Routes = [
     {
         path: '',
@@ -175,7 +180,9 @@ export const routes: Routes = [
             { path: 'teachers', loadComponent: () => import('./portal/admin/teachers/admin-teachers.component').then(m => m.AdminTeachersComponent) },
             { path: 'students', loadComponent: () => import('./portal/admin/students/admin-students.component').then(m => m.AdminStudentsComponent) },
             { path: 'questions', loadComponent: () => import('./portal/admin/questions/admin-questions.component').then(m => m.AdminQuestionsComponent) },
-            { path: 'exams', loadComponent: () => import('./portal/admin/exams/admin-exams.component').then(m => m.AdminExamsComponent) },
+            // Eski "Sınav Yönetimi" adresi — içeriği artık /admin/questions
+            // sekmelerinde; kayıtlı bağlantılar kırılmasın diye yönlendiriliyor.
+            { path: 'exams', pathMatch: 'full', redirectTo: 'questions' },
             { path: 'settings', loadComponent: () => import('./portal/admin/settings/admin-settings.component').then(m => m.AdminSettingsComponent) },
             { path: 'teachers/:id', loadComponent: () => import('./portal/admin/admin-teacher-detail.component').then(m => m.AdminTeacherDetailComponent) },
         ],

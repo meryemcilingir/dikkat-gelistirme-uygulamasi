@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { PortalShellComponent, ShellNavSection } from '../shared/shell/portal-shell.component';
+import { TEACHER_NAV_SECTIONS } from '../shared/portal-nav.config';
 
 /**
  * Öğretmen paneli kabuğu — sidebar + topbar için ortak <app-portal-shell>
@@ -20,11 +21,7 @@ export class TeacherDashboardComponent {
 
     readonly userName = `${this.auth.currentUser()?.firstName ?? ''} ${this.auth.currentUser()?.lastName ?? ''}`.trim();
 
-    readonly sections: ShellNavSection[] = [
-        { label: 'Genel', items: [{ label: 'Genel Bakış', icon: 'grid', link: '/teacher/overview' }] },
-        { label: 'Öğrenciler', items: [{ label: 'Öğrencilerim', icon: 'users', link: '/teacher/students' }] },
-        { label: 'Analitik', items: [{ label: 'Soru Analizi', icon: 'clipboard-check', link: '/teacher/questions' }] },
-    ];
+    readonly sections: ShellNavSection[] = TEACHER_NAV_SECTIONS;
 
     openChangePassword(): void {
         this.auth.openChangePassword();

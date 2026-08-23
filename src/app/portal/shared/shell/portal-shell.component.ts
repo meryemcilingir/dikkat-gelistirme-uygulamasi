@@ -97,6 +97,15 @@ export class PortalShellComponent {
         });
     }
 
+    /** Sidebar başlığındaki tek hamburger: mobilde drawer'ı kapatır, masaüstünde daralt/genişlet yapar. */
+    onHamburgerClick(): void {
+        if (window.innerWidth <= 900) {
+            this.sidebarOpen.set(false);
+        } else {
+            this.toggleCollapse();
+        }
+    }
+
     onChangePassword(): void {
         this.closeUserMenu();
         this.changePassword.emit();

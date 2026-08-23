@@ -1,0 +1,751 @@
+@use 'sass:color';
+@use '../../shared/portal' as *;
+@use '../../shared/portal-tokens' as *;
+@use '../../shared/kpi-strip' as *;
+@use '../../shared/dash-grid' as *;
+@use '../../shared/toolbar-compact' as *;
+@use '../../shared/premium-table' as *;
+@use '../../shared/entity-card' as *;
+
+// ══════════════════════════════════════════════════════════
+// Sorular — soru bankası yönetimi (Genel Bakış / Sorular /
+// Kategoriler / Analiz). Paylaşılan design system partial'ları
+// üzerine yalnızca bu ekrana özel öğeler: segmented sekme çubuğu,
+// soru numarası rozeti, durum pill'i, kategori kartları ve sağdan
+// açılan detay drawer'ı.
+// ══════════════════════════════════════════════════════════
+
+.desktop-only {
+    @media (max-width: 720px) { display: none; }
+}
+
+// Genel Bakış'taki "Kategori Bazlı Soru Dağılımı" listesi kategori sayısı
+// arttıkça uzayıp yanındaki "Sınav Durumu" kartını da (dash-grid'in
+// align-items:stretch'i yüzünden) gereksiz yere büyütüyordu — kart sabit
+// bir yükseklikte kalsın, liste kendi içinde kaysın (scrollbar görünürlüğü
+// _portal.scss'teki genel kuraldan gelir).
+.dash-card .hbar-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.mobile-only {
+    display: none;
+    @media (max-width: 720px) { display: flex; }
+}
+
+.muted { color: $p-text-muted; }
+
+// ── Segmented sekme çubuğu ───────────────────────────────────
+.seg-tabs {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    margin-bottom: $p-space-5;
+    background: $p-surface-muted;
+    border: 1px solid $p-border;
+    border-radius: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+        background: transparent;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 16px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+
+        &:hover:not(.active) { color: $p-text; }
+
+        &.active {
+            background: $p-surface;
+            color: $p-accent;
+            box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+        }
+    }
+}
+
+.seg-count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 20px;
+    background: $p-border;
+    color: $p-text-secondary;
+
+    .active & {
+        background: $p-accent-soft;
+        color: $p-accent;
+    }
+}
+
+// ── Kategori noktası / chip'i ────────────────────────────────
+.cat-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 7px;
+    vertical-align: 1px;
+
+    &.lg {
+        width: 10px;
+        height: 10px;
+        margin-right: 0;
+        vertical-align: 0;
+    }
+}
+
+.cat-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px 3px 9px;
+    border-radius: 20px;
+    background: $p-surface-muted;
+    border: 1px solid $p-border;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $p-text-secondary;
+    white-space: nowrap;
+}
+
+.dist-rate {
+    display: inline-block;
+    margin-left: 8px;
+    padding-left: 8px;
+    border-left: 1px solid $p-border;
+    font-weight: 700;
+    color: $p-text;
+}
+
+// ── Soru numarası rozeti ─────────────────────────────────────
+.q-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 26px;
+    padding: 0 7px;
+    border-radius: $p-radius-sm;
+    background: $p-surface-muted;
+    border: 1px solid $p-border;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $p-text-secondary;
+    font-variant-numeric: tabular-nums;
+
+    &.draft {
+        background: $p-warning-soft;
+        border-color: color.adjust($p-warning, $alpha: -0.75);
+        color: $p-warning;
+    }
+
+    &.lg {
+        min-width: 40px;
+        height: 36px;
+        font-size: 0.95rem;
+        border-radius: $p-radius-md;
+    }
+}
+
+// ── Durum pill'i (nokta + etiket) ────────────────────────────
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &.active {
+        background: $p-success-soft;
+        color: $p-success;
+        .status-dot { background: $p-success; }
+    }
+
+    &.passive {
+        background: $p-surface-muted;
+        color: $p-text-muted;
+        .status-dot { background: $p-text-muted; }
+    }
+
+    &.draft {
+        background: $p-warning-soft;
+        color: $p-warning;
+        .status-dot { background: $p-warning; }
+    }
+}
+
+// ── Sorular tablosu ──────────────────────────────────────────
+.q-table {
+    .col-no { width: 1%; white-space: nowrap; }
+    .col-type { width: 15%; font-size: 0.82rem; }
+    .col-rate { width: 12%; }
+
+    // Dar masaüstlerinde önce tekrar eden "Soru Tipi", sonra "Başarı" gizlenir —
+    // yatay kaydırmaya düşmeden okunabilirlik korunur.
+    @media (max-width: 1180px) { .col-type { display: none; } }
+    @media (max-width: 980px) { .col-rate { display: none; } }
+}
+
+.rate-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 56px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+// ── Araç çubuğu ek öğeleri ───────────────────────────────────
+.toolbar-compact .toolbar-search {
+    position: relative;
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $p-text-muted;
+        pointer-events: none;
+        display: flex;
+    }
+
+    input { padding-left: 34px; }
+}
+
+.toolbar-hint {
+    font-size: 0.82rem;
+    color: $p-text-muted;
+    margin: 0;
+}
+
+.filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    margin-left: 6px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: $p-accent;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+// ── Form yardımcıları ────────────────────────────────────────
+.form-note,
+.drawer-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px 13px;
+    border-radius: $p-radius-md;
+    background: $p-info-soft;
+    color: $p-text-secondary;
+    font-size: 0.82rem;
+    line-height: 1.5;
+
+    app-portal-icon {
+        color: $p-info;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    strong { color: $p-text; }
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: $p-space-3;
+    flex-wrap: wrap;
+}
+
+// ── Kategori kartları ────────────────────────────────────────
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.cat-card {
+    @include p-card;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    cursor: pointer;
+    transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+
+    &:hover:not(.editing) {
+        transform: translateY(-2px);
+        border-color: $p-border-strong;
+        box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05);
+
+        .cat-card-actions { opacity: 1; }
+        .cat-card-link { color: $p-accent; }
+    }
+
+    &.editing { cursor: default; }
+}
+
+.cat-card-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.cat-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $p-text;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cat-card-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 160ms ease;
+
+    // Dokunmatik cihazlarda hover yok — aksiyonlar her zaman görünür kalır.
+    @media (hover: none) { opacity: 1; }
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: $p-radius-sm;
+    border: 1px solid $p-border;
+    background: $p-surface;
+    color: $p-text-muted;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+
+    &:hover {
+        background: $p-surface-muted;
+        color: $p-text;
+        border-color: $p-border-strong;
+    }
+
+    &.danger:hover {
+        background: $p-danger-soft;
+        color: $p-danger;
+        border-color: color.adjust($p-danger, $alpha: -0.7);
+    }
+}
+
+.cat-card-stats {
+    display: flex;
+    gap: 22px;
+}
+
+.cat-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    .cat-stat-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: $p-text;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .cat-stat-label {
+        font-size: 0.75rem;
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+}
+
+.cat-card-link {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $p-text-muted;
+    transition: color 160ms ease;
+}
+
+.inline-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    input {
+        width: 100%;
+        font-family: inherit;
+        font-size: 0.88rem;
+        padding: 8px 11px;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        outline: none;
+
+        &:focus { border-color: $p-accent; }
+    }
+}
+
+.inline-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+// ── Detay drawer'ı (sağdan kayar) ────────────────────────────
+@keyframes p-scrim-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes p-drawer-in {
+    from { transform: translateX(28px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.drawer-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.32);
+    z-index: 600;
+    animation: p-scrim-in 180ms ease-out;
+}
+
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 601;
+    width: min(440px, 100%);
+    display: flex;
+    flex-direction: column;
+    background: $p-surface;
+    border-left: 1px solid $p-border;
+    font-family: $p-font;
+    animation: p-drawer-in 200ms ease-out;
+}
+
+.drawer-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $p-space-3;
+    padding: 18px 20px;
+    border-bottom: 1px solid $p-border;
+    flex-shrink: 0;
+}
+
+.drawer-head-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.drawer-title-block {
+    min-width: 0;
+
+    h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $p-text;
+        line-height: 1.3;
+    }
+}
+
+.drawer-slug {
+    display: block;
+    font-size: 0.75rem;
+    color: $p-text-muted;
+    margin-top: 1px;
+}
+
+.drawer-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.drawer-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.drawer-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $p-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+}
+
+.drawer-rate {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+}
+
+.drawer-rate-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $p-text;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.drawer-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 10px 12px;
+        border-radius: $p-radius-md;
+        background: $p-surface-muted;
+    }
+
+    .label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: $p-text-muted;
+    }
+
+    .value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $p-text;
+        font-variant-numeric: tabular-nums;
+
+        &.ok { color: $p-success; }
+        &.bad { color: $p-danger; }
+    }
+}
+
+.drawer-meta {
+    display: flex;
+    flex-direction: column;
+
+    > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $p-space-3;
+        padding: 9px 0;
+        border-bottom: 1px solid $p-border;
+        font-size: 0.85rem;
+
+        &:last-child { border-bottom: none; }
+    }
+
+    dt {
+        color: $p-text-muted;
+        font-weight: 600;
+    }
+
+    dd {
+        color: $p-text;
+        font-weight: 700;
+        text-align: right;
+    }
+}
+
+.drawer-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-weight: 600;
+        color: $p-text-secondary;
+        font-size: 0.82rem;
+    }
+
+    input,
+    select {
+        font-family: inherit;
+        font-size: 0.88rem;
+        padding: 9px 12px;
+        border-radius: $p-radius-md;
+        border: 1px solid $p-border;
+        background: $p-surface;
+        outline: none;
+
+        &:focus { border-color: $p-accent; }
+    }
+}
+
+.drawer-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-top: 1px solid $p-border;
+    background: $p-surface-muted;
+    flex-shrink: 0;
+}
+
+.secondary-btn.danger {
+    color: $p-danger;
+    border-color: color.adjust($p-danger, $alpha: -0.75);
+
+    &:hover {
+        background: $p-danger-soft;
+        border-color: $p-danger;
+    }
+}
+
+// ── Mobil kart listesi ek öğeleri ────────────────────────────
+.q-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.entity-card-stats.two {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 520px) {
+    .drawer { width: 100%; }
+
+    .cat-grid { grid-template-columns: 1fr; }
+
+    .toolbar-hint { display: none; }
+}
+
+// Hareket hassasiyeti olan kullanıcılar için tüm giriş/hover hareketleri kapanır;
+// renk/gölge geçişleri (anlam taşımayan, rahatsız etmeyen) korunur.
+@media (prefers-reduced-motion: reduce) {
+    .drawer,
+    .drawer-scrim,
+    .card-animate-in {
+        animation: none;
+    }
+
+    .cat-card:hover:not(.editing),
+    .hbar-row:hover,
+    .premium-table tr.row-clickable:hover {
+        transform: none;
+    }
+}
+
+// ── Kategori sil onayı: çıkış yap onayının admin/panel varyantıyla aynı dil ──
+@keyframes p-confirm-in {
+    from { opacity: 0; transform: scale(0.97) translateY(4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: rgba(17, 24, 39, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: p-confirm-in 140ms ease-out;
+}
+
+.confirm-card {
+    background: $p-surface;
+    border-radius: $p-radius-lg;
+    padding: 28px;
+    width: min(360px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(17, 24, 39, 0.18);
+    font-family: $p-font;
+
+    .question {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $p-text;
+        margin: 0;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        margin-top: 6px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 10px 0;
+        border-radius: $p-radius-md;
+        border: none;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: background-color 150ms ease;
+
+        &.cancel {
+            background: $p-surface-muted;
+            color: $p-text-secondary;
+
+            &:hover { background: $p-border; }
+        }
+
+        &.confirm {
+            background: $p-danger;
+            color: #fff;
+
+            &:hover { background: color.adjust($p-danger, $lightness: -6%); }
+        }
+    }
+}

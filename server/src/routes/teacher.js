@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('../db');
 const { authenticate, requireRole, publicUser } = require('../auth');
-const { EXAM_QUESTIONS } = require('../examQuestions');
 const { categorize } = require('../questionCategories');
 const { validateUserFields, validatePartialUserFields } = require('../validate');
 const { asyncHandler } = require('../asyncHandler');
@@ -74,7 +73,7 @@ router.get('/students/:id/exam', asyncHandler(async (req, res) => {
     res.json({
         student: publicUser(student),
         attempt,
-        questions: EXAM_QUESTIONS,
+        questions: db.questionsForAttempt(attempt),
         answers: answers.map(a => ({ ...a, category: categorize(a.questionId) })),
     });
 }));

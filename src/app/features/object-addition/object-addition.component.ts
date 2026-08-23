@@ -7,6 +7,7 @@ import { FeedbackService } from '../../core/services/feedback.service';
 import { HintService } from '../../core/services/hint.service';
 import { ActionButtonsComponent } from '../../shared/action-buttons/action-buttons.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { NumericOnlyDirective } from '../../shared/numeric-only.directive';
 
 export interface AdditionProblem {
     id: number;
@@ -30,7 +31,7 @@ const ID = 'object-addition';
 @Component({
     selector: 'app-object-addition',
     standalone: true,
-    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent],
+    imports: [CommonModule, FormsModule, ActionButtonsComponent, ActivityHeaderComponent, NumericOnlyDirective],
     templateUrl: './object-addition.component.html',
     styleUrl: './object-addition.component.scss'
 })

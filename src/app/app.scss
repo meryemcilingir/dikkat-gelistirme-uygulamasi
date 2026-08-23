@@ -13,27 +13,29 @@
 // büyütülmez, sadece gerekirse KENDİ içinde scroll olur.
 :host.review-active {
     display: grid;
-    // ~%75/%25 sütun oranı — panel en az 300px, en çok ~420px (çok geniş
-    // ekranlarda aşırı büyümesin diye), aradaki her genişlikte konteynerin %25'i.
-    grid-template-columns: minmax(0, 1fr) minmax(300px, min(25%, 420px));
+    // Tek sütun — "Soru İnceleme" kartı artık ayrı bir full-height sütun değil,
+    // soru hücresinin ("question") içine sağ üstte yerleşen kompakt bir overlay
+    // (bkz. review-banner.component.scss .review-panel). Bu sayede soru alanı
+    // ekranın büyük bölümünü kullanır, panelin altında boş sütun kalmaz.
+    grid-template-columns: 1fr;
     grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
-        "header   header"
-        "question panel"
-        "question nav";
+        "header"
+        "question"
+        "nav";
     height: 100vh;
     width: 100%;
     background: #f6f7f9;
     overflow: hidden;
 }
 
-// Tablet/mobilde tek sütun — burada sabit viewport yüksekliği/iç scroll yerine
-// sayfanın kendisi doğal olarak kayar (küçük ekranda hepsini tek satırda
-// sabitlemek okunabilirliği bozar); navigasyon yine soru içeriğinin hemen
+// Tablet/mobilde kart soru alanının sağ üstünde overlay olarak durmaz —
+// dar ekranda soru içeriğinin üzerine binmemesi için kendi satırına,
+// soru alanının altına iner (bkz. review-banner.component.scss). Sayfanın
+// kendisi doğal olarak kayar; navigasyon yine soru içeriğinin hemen
 // altında kalır, sayfanın en altına düşmez.
 @media (max-width: 900px) {
     :host.review-active {
-        grid-template-columns: 1fr;
         grid-template-rows: auto auto auto auto;
         grid-template-areas:
             "header"

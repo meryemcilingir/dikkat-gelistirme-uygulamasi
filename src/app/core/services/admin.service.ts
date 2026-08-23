@@ -12,6 +12,12 @@ import {
 } from '../models/user.model';
 import { TeacherExamReview } from '../models/exam.model';
 import { QuestionDetail, QuestionStatsQuery, QuestionStatsResult } from '../models/question-stats.model';
+import {
+    AdminQuestionDetail,
+    AdminQuestionPage,
+    AdminQuestionQuery,
+    Category,
+} from '../models/question-admin.model';
 
 export interface CreateTeacherPayload {
     firstName: string;
@@ -38,6 +44,8 @@ export interface RecentActivityItem {
     lastName: string;
     completedAt: string;
     finalScore: number | null;
+    correctCount: number;
+    totalQuestions: number;
 }
 
 export interface AdminOverview {
@@ -144,5 +152,48 @@ export class AdminService {
         return firstValueFrom(
             this.http.get<QuestionDetail>(`/api/admin/question-stats/${questionId}`, { params: toParams({ teacherId }) })
         );
+    }
+
+    // ── Sınav Yönetimi: Sorular ─────────────────────────────
+    listQuestionsAdmin(query: AdminQuestionQuery = {}): Promise<AdminQuestionPage> {
+        return firstValueFrom(
+            this.http.get<AdminQuestionPage>('/api/admin/questions', { params: toParams(query as Record<string, unknown>) })
+        );
+    }
+
+    getQuestionAdminDetail(questionId: string): Promise<AdminQuestionDetail> {
+        return firstValueFrom(this.http.get<AdminQuestionDetail>(`/api/admin/questions/${questionId}`));
+    }
+
+    createDraftQuestion(payload: { title: string; categoryId?: string | null }): Promise<AdminQuestionDetail> {
+        return firstValueFrom(this.http.post<AdminQuestionDetail>('/api/admin/questions', payload));
+    }
+
+    updateQuestionMeta(
+        questionId: string,
+        patch: { categoryId?: string | null; active?: boolean; title?: string }
+    ): Promise<AdminQuestionDetail> {
+        return firstValueFrom(this.http.patch<AdminQuestionDetail>(`/api/admin/questions/${questionId}`, patch));
+    }
+
+    deleteDraftQuestion(questionId: string): Promise<void> {
+        return firstValueFrom(this.http.delete<void>(`/api/admin/questions/${questionId}`));
+    }
+
+    // ── Sınav Yönetimi: Kategoriler ──────────────────────────
+    listCategories(): Promise<Category[]> {
+        return firstValueFrom(this.http.get<Category[]>('/api/admin/categories'));
+    }
+
+    createCategory(name: string): Promise<Category> {
+        return firstValueFrom(this.http.post<Category>('/api/admin/categories', { name }));
+    }
+
+    renameCategory(id: string, name: string): Promise<Category> {
+        return firstValueFrom(this.http.patch<Category>(`/api/admin/categories/${id}`, { name }));
+    }
+
+    deleteCategory(id: string): Promise<void> {
+        return firstValueFrom(this.http.delete<void>(`/api/admin/categories/${id}`));
     }
 }

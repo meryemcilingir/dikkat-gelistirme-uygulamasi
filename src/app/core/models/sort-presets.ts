@@ -1,5 +1,6 @@
 import { StudentQuery, TeacherQuery } from './user.model';
 import { QuestionStatsQuery } from './question-stats.model';
+import { AdminQuestionQuery } from './question-admin.model';
 
 export interface SortPreset<TSortBy extends string> {
     label: string;
@@ -37,12 +38,21 @@ export const TEACHER_SORT_PRESETS: SortPreset<NonNullable<TeacherQuery['sortBy']
     { label: 'En eski eklenen', sortBy: 'createdAt', sortDirection: 'asc' },
 ];
 
-/** Soru analizi tablosu için sıralama seçenekleri. */
+/** Soru analizi tablosu için sıralama seçenekleri — varsayılan soru sırasına göre (ilk seçenek). */
 export const QUESTION_SORT_PRESETS: SortPreset<NonNullable<QuestionStatsQuery['sortBy']>>[] = [
+    { label: 'Soru sırasına göre', sortBy: 'questionIndex', sortDirection: 'asc' },
     { label: 'En çok yanlış yapılan', sortBy: 'wrongCount', sortDirection: 'desc' },
     { label: 'En çok doğru yapılan', sortBy: 'correctCount', sortDirection: 'desc' },
     { label: 'Başarı oranı düşükten yükseğe', sortBy: 'correctRate', sortDirection: 'asc' },
     { label: 'Başarı oranı yüksekten düşüğe', sortBy: 'correctRate', sortDirection: 'desc' },
+];
+
+/** Sınav Yönetimi → Sorular tablosu için sıralama seçenekleri. */
+export const ADMIN_QUESTION_SORT_PRESETS: SortPreset<NonNullable<AdminQuestionQuery['sortBy']>>[] = [
+    { label: 'Soru sırasına göre', sortBy: 'index', sortDirection: 'asc' },
+    { label: 'Başarı oranı düşükten yükseğe', sortBy: 'correctRate', sortDirection: 'asc' },
+    { label: 'Başarı oranı yüksekten düşüğe', sortBy: 'correctRate', sortDirection: 'desc' },
+    { label: 'Başlığa göre (A-Z)', sortBy: 'title', sortDirection: 'asc' },
 ];
 
 /** query.sortBy + query.sortDirection çiftini presets listesindeki index'e çevirir (select binding için). */

@@ -70,6 +70,11 @@
         align-items: stretch;
 
         .toolbar-search {
+            // flex-basis: 320px masaüstünde GENİŞLİK ipucuydu; column yönünde
+            // aynı flex-basis artık ana eksen (dikey) için geçerli olur ve
+            // arama kutusunu 320px YÜKSEKLİĞE zorlardı. Column'da flex'i
+            // sıfırlayıp doğal (içerik) yüksekliğe bırakıyoruz.
+            flex: 0 0 auto;
             max-width: none;
         }
 

@@ -10,6 +10,7 @@ import { USER_FIELD_LIMITS, validateEditFields, validateNewPassword } from '../.
 import { STUDENT_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
 import { studentFilterChips, FilterChip } from '../../../core/models/list-filters';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
+import { FloatingMenuDirective } from '../../shared/floating-menu.directive';
 
 const PAGE_SIZE = 25;
 
@@ -21,7 +22,7 @@ const PAGE_SIZE = 25;
 @Component({
     selector: 'app-admin-students',
     standalone: true,
-    imports: [CommonModule, FormsModule, PaginationComponent],
+    imports: [CommonModule, FormsModule, PaginationComponent, FloatingMenuDirective],
     templateUrl: './admin-students.component.html',
     styleUrl: './admin-students.component.scss',
 })
@@ -69,9 +70,11 @@ export class AdminStudentsComponent implements OnInit {
         /** Genel Bakış'tan "Tamamlanan Sınav" veya "düşük başarı" gibi bir karta tıklanıp gelindiyse, o filtre URL'den okunur. */
         const requestedStatus = this.route.snapshot.queryParamMap.get('status') as StudentQuery['status'] | null;
         if (requestedStatus) this.query.status = requestedStatus;
+        const requestedScoreMin = this.route.snapshot.queryParamMap.get('scoreMin');
         const requestedScoreMax = this.route.snapshot.queryParamMap.get('scoreMax');
-        if (requestedScoreMax) {
-            this.query.scoreMax = Number(requestedScoreMax);
+        if (requestedScoreMin || requestedScoreMax) {
+            if (requestedScoreMin) this.query.scoreMin = Number(requestedScoreMin);
+            if (requestedScoreMax) this.query.scoreMax = Number(requestedScoreMax);
             this.query.status = 'Completed';
         }
         await Promise.all([this.reload(1), this.loadTeacherOptions(), this.loadSummary()]);

@@ -143,15 +143,21 @@ export class ExamSessionService {
 
             this._examState.set({ ...state, attempt: res.attempt });
 
-            setTimeout(() => {
-                this._submitting.set(false);
-                if (res.attempt.status === 'Completed') {
-                    router.navigate(['/end']);
-                } else {
-                    const next = state.questions[res.attempt.currentIndex];
-                    router.navigate([`/${next}`]);
-                }
-            }, 900);
+            // Yapay bir bekleme YOK — cevap kaydedilir kaydedilmez direkt sonraki
+            // soruya geçilir (150 soru üzerinden birikince gözle görülür bir
+            // gecikmeye dönüşüyordu). Kapatma katmanı yalnızca navigate()
+            // gerçekten bitene kadar açık kalır: yeni soru component'i
+            // lazy-loaded olduğu için (artık uygulama açılışında preload
+            // edildiğinden neredeyse anlık) blocker'ı erken kaldırırsak eski
+            // soru yok olmuş, yenisi henüz gelmemiş olur ve kısa bir boş ekran
+            // anı oluşur.
+            if (res.attempt.status === 'Completed') {
+                await router.navigate(['/end']);
+            } else {
+                const next = state.questions[res.attempt.currentIndex];
+                await router.navigate([`/${next}`]);
+            }
+            this._submitting.set(false);
         } catch {
             this._submitting.set(false);
         }

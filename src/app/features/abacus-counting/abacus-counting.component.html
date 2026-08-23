@@ -45,7 +45,7 @@
 
                     <!-- Input Card (identical to Question 4) -->
                     <div class="card input-card" [class.error]="showHint && q.hasError" [class.show-hint]="showHint && !q.input">
-                        <input type="text" inputmode="numeric" maxlength="2"
+                        <input type="text" inputmode="numeric" maxlength="2" appNumericOnly
                             [placeholder]="(showHint && !q.input) ? q.expectedTotal : '?'" [(ngModel)]="q.input"
                             (ngModelChange)="onInputChange(q.id)" [attr.aria-label]="'Abaküs toplamı'"
                             class="number-input" />

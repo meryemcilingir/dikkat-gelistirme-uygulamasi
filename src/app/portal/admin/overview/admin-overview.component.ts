@@ -105,6 +105,11 @@ export class AdminOverviewComponent implements OnInit {
         this.router.navigate(['/admin/students'], { queryParams: { scoreMax: 25 } });
     }
 
+    /** Başarı dağılımı grafiğindeki bir sütuna tıklanınca o puan aralığındaki öğrencilere gider. */
+    viewStudentsByScore(min: number, max: number): void {
+        this.router.navigate(['/admin/students'], { queryParams: { scoreMin: min, scoreMax: max } });
+    }
+
     openQuestion(): void {
         this.router.navigate(['/admin/questions']);
     }

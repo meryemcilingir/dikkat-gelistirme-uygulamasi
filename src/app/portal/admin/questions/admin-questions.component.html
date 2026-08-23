@@ -1,0 +1,533 @@
+<div class="page-header">
+    <div>
+        <h1>Sorular</h1>
+        <p class="page-subtitle">Dikkat Geliştirme Testi'nin soru bankası, kategorileri ve başarı analizi</p>
+    </div>
+</div>
+
+<!-- Segmented sekme çubuğu — sayılar gerçek veriden gelir -->
+<div class="seg-tabs" role="tablist">
+    <button role="tab" [attr.aria-selected]="tab() === 'overview'" [class.active]="tab() === 'overview'" (click)="setTab('overview')" type="button">
+        Genel Bakış
+    </button>
+    <button role="tab" [attr.aria-selected]="tab() === 'questions'" [class.active]="tab() === 'questions'" (click)="setTab('questions')" type="button">
+        Sorular <span class="seg-count">{{ totalQuestions }}</span>
+    </button>
+    <button role="tab" [attr.aria-selected]="tab() === 'categories'" [class.active]="tab() === 'categories'" (click)="setTab('categories')" type="button">
+        Kategoriler <span class="seg-count">{{ categories().length }}</span>
+    </button>
+    <button role="tab" [attr.aria-selected]="tab() === 'analysis'" [class.active]="tab() === 'analysis'" (click)="setTab('analysis')" type="button">
+        Analiz
+    </button>
+</div>
+
+<!-- ═══════════════════ GENEL BAKIŞ ═══════════════════ -->
+<ng-container *ngIf="tab() === 'overview'">
+    <div class="empty" *ngIf="overviewLoading()">Yükleniyor...</div>
+
+    <div class="dashboard" *ngIf="!overviewLoading() && overview() as o">
+        <div class="kpi-strip card-animate-in">
+            <div class="kpi-cell">
+                <div class="kpi-icon"><app-portal-icon name="file-text" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Toplam Soru</span>
+                    <span class="kpi-value">{{ totalQuestions }}</span>
+                </div>
+            </div>
+            <div class="kpi-cell clickable" (click)="setTab('categories')">
+                <div class="kpi-icon"><app-portal-icon name="grid" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Toplam Kategori</span>
+                    <span class="kpi-value">{{ categories().length }}</span>
+                </div>
+            </div>
+            <div class="kpi-cell clickable" (click)="viewStudents()">
+                <div class="kpi-icon"><app-portal-icon name="users" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Atanan Öğrenci</span>
+                    <span class="kpi-value">{{ o.studentCount }}</span>
+                </div>
+            </div>
+            <div class="kpi-cell clickable" (click)="viewStudents('Completed')">
+                <div class="kpi-icon"><app-portal-icon name="clipboard-check" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Tamamlayan</span>
+                    <span class="kpi-value">{{ o.examSummary.completed }}</span>
+                </div>
+            </div>
+            <div class="kpi-cell clickable" (click)="viewStudents('InProgress')">
+                <div class="kpi-icon"><app-portal-icon name="trend-up" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Devam Eden</span>
+                    <span class="kpi-value">{{ o.examSummary.inProgress }}</span>
+                </div>
+            </div>
+            <div class="kpi-cell">
+                <div class="kpi-icon"><app-portal-icon name="chart" [size]="16"></app-portal-icon></div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Tamamlama Oranı</span>
+                    <span class="kpi-value">{{ completionRate !== null ? ('%' + completionRate) : '—' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-row">
+            <div class="col-7 panel-card dash-card card-animate-in">
+                <div class="panel-title panel-title-row">
+                    <span>Kategori Bazlı Soru Dağılımı</span>
+                    <button class="link-btn" type="button" (click)="setTab('categories')">Kategorileri Yönet →</button>
+                </div>
+                <div class="panel-subtitle">Soru sayısı ve tamamlanmış sınavlar üzerinden başarı oranı</div>
+
+                <div class="empty-state" *ngIf="!categories().length">
+                    <p class="empty-title">Henüz kategori yok</p>
+                    <p class="empty-subtitle">"Kategoriler" sekmesinden ilk kategoriyi oluşturabilirsiniz.</p>
+                </div>
+
+                <div class="hbar-list compact" *ngIf="categories().length">
+                    <div class="hbar-row" *ngFor="let c of categoriesByRate" (click)="viewCategoryQuestions(c)">
+                        <div class="hbar-top">
+                            <span class="hbar-label">
+                                <span class="cat-dot" [style.background]="catColor(c.name)"></span>{{ c.name }}
+                            </span>
+                            <span class="hbar-value neutral">
+                                {{ c.questionCount }} soru
+                                <span class="dist-rate">{{ c.avgCorrectRate !== null ? ('%' + c.avgCorrectRate) : 'veri yok' }}</span>
+                            </span>
+                        </div>
+                        <div class="hbar-track" *ngIf="c.avgCorrectRate !== null">
+                            <div class="hbar-fill accent" [style.width.%]="c.avgCorrectRate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5 panel-card dash-card card-animate-in">
+                <div class="panel-title">Sınav Durumu</div>
+                <div class="panel-subtitle">Öğrencilerin bu testteki ilerlemesi</div>
+                <div class="panel-card-body">
+                    <div class="segmented-bar">
+                        <div class="segment completed" [style.flex-basis.%]="segmentPct(o.examSummary.completed)"></div>
+                        <div class="segment in-progress" [style.flex-basis.%]="segmentPct(o.examSummary.inProgress)"></div>
+                        <div class="segment not-started" [style.flex-basis.%]="segmentPct(o.examSummary.notStarted)"></div>
+                    </div>
+                    <div class="segmented-legend">
+                        <div class="segmented-legend-row" (click)="viewStudents('Completed')">
+                            <span class="dot completed"></span>
+                            <span class="legend-label">Tamamlandı</span>
+                            <span class="legend-value">{{ o.examSummary.completed }}</span>
+                        </div>
+                        <div class="segmented-legend-row" (click)="viewStudents('InProgress')">
+                            <span class="dot in-progress"></span>
+                            <span class="legend-label">Devam Ediyor</span>
+                            <span class="legend-value">{{ o.examSummary.inProgress }}</span>
+                        </div>
+                        <div class="segmented-legend-row" (click)="viewStudents('Assigned')">
+                            <span class="dot not-started"></span>
+                            <span class="legend-label">Başlamadı</span>
+                            <span class="legend-value">{{ o.examSummary.notStarted }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<!-- ═══════════════════ SORULAR ═══════════════════ -->
+<ng-container *ngIf="tab() === 'questions'">
+    <div class="toolbar-compact">
+        <div class="toolbar-search">
+            <app-portal-icon class="search-icon" name="search" [size]="15"></app-portal-icon>
+            <input
+                [(ngModel)]="query.search"
+                (ngModelChange)="onSearchInput()"
+                placeholder="Soru ara..."
+                maxlength="100"
+            />
+        </div>
+        <div class="toolbar-controls">
+            <div class="filter-popover-wrap">
+                <button class="filter-toggle-btn" [class.active]="showFilters()" (click)="toggleFilters($event)">
+                    Filtreler<span class="filter-count" *ngIf="activeFilterCount">{{ activeFilterCount }}</span>
+                </button>
+                <div class="filter-popover" *ngIf="showFilters()" (click)="$event.stopPropagation()">
+                    <label class="toolbar-select">
+                        <span>Kategori</span>
+                        <select [(ngModel)]="query.categoryId" (ngModelChange)="reloadQuestions(1)">
+                            <option value="">Tüm kategoriler</option>
+                            <option *ngFor="let c of categories()" [value]="c.id">{{ c.name }}</option>
+                        </select>
+                    </label>
+                    <label class="toolbar-select">
+                        <span>Durum</span>
+                        <select [(ngModel)]="query.active" (ngModelChange)="reloadQuestions(1)">
+                            <option value="">Tümü</option>
+                            <option value="active">Aktif</option>
+                            <option value="passive">Pasif</option>
+                            <option value="draft">Taslak</option>
+                        </select>
+                    </label>
+                    <button class="link-btn" type="button" (click)="clearFilters()">Filtreleri Temizle</button>
+                </div>
+            </div>
+            <label class="toolbar-select">
+                <span>Sırala</span>
+                <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
+                    <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
+                </select>
+            </label>
+            <button class="primary-btn" type="button" (click)="toggleCreateQuestion()">
+                {{ showCreateQuestion() ? 'Vazgeç' : '+ Yeni Soru' }}
+            </button>
+        </div>
+    </div>
+
+    <form class="create-form card-animate-in" *ngIf="showCreateQuestion()" (ngSubmit)="createQuestion()">
+        <div class="form-note">
+            <app-portal-icon name="help-circle" [size]="15"></app-portal-icon>
+            <span>
+                Yeni soru, geliştirici tarafından gerçek bir interaktif ekran olarak eklenene kadar
+                <strong>taslak</strong> olarak kalır ve canlı sınava dahil edilmez.
+            </span>
+        </div>
+        <div class="form-row">
+            <label>Başlık
+                <input [(ngModel)]="newQuestionTitle" name="newQuestionTitle" maxlength="100" placeholder="Soru başlığı" />
+            </label>
+            <label>Kategori
+                <select [(ngModel)]="newQuestionCategoryId" name="newQuestionCategoryId">
+                    <option value="">Kategori seçin</option>
+                    <option *ngFor="let c of categories()" [value]="c.id">{{ c.name }}</option>
+                </select>
+            </label>
+        </div>
+        <div class="error" *ngIf="createQuestionError()">{{ createQuestionError() }}</div>
+        <div class="form-actions">
+            <button class="primary-btn" type="submit" [disabled]="createQuestionSaving()">
+                {{ createQuestionSaving() ? 'Kaydediliyor...' : 'Kaydet' }}
+            </button>
+            <button class="link-btn" type="button" (click)="toggleCreateQuestion()">İptal</button>
+        </div>
+    </form>
+
+    <div class="filter-chips" *ngIf="hasActiveFilters">
+        <span class="chip" *ngIf="query.search">
+            Arama: "{{ query.search }}"
+            <button type="button" (click)="query.search = ''; reloadQuestions(1)" aria-label="Filtreyi kaldır">×</button>
+        </span>
+        <span class="chip" *ngIf="query.categoryId">
+            Kategori: {{ categoryName(query.categoryId) }}
+            <button type="button" (click)="query.categoryId = ''; reloadQuestions(1)" aria-label="Filtreyi kaldır">×</button>
+        </span>
+        <span class="chip" *ngIf="query.active">
+            {{ query.active === 'active' ? 'Aktif' : (query.active === 'passive' ? 'Pasif' : 'Taslak') }}
+            <button type="button" (click)="query.active = ''; reloadQuestions(1)" aria-label="Filtreyi kaldır">×</button>
+        </span>
+    </div>
+
+    <div class="table-scroll skeleton-table" *ngIf="questionsLoading()">
+        <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]"></div>
+    </div>
+    <div class="empty-state" *ngIf="!questionsLoading() && questionPage()?.total === 0">
+        <p class="empty-title">{{ hasActiveFilters ? 'Bu filtrelerle eşleşen soru yok' : 'Henüz soru yok' }}</p>
+        <p class="empty-subtitle" *ngIf="hasActiveFilters">Filtreleri değiştirip tekrar deneyin.</p>
+        <button class="secondary-btn" type="button" *ngIf="hasActiveFilters" (click)="clearFilters()">Filtreleri Temizle</button>
+    </div>
+
+    <ng-container *ngIf="!questionsLoading() && (questionPage()?.total ?? 0) > 0">
+        <!-- Masaüstü: premium tablo -->
+        <div class="table-scroll desktop-only">
+            <table class="premium-table q-table">
+                <thead>
+                    <tr>
+                        <th class="col-no">#</th>
+                        <th>Soru</th>
+                        <th>Kategori</th>
+                        <th class="col-type">Soru Tipi</th>
+                        <th class="col-rate">Başarı</th>
+                        <th>Durum</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let q of questionPage()!.items" class="row-clickable" (click)="openDetail(q)">
+                        <td class="col-no">
+                            <span class="q-index" [class.draft]="q.isDraft">{{ q.questionIndex !== null ? (q.questionIndex + 1) : '—' }}</span>
+                        </td>
+                        <td>
+                            <div class="cell-primary">
+                                <span class="cell-name">{{ q.title }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="cat-chip">
+                                <span class="cat-dot" [style.background]="catColor(q.category)"></span>{{ q.category }}
+                            </span>
+                        </td>
+                        <td class="col-type muted">{{ q.category }}</td>
+                        <td class="col-rate">
+                            <div class="rate-cell" *ngIf="q.correctRate !== null; else noRate">
+                                <span>%{{ q.correctRate }}</span>
+                                <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="q.correctRate"></div></div>
+                            </div>
+                            <ng-template #noRate><span class="muted">—</span></ng-template>
+                        </td>
+                        <td>
+                            <span class="status-pill" [class]="statusKind(q)">
+                                <span class="status-dot"></span>{{ statusLabel(q) }}
+                            </span>
+                        </td>
+                        <td class="actions-cell col-actions">
+                            <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
+                            <div class="action-menu">
+                                <button class="action-menu-trigger" (click)="toggleMenu(q.questionId, $event)" aria-label="Diğer işlemler">⋯</button>
+                                <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === q.questionId" (click)="$event.stopPropagation()">
+                                    <button (click)="openDetailForEdit(q); closeMenus()">Düzenle</button>
+                                    <button *ngIf="!q.isDraft" (click)="toggleActive(q)">
+                                        {{ q.active ? 'Pasif Yap' : 'Aktif Yap' }}
+                                    </button>
+                                    <button *ngIf="!q.isDraft" (click)="openLiveView(q.questionId); closeMenus()">Gerçek Görünümü Aç</button>
+                                    <button class="danger" *ngIf="q.isDraft" (click)="deleteDraft(q)">Sil</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobil: kart listesi -->
+        <div class="entity-card-list mobile-only">
+            <div class="entity-card" *ngFor="let q of questionPage()!.items" (click)="openDetail(q)">
+                <div class="entity-card-head">
+                    <div class="q-card-title">
+                        <span class="q-index" [class.draft]="q.isDraft">{{ q.questionIndex !== null ? (q.questionIndex + 1) : '—' }}</span>
+                        <div>
+                            <div class="entity-card-name">{{ q.title }}</div>
+                        </div>
+                    </div>
+                    <span class="status-pill" [class]="statusKind(q)">
+                        <span class="status-dot"></span>{{ statusLabel(q) }}
+                    </span>
+                </div>
+                <div class="entity-card-stats two">
+                    <div class="entity-card-stat">
+                        <span class="stat-label">Kategori</span>
+                        <span class="stat-value">
+                            <span class="cat-dot" [style.background]="catColor(q.category)"></span>{{ q.category }}
+                        </span>
+                    </div>
+                    <div class="entity-card-stat">
+                        <span class="stat-label">Başarı</span>
+                        <span class="stat-value">{{ q.correctRate !== null ? ('%' + q.correctRate) : '—' }}</span>
+                    </div>
+                </div>
+                <button class="entity-card-action" (click)="openDetail(q); $event.stopPropagation()">Görüntüle &rarr;</button>
+            </div>
+        </div>
+    </ng-container>
+
+    <app-pagination
+        *ngIf="questionPage() as p"
+        [page]="p.page"
+        [totalPages]="p.totalPages"
+        [total]="p.total"
+        [pageSize]="p.pageSize"
+        (pageChange)="reloadQuestions($event)"
+        (pageSizeChange)="query.pageSize = $event; reloadQuestions(1)"
+    ></app-pagination>
+</ng-container>
+
+<!-- ═══════════════════ KATEGORİLER ═══════════════════ -->
+<ng-container *ngIf="tab() === 'categories'">
+    <div class="toolbar-compact">
+        <p class="toolbar-hint">Kategoriye tıklayarak o kategorideki soruları görebilirsiniz.</p>
+        <div class="toolbar-controls">
+            <button class="primary-btn" type="button" (click)="toggleCreateCategory()">
+                {{ showCreateCategory() ? 'Vazgeç' : '+ Yeni Kategori' }}
+            </button>
+        </div>
+    </div>
+
+    <form class="create-form card-animate-in" *ngIf="showCreateCategory()" (ngSubmit)="createCategory()">
+        <div class="form-row">
+            <label>Kategori Adı
+                <input [(ngModel)]="newCategoryName" name="newCategoryName" maxlength="40" placeholder="ör. Desen" />
+            </label>
+        </div>
+        <div class="error" *ngIf="createCategoryError()">{{ createCategoryError() }}</div>
+        <div class="form-actions">
+            <button class="primary-btn" type="submit" [disabled]="createCategorySaving()">
+                {{ createCategorySaving() ? 'Kaydediliyor...' : 'Kaydet' }}
+            </button>
+            <button class="link-btn" type="button" (click)="toggleCreateCategory()">İptal</button>
+        </div>
+    </form>
+
+    <div class="error" *ngIf="categoryDeleteError()">{{ categoryDeleteError() }}</div>
+
+    <div class="empty-state" *ngIf="!categoriesLoading() && !categories().length">
+        <p class="empty-title">Henüz kategori yok</p>
+        <p class="empty-subtitle">"+ Yeni Kategori" ile ilk kategoriyi oluşturabilirsiniz.</p>
+    </div>
+
+    <div class="cat-grid" *ngIf="categories().length">
+        <div class="cat-card card-animate-in" *ngFor="let c of categories()"
+             [class.editing]="editingCategory()?.id === c.id"
+             (click)="editingCategory()?.id === c.id ? null : viewCategoryQuestions(c)">
+
+            <ng-container *ngIf="editingCategory()?.id !== c.id; else editingCatTpl">
+                <div class="cat-card-head">
+                    <span class="cat-dot lg" [style.background]="catColor(c.name)"></span>
+                    <span class="cat-name">{{ c.name }}</span>
+                    <div class="cat-card-actions">
+                        <button class="icon-btn" type="button" title="Yeniden adlandır" (click)="startEditCategory(c, $event)">
+                            <app-portal-icon name="file-text" [size]="14"></app-portal-icon>
+                        </button>
+                        <button class="icon-btn danger" type="button" title="Sil" (click)="requestRemoveCategory(c, $event)">
+                            <app-portal-icon name="x" [size]="14"></app-portal-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cat-card-stats">
+                    <div class="cat-stat">
+                        <span class="cat-stat-value">{{ c.questionCount }}</span>
+                        <span class="cat-stat-label">soru</span>
+                    </div>
+                    <div class="cat-stat">
+                        <span class="cat-stat-value">{{ c.avgCorrectRate !== null ? ('%' + c.avgCorrectRate) : '—' }}</span>
+                        <span class="cat-stat-label">başarı</span>
+                    </div>
+                </div>
+
+                <div class="rate-bar" *ngIf="c.avgCorrectRate !== null">
+                    <div class="rate-bar-fill" [style.width.%]="c.avgCorrectRate"></div>
+                </div>
+
+                <span class="cat-card-link">Soruları gör &rarr;</span>
+            </ng-container>
+
+            <ng-template #editingCatTpl>
+                <div class="inline-edit" (click)="$event.stopPropagation()">
+                    <input [(ngModel)]="editCategoryName" name="editCategoryName-{{ c.id }}" maxlength="40" aria-label="Kategori adı" />
+                    <div class="inline-edit-actions">
+                        <button class="primary-btn" type="button" [disabled]="categorySaving()" (click)="saveCategoryEdit()">Kaydet</button>
+                        <button class="link-btn" type="button" (click)="cancelEditCategory()">Vazgeç</button>
+                    </div>
+                    <span class="error" *ngIf="categoryError()">{{ categoryError() }}</span>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</ng-container>
+
+<!-- ═══════════════════ ANALİZ ═══════════════════ -->
+<ng-container *ngIf="tab() === 'analysis'">
+    <app-question-analysis scope="admin" [embedded]="true"></app-question-analysis>
+</ng-container>
+
+<!-- ═══════════════════ SORU DETAY DRAWER ═══════════════════ -->
+<div class="drawer-root" *ngIf="selectedQuestion() || questionDetailLoading()">
+    <div class="drawer-scrim" (click)="closeDetail()"></div>
+
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Soru detayı">
+        <div class="empty" *ngIf="questionDetailLoading()">Yükleniyor...</div>
+
+        <ng-container *ngIf="selectedQuestion() as d">
+            <header class="drawer-head">
+                <div class="drawer-head-main">
+                    <span class="q-index lg" [class.draft]="d.isDraft">{{ d.questionIndex !== null ? (d.questionIndex + 1) : '—' }}</span>
+                    <div class="drawer-title-block">
+                        <h2>{{ d.title }}</h2>
+                    </div>
+                </div>
+                <button class="icon-btn" (click)="closeDetail()" aria-label="Kapat">
+                    <app-portal-icon name="x" [size]="16"></app-portal-icon>
+                </button>
+            </header>
+
+            <div class="drawer-body">
+                <ng-container *ngIf="!editingQuestion()">
+                    <div class="drawer-status-row">
+                        <span class="status-pill" [class]="statusKind(d)">
+                            <span class="status-dot"></span>{{ statusLabel(d) }}
+                        </span>
+                        <span class="cat-chip">
+                            <span class="cat-dot" [style.background]="catColor(d.category)"></span>{{ d.category }}
+                        </span>
+                    </div>
+
+                    <div class="drawer-note" *ngIf="d.isDraft">
+                        <app-portal-icon name="help-circle" [size]="15"></app-portal-icon>
+                        <span>Bu bir taslak sorudur — henüz gerçek bir interaktif ekranı yok, bu yüzden canlı sınava dahil edilemez.</span>
+                    </div>
+
+                    <div class="drawer-section" *ngIf="!d.isDraft">
+                        <div class="drawer-section-title">Başarı</div>
+                        <div class="drawer-rate">
+                            <span class="drawer-rate-value">{{ d.correctRate !== null ? ('%' + d.correctRate) : '—' }}</span>
+                            <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="d.correctRate ?? 0"></div></div>
+                        </div>
+                        <div class="drawer-mini-stats">
+                            <div><span class="label">Cevaplayan</span><span class="value">{{ d.answered }}</span></div>
+                            <div><span class="label">Doğru</span><span class="value ok">{{ d.correct }}</span></div>
+                            <div><span class="label">Yanlış</span><span class="value bad">{{ d.wrong }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="drawer-section">
+                        <div class="drawer-section-title">Bilgiler</div>
+                        <dl class="drawer-meta">
+                            <div><dt>Kategori</dt><dd>{{ d.category }}</dd></div>
+                            <div><dt>Soru Tipi</dt><dd>{{ d.category }}</dd></div>
+                            <div><dt>Soru No</dt><dd>{{ d.questionIndex !== null ? (d.questionIndex + 1) + ' / ' + totalQuestions : '—' }}</dd></div>
+                            <div><dt>Durum</dt><dd>{{ statusLabel(d) }}</dd></div>
+                        </dl>
+                    </div>
+                </ng-container>
+
+                <form class="drawer-edit" *ngIf="editingQuestion()" (ngSubmit)="saveQuestionEdit()">
+                    <div class="drawer-section-title">Düzenle</div>
+                    <label>Başlık
+                        <input [(ngModel)]="editTitle" name="editTitle" maxlength="100" />
+                    </label>
+                    <label>Kategori
+                        <select [(ngModel)]="editCategoryId" name="editCategoryId">
+                            <option value="">Kategori seçin</option>
+                            <option *ngFor="let c of categories()" [value]="c.id">{{ c.name }}</option>
+                        </select>
+                    </label>
+                    <div class="error" *ngIf="editError()">{{ editError() }}</div>
+                    <div class="form-actions">
+                        <button class="primary-btn" type="submit" [disabled]="editSaving()">
+                            {{ editSaving() ? 'Kaydediliyor...' : 'Kaydet' }}
+                        </button>
+                        <button class="link-btn" type="button" (click)="cancelEditQuestion()">Vazgeç</button>
+                    </div>
+                </form>
+            </div>
+
+            <footer class="drawer-foot" *ngIf="!editingQuestion()">
+                <button class="primary-btn" (click)="startEditQuestion()">Düzenle</button>
+                <button class="secondary-btn" *ngIf="!d.isDraft" (click)="toggleActive(d)">
+                    {{ d.active ? 'Pasif Yap' : 'Aktif Yap' }}
+                </button>
+                <button class="secondary-btn" *ngIf="!d.isDraft" (click)="openLiveView(d.questionId)">Sınavda Gör →</button>
+                <button class="secondary-btn danger" *ngIf="d.isDraft" (click)="deleteDraft(d)">Sil</button>
+            </footer>
+        </ng-container>
+    </aside>
+</div>
+
+<!-- ═══════════════════ KATEGORİ SİL ONAYI ═══════════════════ -->
+<div class="confirm-backdrop" *ngIf="confirmingCategoryDelete() as cat" (click)="cancelRemoveCategory()">
+    <div class="confirm-card" (click)="$event.stopPropagation()">
+        <p class="question">"{{ cat.name }}" kategorisini silmek istediğinize emin misiniz?</p>
+        <div class="actions">
+            <button class="btn cancel" (click)="cancelRemoveCategory()">İptal</button>
+            <button class="btn confirm" (click)="confirmRemoveCategory()">Sil</button>
+        </div>
+    </div>
+</div>

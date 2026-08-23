@@ -26,23 +26,21 @@
     padding: 12px 18px;
     border-radius: 14px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
-    animation: toast-life 900ms ease-in-out forwards;
+    // Katman artık yalnızca gerçek navigasyon süresi kadar açık kalıyor (yapay
+    // bekleme yok) — bildirim bu kısa pencerede hemen görünür olsun diye
+    // sadece hızlı bir fade-in var; kapanışı zaten katmanın kendisi (ng-container
+    // kaldırılınca) hallediyor.
+    animation: toast-in 150ms ease-out forwards;
 }
 
-@keyframes toast-life {
-    0% {
+@keyframes toast-in {
+    from {
         opacity: 0;
         transform: translateY(-8px);
     }
 
-    15%,
-    75% {
+    to {
         opacity: 1;
         transform: translateY(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(-8px);
     }
 }

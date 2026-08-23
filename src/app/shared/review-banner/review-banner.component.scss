@@ -53,14 +53,34 @@
     flex: 1;
     min-width: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: $p-space-3;
     line-height: 1.25;
-    text-align: center;
+}
+
+.student-avatar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: $p-accent-soft;
+    color: $p-accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.header-student-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    text-align: left;
 
     strong {
-        font-size: 1.15rem;
+        font-size: 1.25rem;
         font-weight: 800;
         color: $p-text;
         white-space: nowrap;
@@ -115,28 +135,26 @@
     }
 }
 
+// Soru alanının kendi grid hücresine ("question") yerleşir — ayrı bir sütun
+// değil, kartın kendisi kadar yer kaplayan bir overlay. Böylece soru alanı
+// tüm genişliği kullanır ve panelin altında/yanında full-height boş beyaz
+// alan oluşmaz; kart yalnızca içeriği kadar yüksekliğe sahiptir.
 .review-panel {
-    grid-area: panel;
+    grid-area: question;
     z-index: 6;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: $p-space-4;
-    font-family: $p-font;
-    // Soru alanından net ama sade bir çizgiyle ayrılır — gölge/gradient yok.
-    border-left: 1px solid $p-border;
-    // Soru alanı kendi içinde kayarken (bkz. styles.scss) panel her zaman
-    // görünür kalsın diye üstte sabitlenir — kartın kendisi içeriği kadar
-    // yüksektir, sidebar boyunca uzanan boş beyaz alan oluşturmaz.
-    position: sticky;
-    top: 0;
+    justify-self: end;
     align-self: start;
+    width: min(300px, 100%);
+    margin: clamp(16px, 3vw, 32px);
+    font-family: $p-font;
+    pointer-events: none;
 }
 
 .review-detail-card {
     @include p-card;
     padding: $p-space-4;
-    box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06);
+    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.08);
+    pointer-events: auto;
 }
 
 .detail-card-head {
@@ -195,13 +213,12 @@
     z-index: 6;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: $p-space-2;
+    justify-content: center;
+    gap: $p-space-4;
     padding: $p-space-3;
     font-family: $p-font;
     background: $p-surface;
     border-top: 1px solid $p-border;
-    border-left: 1px solid $p-border;
     // Dış konteyner viewport'a sabitlendiği için (bkz. app.scss) bu zaten
     // her zaman görünür kalır; sticky ek bir güvence katmanı olarak durur.
     position: sticky;
@@ -241,14 +258,17 @@
 }
 
 @media (max-width: 900px) {
-    .review-panel,
-    .review-nav {
-        border-left: none;
-    }
-
+    // Mobilde kart artık soru alanının sağ üstünde overlay değil, akışın
+    // içinde soru alanının altında tam genişlikte kendi satırında durur.
     .review-panel {
+        grid-area: panel;
+        justify-self: stretch;
+        align-self: auto;
+        width: 100%;
+        margin: 0;
+        padding: $p-space-3 $p-space-4;
+        pointer-events: auto;
         border-top: 1px solid $p-border;
-        position: static;
     }
 
     // Dar ekranda "← Sınav Özetine Dön" + "Soru X/Y" rozeti tek satırda

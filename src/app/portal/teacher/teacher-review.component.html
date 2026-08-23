@@ -15,12 +15,12 @@
                 <div><span class="label">Toplam Soru</span><span class="value">{{ r.attempt.totalQuestions }}</span></div>
                 <div><span class="label">Doğru</span><span class="value correct">{{ r.attempt.correctCount ?? '—' }}</span></div>
                 <div><span class="label">Yanlış</span><span class="value wrong">{{ r.attempt.wrongCount ?? '—' }}</span></div>
-                <div><span class="label">Puan</span><span class="value">{{ r.attempt.finalScore !== null ? (r.attempt.finalScore + ' / 100') : '—' }}</span></div>
+                <div><span class="label">Puan</span><span class="value">{{ r.attempt.finalScore !== null ? (r.attempt.correctCount + ' / ' + r.attempt.totalQuestions) : '—' }}</span></div>
                 <div><span class="label">Toplam Sınav Süresi</span><span class="value">{{ formatDuration(totalTimeSeconds) }}</span></div>
                 <div><span class="label">Ortalama Soru Süresi</span><span class="value">{{ formatDuration(avgTimeSeconds) }}</span></div>
             </div>
             <p class="note" *ngIf="r.attempt.status !== 'Completed'">
-                Sınav henüz tamamlanmadı ({{ r.answers.length }}/{{ r.attempt.totalQuestions }}). Final puan yalnızca 150 soru bitince oluşur.
+                Sınav henüz tamamlanmadı ({{ r.answers.length }}/{{ r.attempt.totalQuestions }}). Final puan yalnızca {{ r.attempt.totalQuestions }} soru bitince oluşur.
             </p>
         </div>
 

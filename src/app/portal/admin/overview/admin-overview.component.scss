@@ -74,3 +74,15 @@
     font-size: 0.9rem;
     color: $p-text;
 }
+
+// ── Başarı dağılımı sütunları: tıklanınca ilgili öğrencilere gider ──
+.column-chart-col.clickable {
+    cursor: pointer;
+    border-radius: $p-radius-sm;
+    transition: transform 160ms ease, background-color 160ms ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        background: $p-surface-muted;
+    }
+}

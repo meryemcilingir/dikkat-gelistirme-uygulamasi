@@ -21,6 +21,20 @@
     -ms-overflow-style: none;
 }
 
+// Windows'ta touchpad'le (iki parmak kaydırma) yapılan "momentum/inertia"
+// hareketi, sayfa `overflow: hidden` olsa bile Chrome'un elastik geri-sekme
+// (rubber-band/overscroll glide) efektiyle sınırların ÖTESİNDE geçici bir
+// boş alan gösterebiliyor. Bu YALNIZCA html/body'ye uygulanır — `*` (tüm
+// elementler) ile denenmişti ama gerçek bir hataya yol açtı: yalnızca
+// YATAYDA kayan kutular (ör. `.table-scroll`, overflow-x:auto) üzerinde
+// fare imleci varken dikey scroll denemesi "zaten sınırda" sayılıp sayfaya
+// hiç iletilmiyordu — imleç bir tablo/liste üzerindeyken kaydırma tamamen
+// donuyordu. Doğru kapsam: yalnızca gerçek dış sınır (html/body).
+html,
+body {
+    overscroll-behavior: none;
+}
+
 body {
     font-family: 'Nunito', sans-serif;
     background: $color-bg;
@@ -54,7 +68,7 @@ app-root {
 }
 
 // Yönlendirilen sayfanın tam ekran ve esnek olmasını sağlar (overlay ve router tagleri hariç)
-app-root> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
+app-root> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-question-preview-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
     display: flex !important;
     width: 100% !important;
     height: 100% !important;
@@ -82,7 +96,7 @@ app-root> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):no
 // (ikinci bir kopya oluşturulmaz), ve öğrenci sınavındaki canlı pastel/mavi
 // arka plan yerine öğretmen incelemesine uygun daha nötr bir zemin + makul
 // bir iç boşluk alır (yalnızca inceleme modunda; öğrenci ekranı değişmez).
-app-root.review-active> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
+app-root.review-active> :not(router-outlet):not(app-shared-feedback):not(app-review-banner):not(app-question-preview-banner):not(app-session-bar):not(app-exam-submit-overlay):not(app-logout-confirm):not(app-change-password) {
     grid-area: question;
     background: #eef1f5 !important;
     padding: clamp(16px, 3vw, 32px) !important;
@@ -93,6 +107,16 @@ app-root.review-active> :not(router-outlet):not(app-shared-feedback):not(app-rev
 
     @include tablet {
         overflow-y: auto !important;
+    }
+
+    // Masaüstünde "Soru İnceleme" kartı (bkz. review-banner.component.scss
+    // .review-panel) bu hücrenin sağ üstüne overlay olarak biner — soru
+    // component'i kendi içeriğini ortalarken kartın altına gizlenmesin diye
+    // sağda kart genişliği kadar ekstra boşluk bırakılır. Mobilde kart artık
+    // soru alanının altına indiği için (bkz. app.scss @media) bu boşluğa
+    // gerek kalmaz.
+    @media (min-width: 901px) {
+        padding-right: 350px !important;
     }
 }
 
