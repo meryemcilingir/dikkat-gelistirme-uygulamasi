@@ -59,6 +59,18 @@ body {
         overflow-y: auto;
         overflow-x: hidden;
     }
+
+    // "Sınavda Gör" önizlemesi mobilde (bkz. question-preview-banner.component.ts):
+    // "Sorulara Dön" butonu ekranın altına sabit (sticky) bir bar olarak
+    // yerleşiyor — sayfanın en altına kaydırıldığında bu bar'ın soru
+    // içeriğinin son kısmını kapatmaması için body'ye o kadarlık ekstra
+    // scroll payı (bottom padding) ekliyoruz. Masaüstünde buton küçük bir
+    // köşe butonuna dönüştüğü için bu padding'e gerek yok.
+    &.preview-active {
+        @include mobile {
+            padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+        }
+    }
 }
 
 app-root {
@@ -189,8 +201,20 @@ h6 {
     @include mobile {
         overflow-x: hidden;  // yatay taşma engelle
         overflow-y: visible; // dikey büyümeye izin ver
-        padding: 0;          // ok butonları için daha fazla alan
+        // İçerik, header ile alt bar arasında kalan kutunun içinde dikeyde
+        // ortalanır (align-items:center) — flex-start'a çevirmek kısa/orta
+        // boy sorularda (ör. shade-sorting) içeriği üstte yapışık, altta
+        // boşlukla dengesiz bırakıyordu. Kutunun kendisi zaten header'ın
+        // altından başlayıp (üst padding) alt bar'dan önce bittiği
+        // (alt padding) için ortalama otomatik olarak "orta-üst" bölgeye
+        // denk geliyor, tam viewport ortasına değil. Uzun içerikte sayfa
+        // zaten kaydırılabilir (bkz. body/.page-frame mobil overflow-y:auto).
+        align-items: center;
+        padding: clamp(16px, 3vh, 28px) 16px 0;
         gap: 0;
+        // .frame-bottom mobilde sabit (fixed) alt bar'a dönüşüyor (bkz. altta) —
+        // akıştan çıktığı için içerik onun altında kalmasın diye burada yer ayır.
+        padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     }
 
     @include tablet {
@@ -290,10 +314,23 @@ h6 {
     padding: 0 clamp(8px, 2vw, 16px);
     overflow: hidden;
 
+    // Mobilde sticky/fixed alt action bar: her zaman ekranın en altında,
+    // beyaz zemin + ince üst border ile ayrışan, safe-area destekli. Az önce
+    // cevaplanan sorunun üzerine binmesin diye .frame-middle'a (yukarıda)
+    // bu bar'ın yüksekliği kadar bottom padding eklendi.
     @include mobile {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 900;
         height: auto;
         max-height: none;
-        padding: 0.75rem 0.5rem;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
     }
 }
 
@@ -359,6 +396,49 @@ h6 {
     flex-wrap: wrap;
     justify-content: center;
     gap: clamp(8px, 1.5vw, 12px);
+}
+
+// Öğrenci sınav ekranında mobilde bu satır .frame-bottom'un sabit alt bar'ı
+// içinde gösterilir: solda ghost "Çıkış Yap" (bkz. action-buttons.component.ts),
+// sağda mevcut yeşil "Gönder". Yalnızca öğrenci sınav akışında (isStudent)
+// eklenen `.student-exam-actions` sınıfıyla kapsamlanır — admin/öğretmenin
+// "Baştan Başla" + "Kontrol Et" iki butonlu satırı hiç etkilenmez.
+@include mobile {
+    .action-buttons.student-exam-actions {
+        width: 100%;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.btn-exit {
+    // Masaüstünde bu satırda hiç görünmez — "Çıkış Yap" orada sağ üstteki
+    // sabit butondan (bkz. session-bar.component.scss) gelir.
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 40px;
+    border: 1.5px solid #d8dde3;
+    background: transparent;
+    color: #5a6472;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color .15s ease;
+
+    &:active {
+        background: rgba(0, 0, 0, 0.04);
+    }
+
+    @include mobile {
+        display: inline-flex;
+    }
 }
 
 .btn {

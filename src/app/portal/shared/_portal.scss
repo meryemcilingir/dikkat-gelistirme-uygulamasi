@@ -1411,6 +1411,18 @@
     tr:last-child td {
         border-bottom: none;
     }
+
+    // Pasifleştirilmiş öğrenci/öğretmen satırı — tablo tarandığında pasif
+    // hesap tek bakışta ayırt edilebilsin diye tüm satır (metin, rozet,
+    // butonlar dahil) soluklaşır. Etkileşim (satıra tıklama, "..." menüsü)
+    // devre dışı bırakılmaz — yalnızca görsel bir işaret.
+    tr.inactive {
+        opacity: 0.5;
+
+        &:hover {
+            opacity: 0.75;
+        }
+    }
 }
 
 .muted {

@@ -46,7 +46,7 @@
 
         <div class="section-header"><h2>Sınavlarım</h2></div>
 
-        <div class="exam-card" [class.done]="status() === 'Completed'" (click)="status() !== 'Completed' && start()">
+        <div class="exam-card" [class.done]="status() === 'Completed'" (click)="status() !== 'Completed' && requestStart()">
             <div class="exam-card-main">
                 <div class="exam-card-text">
                     <span class="exam-card-title">Dikkat Geliştirme Testi</span>
@@ -60,7 +60,7 @@
                 <span class="progress-label">{{ currentIndex() }} / {{ total() }}</span>
             </div>
 
-            <button class="primary-btn exam-card-action" *ngIf="status() !== 'Completed'" (click)="start(); $event.stopPropagation()">
+            <button class="primary-btn exam-card-action" *ngIf="status() !== 'Completed'" (click)="requestStart(); $event.stopPropagation()">
                 {{ actionLabel }} →
             </button>
         </div>
@@ -69,4 +69,20 @@
             Testi tamamladın. <span>Sonucun öğretmenine iletildi.</span>
         </p>
     </main>
+
+    <!-- ── Sınava başlamadan önce kural bilgi kartı ────────────── -->
+    <div class="confirm-backdrop" *ngIf="confirmingStart()" (click)="cancelStart()">
+        <div class="confirm-card" (click)="$event.stopPropagation()">
+            <h3 class="confirm-title">Sınava Başlamadan Önce</h3>
+            <ul class="confirm-rules">
+                <li>Sınav toplam <strong>{{ total() }} sorudan</strong> oluşuyor.</li>
+                <li>Bir soruyu işaretledikten sonra <strong>geri dönüp değiştiremezsin.</strong></li>
+                <li>Sorular sırayla gelir, istediğin an sınavdan çıkıp kaldığın yerden devam edebilirsin.</li>
+            </ul>
+            <div class="actions">
+                <button class="btn cancel" (click)="cancelStart()">Vazgeç</button>
+                <button class="btn confirm" (click)="confirmStart()">Sınava Başla →</button>
+            </div>
+        </div>
+    </div>
 </div>

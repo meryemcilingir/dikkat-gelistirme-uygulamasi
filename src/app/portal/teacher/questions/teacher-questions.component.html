@@ -1,7 +1,7 @@
 <div class="page-header">
     <div>
         <h1>Sorular</h1>
-        <p class="page-subtitle">150 sorunun soru bankası ve başarı analizi — kendi öğrencilerinin istatistikleriyle.</p>
+        <p class="page-subtitle">150 sorunun soru bankası ve başarı analizi — kendi öğrencilerinizin istatistikleriyle.</p>
     </div>
 </div>
 
@@ -18,10 +18,14 @@
     *ngIf="tab() === 'questions'"
     [initialSortBy]="questionsSortBy()"
     [initialSortDirection]="questionsSortDirection()"
+    [initialRateMin]="questionsRateMin()"
+    [initialRateMax]="questionsRateMax()"
+    [initialNoData]="questionsNoData()"
 ></app-teacher-question-list>
 <app-question-analysis
     *ngIf="tab() === 'analysis'"
     scope="teacher"
     [embedded]="true"
     (viewQuestionsSorted)="viewQuestionsSorted($event)"
+    (viewFilteredQuestions)="viewFilteredQuestions($event)"
 ></app-question-analysis>

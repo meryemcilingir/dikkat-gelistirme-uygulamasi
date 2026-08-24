@@ -36,6 +36,18 @@ export interface QuestionStatsResult {
     categories: QuestionCategoryStat[];
 }
 
+/**
+ * "Dikkat Gerektirenler" satırlarından "Sorular" sekmesine geçerken uygulanan
+ * karşılıklı dışlayan başarı-aralığı filtresi — admin ve öğretmen tarafında
+ * ortak (bkz. question-analysis.component.ts).
+ */
+export interface QuestionRateFilter {
+    correctRateMin?: number;
+    correctRateMax?: number;
+    /** true ise yalnızca hiç cevaplanmamış (answered=0) sorular. */
+    noData?: boolean;
+}
+
 export interface QuestionWrongStudent {
     studentId: string;
     firstName: string;

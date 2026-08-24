@@ -149,6 +149,41 @@
         margin-bottom: $p-space-5;
     }
 
+    // Mobilde masaüstündeki "..." menüsüne (Düzenle/Şifre Sıfırla/Pasifleştir)
+    // erişim yoktu — aynı işlemler burada, detay sheet'inde bir buton satırı
+    // olarak sunulur.
+    .sheet-actions {
+        display: flex;
+        gap: $p-space-2;
+        margin-bottom: $p-space-4;
+
+        button {
+            flex: 1;
+            padding: $p-space-2 $p-space-3;
+            border-radius: $p-radius-md;
+            border: 1px solid $p-border;
+            background: $p-surface;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: $p-text-secondary;
+            cursor: pointer;
+
+            &:hover {
+                background: $p-surface-muted;
+            }
+
+            &.danger {
+                color: $p-danger;
+                border-color: rgba(220, 38, 38, 0.3);
+
+                &:hover {
+                    background: $p-danger-soft;
+                }
+            }
+        }
+    }
+
     .sheet-review-btn {
         width: 100%;
         text-align: center;

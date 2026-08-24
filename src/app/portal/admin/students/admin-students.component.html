@@ -145,7 +145,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let s of studentPage()!.items" class="student-row" (click)="openStudentSheet(s)">
+            <tr *ngFor="let s of studentPage()!.items" class="student-row" [class.inactive]="!s.active" (click)="openStudentSheet(s)">
                 <td>{{ s.firstName }} {{ s.lastName }}</td>
                 <td class="muted">{{ s.username }}</td>
                 <td class="col-teacher">{{ s.teacherName || '—' }}</td>
@@ -190,6 +190,11 @@
         <div class="sheet-status-row">
             <span class="sheet-status-label">Sınav Durumu</span>
             <span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span>
+        </div>
+
+        <div class="sheet-actions">
+            <button type="button" (click)="closeStudentSheet(); startEdit(s)">Düzenle</button>
+            <button type="button" (click)="closeStudentSheet(); startResetPassword(s)">Şifre Sıfırla</button>
         </div>
 
         <div class="summary-grid sheet-grid">

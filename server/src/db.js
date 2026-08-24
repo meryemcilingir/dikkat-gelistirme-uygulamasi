@@ -1012,7 +1012,7 @@ async function getQuestionMetaMap() {
 }
 
 /** Gerçek 150 soru + taslak sorular; her biri için metadata + istatistik birleştirilmiş liste (bellek içi filtre/sırala/sayfala — veri seti küçük). */
-async function listAdminQuestions({ search, categoryId, active, sortBy, sortDirection, page, pageSize }) {
+async function listAdminQuestions({ search, categoryId, active, correctRateMin, correctRateMax, noData, sortBy, sortDirection, page, pageSize }) {
     const metaMap = await getQuestionMetaMap();
     // Filtre, listedeki "category" (görünen ad, açık atama YOKSA anahtar-kelime
     // eşlemesinden gelir) ile eşleşmeli — yalnızca categoryId'ye bakmak, hiç
@@ -1067,6 +1067,18 @@ async function listAdminQuestions({ search, categoryId, active, sortBy, sortDire
     if (active === 'active') filtered = filtered.filter(it => it.active && !it.isDraft);
     else if (active === 'passive') filtered = filtered.filter(it => !it.active && !it.isDraft);
     else if (active === 'draft') filtered = filtered.filter(it => it.isDraft);
+
+    // "Dikkat Gerektirenler" satırlarından gelen başarı-aralığı filtresi —
+    // noData ile aralık filtreleri karşılıklı dışlayan (mutually exclusive)
+    // kümeler olsun diye birlikte uygulanmaz (bkz. question-analysis.component.ts).
+    if (noData) {
+        filtered = filtered.filter(it => it.answered === 0);
+    } else {
+        const rateMin = toNumberOrNull(correctRateMin);
+        const rateMax = toNumberOrNull(correctRateMax);
+        if (rateMin !== null) filtered = filtered.filter(it => it.correctRate !== null && it.correctRate >= rateMin);
+        if (rateMax !== null) filtered = filtered.filter(it => it.correctRate !== null && it.correctRate <= rateMax);
+    }
 
     const dir = sortDirection === 'desc' ? -1 : 1;
     if (sortBy === 'correctRate') {

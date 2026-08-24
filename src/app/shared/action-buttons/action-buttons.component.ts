@@ -35,13 +35,24 @@ import { QuestionPreviewService } from '../../core/services/question-preview.ser
     standalone: true,
     imports: [CommonModule],
     template: `
-        <div class="action-buttons" *ngIf="!reviewMode.active() && !preview.active()">
+        <div class="action-buttons" [class.student-exam-actions]="isStudent" *ngIf="!reviewMode.active() && !preview.active()">
             <button
                 *ngIf="!isStudent"
                 class="btn btn-clear"
                 (click)="reset.emit()"
             >
                 <span class="material-icons btn-icon">refresh</span> Baştan Başla
+            </button>
+            <!-- Mobilde sağ üstteki sabit "Çıkış Yap" gizlenir (bkz. session-bar.component.scss);
+                 yerine bu satırda, Gönder'in solunda ghost bir buton olarak görünür.
+                 Masaüstünde .btn-exit { display:none } — çift buton olmasın. -->
+            <button
+                *ngIf="isStudent"
+                type="button"
+                class="btn-exit"
+                (click)="onExitClick()"
+            >
+                Çıkış Yap
             </button>
             <button
                 class="btn btn-check"
@@ -53,6 +64,17 @@ import { QuestionPreviewService } from '../../core/services/question-preview.ser
             </button>
         </div>
     `,
+    // Angular custom element'i varsayılan olarak "inline" — bu yüzden içindeki
+    // .action-buttons'un width:100% (bkz. styles.scss .student-exam-actions)
+    // kuralı, host kendisi shrink-to-fit kaldığı için hiç etkili olmuyordu.
+    // Host'u block+tam genişlik yapmak masaüstünde görünümü değiştirmez
+    // (içerik zaten .frame-bottom'un tüm genişliğinde ortalanıyordu).
+    styles: [`
+        :host {
+            display: block;
+            width: 100%;
+        }
+    `],
 })
 export class ActionButtonsComponent {
     private auth = inject(AuthService);
@@ -77,6 +99,11 @@ export class ActionButtonsComponent {
 
     get isStudent(): boolean {
         return this.auth.currentUser()?.role === 'student';
+    }
+
+    /** Mobil alt bar'daki "Çıkış Yap" — session-bar'daki butonla AYNI onay akışını tetikler. */
+    onExitClick(): void {
+        this.auth.requestLogout();
     }
 
     onCheckClick(): void {

@@ -27,6 +27,21 @@ export class ExamSessionService {
     private readonly _submitting = signal(false);
     readonly submitting = this._submitting.asReadonly();
 
+    /**
+     * "Cevabınız gönderildi" bildirimi — `submitting` ile AYNI anda başlar
+     * ama ondan bağımsız, sabit bir süre boyunca açık kalır. `submitting`
+     * yalnızca gerçek network+navigate süresi kadar açık (soru geçiş hızını
+     * bozmamak için olabildiğince kısa); bildirimi de ona bağlarsak (soru
+     * önceden yüklendiği için ~anlık kapanıyor) okunamadan kayboluyordu.
+     * Blocker kalkınca kullanıcı zaten bir sonraki soruyla etkileşebilir —
+     * bu bildirim yalnızca üstte kısa süre görünen, hiçbir şeyi engellemeyen
+     * bir katman.
+     */
+    private readonly _toastVisible = signal(false);
+    readonly toastVisible = this._toastVisible.asReadonly();
+    private toastTimer: ReturnType<typeof setTimeout> | null = null;
+    private static readonly TOAST_DURATION_MS = 1400;
+
     private loadPromise: Promise<StudentExamState> | null = null;
 
     /**
@@ -93,6 +108,9 @@ export class ExamSessionService {
     beginSubmitIfActive(activityPath: string): boolean {
         if (this.currentQuestionPath() !== activityPath) return false;
         this._submitting.set(true);
+        this._toastVisible.set(true);
+        if (this.toastTimer) clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => this._toastVisible.set(false), ExamSessionService.TOAST_DURATION_MS);
         return true;
     }
 
@@ -166,5 +184,7 @@ export class ExamSessionService {
     reset(): void {
         this._examState.set(null);
         this._submitting.set(false);
+        this._toastVisible.set(false);
+        if (this.toastTimer) clearTimeout(this.toastTimer);
     }
 }

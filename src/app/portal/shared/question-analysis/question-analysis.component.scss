@@ -24,6 +24,14 @@
     margin-bottom: 4px;
 }
 
+// "Başarı %X" değerinin yanındaki "· N cevap" — daha küçük, soluk ikincil metin.
+.hbar-meta {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #9ca3af;
+    margin-left: 4px;
+}
+
 // "Soru Başarı Dağılımı" çubukları — tıklanınca ilgili sorulara (Sorular
 // sekmesi, başarı oranına göre sıralı) götürür. Paylaşılan .column-chart-col
 // varsayılan olarak cursor:default kullanır (başka ekranlarda salt bilgi

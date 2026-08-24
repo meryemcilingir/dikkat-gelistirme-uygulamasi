@@ -18,6 +18,13 @@
     </div>
 </div>
 
+<div class="filter-chips" *ngIf="rateFilterLabel">
+    <span class="chip">
+        {{ rateFilterLabel }}
+        <button type="button" (click)="clearRateFilter()" aria-label="Filtreyi kaldır">×</button>
+    </span>
+</div>
+
 <div class="table-scroll skeleton-table" *ngIf="loading()">
     <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]"></div>
 </div>

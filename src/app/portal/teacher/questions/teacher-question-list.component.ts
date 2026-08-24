@@ -36,6 +36,11 @@ export class TeacherQuestionListComponent implements OnInit {
     @Input() initialSortBy: SortKey = 'questionIndex';
     @Input() initialSortDirection: 'asc' | 'desc' = 'asc';
 
+    /** Analiz sekmesindeki "Dikkat Gerektirenler" satırından gelindiğinde başlangıç başarı-aralığı filtresi. */
+    @Input() initialRateMin: number | null = null;
+    @Input() initialRateMax: number | null = null;
+    @Input() initialNoData = false;
+
     readonly loading = signal(true);
     readonly allQuestions = signal<QuestionStat[]>([]);
     readonly sortPresets = QUESTION_SORT_PRESETS;
@@ -44,12 +49,19 @@ export class TeacherQuestionListComponent implements OnInit {
     private sortBy: SortKey = 'questionIndex';
     private sortDirection: 'asc' | 'desc' = 'asc';
 
+    rateMin: number | null = null;
+    rateMax: number | null = null;
+    noDataFilter = false;
+
     readonly page = signal(1);
     readonly pageSize = signal(25);
 
     async ngOnInit(): Promise<void> {
         this.sortBy = this.initialSortBy;
         this.sortDirection = this.initialSortDirection;
+        this.rateMin = this.initialRateMin;
+        this.rateMax = this.initialRateMax;
+        this.noDataFilter = this.initialNoData;
         this.loading.set(true);
         try {
             const res = await this.teacherApi.getQuestionStats({ page: 1, pageSize: 150, sortBy: 'questionIndex', sortDirection: 'asc' });
@@ -74,6 +86,22 @@ export class TeacherQuestionListComponent implements OnInit {
         this.page.set(1);
     }
 
+    /** Filtre çipinde gösterilecek etiket (bkz. teacher-questions.component.ts viewFilteredQuestions). */
+    get rateFilterLabel(): string | null {
+        if (this.noDataFilter) return 'Yeterli veri yok';
+        if (this.rateMin === null && this.rateMax === null) return null;
+        if (this.rateMin === null) return `Başarı: %${this.rateMax} ve altı`;
+        if (this.rateMax === null) return `Başarı: %${this.rateMin} ve üzeri`;
+        return `Başarı: %${this.rateMin}–${this.rateMax}`;
+    }
+
+    clearRateFilter(): void {
+        this.rateMin = null;
+        this.rateMax = null;
+        this.noDataFilter = false;
+        this.page.set(1);
+    }
+
     private get filteredSorted(): QuestionStat[] {
         const term = this.search.trim().toLowerCase();
         let items = this.allQuestions();
@@ -82,6 +110,12 @@ export class TeacherQuestionListComponent implements OnInit {
                 this.title(q.questionId).toLowerCase().includes(term) ||
                 q.category.toLowerCase().includes(term)
             );
+        }
+        if (this.noDataFilter) {
+            items = items.filter(q => q.answered === 0);
+        } else {
+            if (this.rateMin !== null) items = items.filter(q => q.answered > 0 && q.correctRate >= this.rateMin!);
+            if (this.rateMax !== null) items = items.filter(q => q.answered > 0 && q.correctRate <= this.rateMax!);
         }
         const key = this.sortBy;
         const dir = this.sortDirection === 'asc' ? 1 : -1;

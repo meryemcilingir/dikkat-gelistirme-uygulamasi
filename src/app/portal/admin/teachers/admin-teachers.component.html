@@ -136,7 +136,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let t of teacherPage()!.items" class="teacher-row" (click)="openTeacherSheet(t)">
+            <tr *ngFor="let t of teacherPage()!.items" class="teacher-row" [class.inactive]="!t.active" (click)="openTeacherSheet(t)">
                 <td>{{ t.firstName }} {{ t.lastName }}</td>
                 <td class="muted">{{ t.username }}</td>
                 <td>{{ t.studentCount }}</td>
@@ -181,6 +181,14 @@
             <span class="badge" [class.Completed]="t.active" [class.Assigned]="!t.active">
                 {{ t.active ? 'Aktif' : 'Pasif' }}
             </span>
+        </div>
+
+        <div class="sheet-actions">
+            <button type="button" (click)="closeTeacherSheet(); startEdit(t)">Düzenle</button>
+            <button type="button" (click)="closeTeacherSheet(); startResetPassword(t)">Şifre Sıfırla</button>
+            <button type="button" class="danger" (click)="toggleActive(t); closeTeacherSheet()">
+                {{ t.active ? 'Pasifleştir' : 'Aktifleştir' }}
+            </button>
         </div>
 
         <div class="summary-grid sheet-grid">

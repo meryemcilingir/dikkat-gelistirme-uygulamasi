@@ -152,8 +152,10 @@ router.get('/question-stats/:questionId', asyncHandler(async (req, res) => {
 // (kategori ataması, aktif/pasif, taslak soru) için.
 
 router.get('/questions', asyncHandler(async (req, res) => {
-    const { search, categoryId, active, sortBy, sortDirection, page, pageSize } = req.query;
-    const result = await db.listAdminQuestions({ search, categoryId, active, sortBy, sortDirection, page, pageSize });
+    const { search, categoryId, active, correctRateMin, correctRateMax, noData, sortBy, sortDirection, page, pageSize } = req.query;
+    const result = await db.listAdminQuestions({
+        search, categoryId, active, correctRateMin, correctRateMax, noData: noData === 'true', sortBy, sortDirection, page, pageSize,
+    });
     res.json(result);
 }));
 

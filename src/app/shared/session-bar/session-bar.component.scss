@@ -6,7 +6,10 @@
     position: fixed;
     top: 14px;
     right: 14px;
-    z-index: 800;
+    // Soru geçişlerinde her seferinde beliren tam sayfa "gönderildi" katmanının
+    // (bkz. exam-submit-overlay, z-index 980/985) ÜSTÜNDE kalsın — böylece
+    // buton her soru gönderiminde bir an için kaybolup tekrar belirmez.
+    z-index: 995;
     height: 44px;
     padding: 0 16px;
     border-radius: 22px;
@@ -24,5 +27,14 @@
 
     .icon {
         font-size: 1.2rem;
+    }
+
+    // Mobilde bu köşe butonu tamamen gizlenir — "Çıkış Yap" yerine alt sabit
+    // action bar'daki ghost buton kullanılır (bkz. action-buttons.component.ts
+    // `.btn-exit`). Kırılım noktası soru çerçevesinin kendi mobil sınırıyla
+    // (styles.scss $breakpoint-mobile) birebir aynı: 768px'te .frame-top zaten
+    // tam genişliğe yayılıyor, üstte kalan bir köşe butonu onunla çakışırdı.
+    @media (max-width: 768px) {
+        display: none;
     }
 }

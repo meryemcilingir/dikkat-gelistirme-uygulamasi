@@ -128,6 +128,41 @@ import { ActivityService } from '../../core/services/activity.service';
       flex-shrink: 0;
       white-space: nowrap;
     }
+
+    /* Mobilde numara + ilerleme + metin tek satıra sıkışıyordu (masaüstünde
+       tasarım aynı kalıyor — bu blok yalnızca ≤768px'te devreye girer).
+       Numara solda, ilerleme rozeti sağda sabit kalır; metin aradaki alanı
+       kullanır ve gerektiğinde 2 satıra sarar (küçültülmez/kırpılmaz). */
+    @media (max-width: 768px) {
+      .instruction-card {
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        padding: 12px 16px;
+        gap: 10px;
+      }
+
+      .instruction-icons {
+        display: none;
+      }
+
+      .question-number {
+        font-size: 1.25rem;
+        line-height: 1.35;
+        padding-top: 1px;
+      }
+
+      .instruction-text {
+        text-align: left;
+        font-size: 0.95rem;
+        line-height: 1.35;
+      }
+
+      .progress-counter {
+        font-size: 0.76rem;
+        padding: 4px 10px;
+        margin-top: 2px;
+      }
+    }
   `]
 })
 export class ActivityHeaderComponent {

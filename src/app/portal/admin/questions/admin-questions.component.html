@@ -224,6 +224,10 @@
             {{ query.active === 'active' ? 'Aktif' : (query.active === 'passive' ? 'Pasif' : 'Taslak') }}
             <button type="button" (click)="query.active = ''; reloadQuestions(1)" aria-label="Filtreyi kaldır">×</button>
         </span>
+        <span class="chip" *ngIf="rateFilterLabel">
+            {{ rateFilterLabel }}
+            <button type="button" (click)="clearRateFilter()" aria-label="Filtreyi kaldır">×</button>
+        </span>
     </div>
 
     <div class="table-scroll skeleton-table" *ngIf="questionsLoading()">
@@ -425,7 +429,12 @@
 
 <!-- ═══════════════════ ANALİZ ═══════════════════ -->
 <ng-container *ngIf="tab() === 'analysis'">
-    <app-question-analysis scope="admin" [embedded]="true" (viewQuestionsSorted)="viewQuestionsSorted($event)"></app-question-analysis>
+    <app-question-analysis
+        scope="admin"
+        [embedded]="true"
+        (viewQuestionsSorted)="viewQuestionsSorted($event)"
+        (viewFilteredQuestions)="viewFilteredQuestions($event)"
+    ></app-question-analysis>
 </ng-container>
 
 <!-- ═══════════════════ SORU DETAY DRAWER ═══════════════════ -->

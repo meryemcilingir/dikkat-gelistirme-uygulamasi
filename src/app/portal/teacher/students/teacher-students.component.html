@@ -134,7 +134,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let s of studentPage()!.items" class="student-row" (click)="openStudentSheet(s)">
+            <tr *ngFor="let s of studentPage()!.items" class="student-row" [class.inactive]="!s.active" (click)="openStudentSheet(s)">
                 <td>{{ s.firstName }} {{ s.lastName }}</td>
                 <td class="muted">{{ s.username }}</td>
                 <td>{{ s.exam.answered }} / {{ s.exam.total }}</td>
@@ -153,6 +153,9 @@
                         <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
                             <button (click)="startEdit(s); closeMenu()">Düzenle</button>
                             <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
+                            <button class="danger" (click)="toggleActive(s)">
+                                {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
+                            </button>
                         </div>
                     </div>
                 </td>
@@ -175,6 +178,14 @@
         <div class="sheet-status-row">
             <span class="sheet-status-label">Sınav Durumu</span>
             <span class="badge" [class]="s.exam.status">{{ statusLabel(s) }}</span>
+        </div>
+
+        <div class="sheet-actions">
+            <button type="button" (click)="closeStudentSheet(); startEdit(s)">Düzenle</button>
+            <button type="button" (click)="closeStudentSheet(); startResetPassword(s)">Şifre Sıfırla</button>
+            <button type="button" class="danger" (click)="toggleActive(s); closeStudentSheet()">
+                {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
+            </button>
         </div>
 
         <div class="summary-grid sheet-grid">

@@ -224,6 +224,12 @@ export class TeacherStudentsComponent implements OnInit {
         }
     }
 
+    async toggleActive(student: StudentWithExam): Promise<void> {
+        this.openMenuId.set(null);
+        await this.teacherApi.updateStudent(student.id, { active: !student.active });
+        await this.reload();
+    }
+
     startResetPassword(student: StudentWithExam): void {
         this.closePanels();
         this.resettingStudent.set(student);

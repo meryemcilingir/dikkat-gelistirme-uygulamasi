@@ -67,35 +67,36 @@
 <div class="empty" *ngIf="!loading() && studentPage()?.total === 0">Kayıt bulunamadı.</div>
 
 <div class="table-scroll" *ngIf="!loading() && (studentPage()?.total ?? 0) > 0">
-    <table class="student-table">
+    <table class="student-table student-table-responsive">
         <thead>
             <tr>
                 <th class="sortable" (click)="sortBy('name')">Ad Soyad {{ sortIcon('name') }}</th>
-                <th class="sortable" (click)="sortBy('username')">Username {{ sortIcon('username') }}</th>
+                <th class="sortable" (click)="sortBy('username')">Kullanıcı Adı {{ sortIcon('username') }}</th>
                 <th class="sortable" (click)="sortBy('progress')">İlerleme {{ sortIcon('progress') }}</th>
                 <th>Sınav Durumu</th>
-                <th class="sortable" (click)="sortBy('correctRate')">Doğru {{ sortIcon('correctRate') }}</th>
-                <th>Yanlış</th>
-                <th class="sortable" (click)="sortBy('score')">Puan {{ sortIcon('score') }}</th>
-                <th></th>
+                <th class="sortable col-dy" (click)="sortBy('correctRate')">D / Y {{ sortIcon('correctRate') }}</th>
+                <th class="sortable col-score" (click)="sortBy('score')">Puan {{ sortIcon('score') }}</th>
+                <th class="col-actions"></th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let s of studentPage()!.items">
+            <tr *ngFor="let s of studentPage()!.items" class="student-row" [class.inactive]="!s.active" (click)="openStudentSheet(s)">
                 <td>{{ s.firstName }} {{ s.lastName }}</td>
                 <td class="muted">{{ s.username }}</td>
                 <td>{{ s.exam.answered }} / {{ s.exam.total }}</td>
                 <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
-                <td class="ok">{{ s.exam.correctCount ?? 0 }}</td>
-                <td class="bad">{{ s.exam.wrongCount ?? 0 }}</td>
-                <td>
+                <td class="col-dy">
+                    <span class="ok">{{ s.exam.correctCount ?? 0 }}</span> /
+                    <span class="bad">{{ s.exam.wrongCount ?? 0 }}</span>
+                </td>
+                <td class="col-score">
                     <div class="score-cell">
                         <span>{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
                         <span class="score-secondary" *ngIf="s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined">Başarı %{{ s.exam.finalScore }}</span>
                     </div>
                 </td>
-                <td class="actions-cell">
-                    <button class="link-btn review" (click)="openReview(s)" [disabled]="s.exam.answered === 0">İncele</button>
+                <td class="actions-cell col-actions">
+                    <button class="link-btn review" (click)="openReview(s); $event.stopPropagation()" [disabled]="s.exam.answered === 0">İncele</button>
                 </td>
             </tr>
         </tbody>
@@ -111,3 +112,54 @@
     (pageChange)="reload($event)"
     (pageSizeChange)="query.pageSize = $event; reload(1)"
 ></app-pagination>
+
+<!-- ── Mobil: öğrenci detay bottom sheet'i ─────────────────── -->
+<div class="sheet-backdrop" *ngIf="selectedStudent() as s" (click)="closeStudentSheet()">
+    <div class="mobile-sheet" (click)="$event.stopPropagation()">
+        <div class="sheet-drag-handle"></div>
+        <button class="sheet-close-btn" (click)="closeStudentSheet()" aria-label="Kapat">×</button>
+
+        <div class="sheet-header">
+            <h3>{{ s.firstName }} {{ s.lastName }}</h3>
+            <p class="sheet-username">&#64;{{ s.username }}</p>
+        </div>
+
+        <div class="sheet-status-row">
+            <span class="sheet-status-label">Sınav Durumu</span>
+            <span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span>
+        </div>
+
+        <div class="summary-grid sheet-grid">
+            <div>
+                <span class="label">İlerleme</span>
+                <span class="value">{{ s.exam.answered }} / {{ s.exam.total }}</span>
+            </div>
+            <div>
+                <span class="label">Puan</span>
+                <span class="value">{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
+            </div>
+            <div>
+                <span class="label">Başarı</span>
+                <span class="value">{{ s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined ? ('%' + s.exam.finalScore) : '—' }}</span>
+            </div>
+            <div>
+                <span class="label">Doğru</span>
+                <span class="value correct">{{ s.exam.correctCount ?? 0 }}</span>
+            </div>
+            <div>
+                <span class="label">Yanlış</span>
+                <span class="value wrong">{{ s.exam.wrongCount ?? 0 }}</span>
+            </div>
+            <div>
+                <span class="label">Toplam Süre</span>
+                <span class="value">{{ formatDuration(s.exam.totalTimeSeconds) }}</span>
+            </div>
+            <div>
+                <span class="label">Ort. Soru Süresi</span>
+                <span class="value">{{ formatDuration(avgTimeSeconds(s)) }}</span>
+            </div>
+        </div>
+
+        <button class="primary-btn sheet-review-btn" (click)="reviewFromSheet()" [disabled]="s.exam.answered === 0">Sınavı İncele &rarr;</button>
+    </div>
+</div>

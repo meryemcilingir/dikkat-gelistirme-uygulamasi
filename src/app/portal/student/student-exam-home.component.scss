@@ -195,3 +195,85 @@
         color: $p-text-secondary;
     }
 }
+
+// ── Sınava başlamadan önce kural bilgi kartı ────────────────
+@keyframes p-confirm-in {
+    from { opacity: 0; transform: scale(0.97) translateY(4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: rgba(17, 24, 39, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: p-confirm-in 140ms ease-out;
+}
+
+.confirm-card {
+    background: $p-surface;
+    border-radius: $p-radius-lg;
+    padding: $p-space-6;
+    width: min(400px, 100%);
+    box-shadow: 0 16px 40px rgba(17, 24, 39, 0.18);
+    font-family: $p-font;
+}
+
+.confirm-title {
+    margin: 0 0 $p-space-4;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $p-text;
+}
+
+.confirm-rules {
+    margin: 0 0 $p-space-5;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: $p-space-2;
+    font-size: 0.86rem;
+    color: $p-text-secondary;
+    line-height: 1.5;
+
+    strong {
+        color: $p-text;
+        font-weight: 700;
+    }
+}
+
+.confirm-card .actions {
+    display: flex;
+    gap: $p-space-3;
+    width: 100%;
+}
+
+.confirm-card .btn {
+    flex: 1;
+    padding: $p-space-3 0;
+    border-radius: $p-radius-md;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &.cancel {
+        background: $p-surface-muted;
+        color: $p-text-secondary;
+
+        &:hover { background: $p-border; }
+    }
+
+    &.confirm {
+        background: $p-accent;
+        color: #fff;
+
+        &:hover { background: color.adjust($p-accent, $lightness: -6%); }
+    }
+}

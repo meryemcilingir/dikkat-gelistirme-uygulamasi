@@ -12,11 +12,13 @@
     background: $color-bg;
 }
 
-// Sağ üstte beliren küçük bildirim.
+// Çıkış Yap butonunun (bkz. session-bar.component.scss: top 14px, height 44px,
+// z-index 995) hemen altında beliren küçük bildirim — üst üste binmesin diye
+// butonun altındaki boşlukta, kendi z-index'i butonunkinden düşük kalır.
 .submit-toast {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 66px;
+    right: 14px;
     z-index: 985;
     background: #fff;
     color: $color-text;
@@ -26,10 +28,9 @@
     padding: 12px 18px;
     border-radius: 14px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
-    // Katman artık yalnızca gerçek navigasyon süresi kadar açık kalıyor (yapay
-    // bekleme yok) — bildirim bu kısa pencerede hemen görünür olsun diye
-    // sadece hızlı bir fade-in var; kapanışı zaten katmanın kendisi (ng-container
-    // kaldırılınca) hallediyor.
+    // Görünürlüğü artık `submitting`'den bağımsız, sabit bir süre boyunca
+    // açık (bkz. ExamSessionService.TOAST_DURATION_MS) — soru geçişi kendisi
+    // hâlâ olabildiğince hızlı, ama bildirim okunabilecek kadar ekranda kalır.
     animation: toast-in 150ms ease-out forwards;
 }
 

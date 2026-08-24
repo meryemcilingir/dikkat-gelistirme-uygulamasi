@@ -1,11 +1,13 @@
-<ng-container *ngIf="examSession.submitting()">
-    <!-- Tam sayfayı kaplayan görünmez katman: altındaki doğru/yanlış görselini
-         (renkler, işaretler) öğrenciye göstermeden tıklamaları da engeller.
-         Sınav soruları artık uygulama açılışında preload edildiği için
-         (bkz. ExamPreloadStrategy) bir sonraki soru neredeyse anında hazır —
-         bu yüzden burada ayrıca bir yükleniyor göstergesine gerek yok. -->
-    <div class="submit-blocker"></div>
+<!-- Tam sayfayı kaplayan görünmez katman: altındaki doğru/yanlış görselini
+     (renkler, işaretler) öğrenciye göstermeden tıklamaları da engeller.
+     Sınav soruları artık uygulama açılışında preload edildiği için
+     (bkz. ExamPreloadStrategy) bir sonraki soru neredeyse anında hazır —
+     bu yüzden burada ayrıca bir yükleniyor göstergesine gerek yok. Soru
+     geçiş hızını korumak için `submitting` yalnızca gerçek network+navigate
+     süresi kadar açık kalır. -->
+<div class="submit-blocker" *ngIf="examSession.submitting()"></div>
 
-    <!-- Sağ üstte beliren, kısa süre sonra kaybolan küçük bildirim. -->
-    <div class="submit-toast">Cevabınız gönderildi</div>
-</ng-container>
+<!-- Çıkış Yap butonunun altında beliren bildirim — `submitting`'den BAĞIMSIZ
+     sabit bir süre boyunca açık kalır (bkz. ExamSessionService.toastVisible)
+     ki okunabilsin; blocker kalkınca bir sonraki soruyla etkileşimi engellemez. -->
+<div class="submit-toast" *ngIf="examSession.toastVisible()">Cevabınız gönderildi</div>

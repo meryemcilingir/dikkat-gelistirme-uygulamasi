@@ -58,8 +58,32 @@ export class StudentExamHomeComponent implements OnInit {
         return this.status() === 'InProgress' ? 'Devam Et' : 'Sınava Başla';
     }
 
+    /**
+     * Henüz başlamamış bir sınav için önce kural bilgi kartını gösterir
+     * (bkz. şablon `confirmingStart`) — "Devam Et" (zaten başlamış sınav)
+     * için tekrar tekrar aynı uyarıyı göstermenin faydası yok, direkt devam eder.
+     */
+    readonly confirmingStart = signal(false);
+
+    requestStart(): void {
+        if (this.status() === 'InProgress') {
+            this.start();
+            return;
+        }
+        this.confirmingStart.set(true);
+    }
+
+    cancelStart(): void {
+        this.confirmingStart.set(false);
+    }
+
+    confirmStart(): void {
+        this.confirmingStart.set(false);
+        this.start();
+    }
+
     /** Sıradaki soruya gider (tamamlanmış sınavlar için hiç çağrılmaz — bkz. şablon). */
-    start(): void {
+    private start(): void {
         const state = this.examSession.examState();
         if (!state || state.attempt.status === 'Completed') return;
         const next = state.questions[state.attempt.currentIndex];

@@ -119,4 +119,40 @@ export class TeacherDetailStudentsComponent implements OnChanges {
         if (status === 'InProgress') return 'Devam Ediyor';
         return 'Başlamadı';
     }
+
+    // ── Mobil: satıra dokununca açılan detay bottom sheet'i ────
+    // Masaüstünde davranış hiç değişmesin diye yalnızca mobil genişlikte tetiklenir.
+    // (bkz. admin-students.component.ts — aynı desen)
+    readonly selectedStudent = signal<StudentWithExam | null>(null);
+
+    openStudentSheet(s: StudentWithExam): void {
+        if (window.innerWidth > 640) return;
+        this.selectedStudent.set(s);
+    }
+
+    closeStudentSheet(): void {
+        this.selectedStudent.set(null);
+    }
+
+    reviewFromSheet(): void {
+        const s = this.selectedStudent();
+        if (!s || s.exam.answered === 0) return;
+        this.closeStudentSheet();
+        this.openReview(s);
+    }
+
+    avgTimeSeconds(s: StudentWithExam): number | null {
+        const total = s.exam.totalTimeSeconds;
+        if (!total || !s.exam.answered) return null;
+        return Math.round(total / s.exam.answered);
+    }
+
+    /** "46 dk 18 sn" / "18 sn" formatında gösterir; veri yoksa "—". */
+    formatDuration(seconds: number | null | undefined): string {
+        if (seconds === null || seconds === undefined) return '—';
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        if (mins === 0) return `${secs} sn`;
+        return `${mins} dk ${secs} sn`;
+    }
 }

@@ -14,6 +14,7 @@ import {
     Category,
 } from '../../../core/models/question-admin.model';
 import { ADMIN_QUESTION_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
+import { QuestionRateFilter } from '../../../core/models/question-stats.model';
 import { catColor } from '../../../core/models/category-color';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { FloatingMenuDirective } from '../../shared/floating-menu.directive';
@@ -64,7 +65,9 @@ export class AdminQuestionsComponent implements OnInit {
     readonly showFilters = signal(false);
 
     query: AdminQuestionQuery = {
-        page: 1, pageSize: PAGE_SIZE, search: '', categoryId: '', active: '', sortBy: 'index', sortDirection: 'asc',
+        page: 1, pageSize: PAGE_SIZE, search: '', categoryId: '', active: '',
+        correctRateMin: null, correctRateMax: null, noData: undefined,
+        sortBy: 'index', sortDirection: 'asc',
     };
 
     readonly selectedQuestion = signal<AdminQuestionDetail | null>(null);
@@ -112,12 +115,43 @@ export class AdminQuestionsComponent implements OnInit {
         if (t === 'questions' && !this.questionPage()) this.reloadQuestions(1);
     }
 
-    /** Analiz sekmesindeki "Dikkat Gerektirenler" / "Soru Başarı Dağılımı" — Sorular sekmesini başarı oranına göre sıralı açar. */
+    /** "Soru Başarı Dağılımı" çubuğu — Sorular sekmesini başarı oranına göre sıralı açar (filtre yok, yalnızca sıralama). */
     viewQuestionsSorted(direction: 'asc' | 'desc'): void {
         this.query.sortBy = 'correctRate';
         this.query.sortDirection = direction;
         this.tab.set('questions');
         this.reloadQuestions(1);
+    }
+
+    /** "Dikkat Gerektirenler" satırı — Sorular sekmesini o satırın başarı-aralığı filtresiyle açar. */
+    viewFilteredQuestions(filter: QuestionRateFilter): void {
+        this.query.search = '';
+        this.query.categoryId = '';
+        this.query.active = '';
+        this.query.correctRateMin = filter.correctRateMin ?? null;
+        this.query.correctRateMax = filter.correctRateMax ?? null;
+        this.query.noData = filter.noData || undefined;
+        this.query.sortBy = filter.noData ? 'index' : 'correctRate';
+        this.query.sortDirection = 'asc';
+        this.tab.set('questions');
+        this.reloadQuestions(1);
+    }
+
+    clearRateFilter(): void {
+        this.query.correctRateMin = null;
+        this.query.correctRateMax = null;
+        this.query.noData = undefined;
+        this.reloadQuestions(1);
+    }
+
+    /** Filtre çipinde gösterilecek etiket (bkz. viewFilteredQuestions). */
+    get rateFilterLabel(): string | null {
+        if (this.query.noData) return 'Yeterli veri yok';
+        const { correctRateMin, correctRateMax } = this.query;
+        if (correctRateMin == null && correctRateMax == null) return null;
+        if (correctRateMin == null) return `Başarı: %${correctRateMax} ve altı`;
+        if (correctRateMax == null) return `Başarı: %${correctRateMin} ve üzeri`;
+        return `Başarı: %${correctRateMin}–${correctRateMax}`;
     }
 
     private async loadOverview(): Promise<void> {
@@ -186,15 +220,18 @@ export class AdminQuestionsComponent implements OnInit {
         this.query.search = '';
         this.query.categoryId = '';
         this.query.active = '';
+        this.query.correctRateMin = null;
+        this.query.correctRateMax = null;
+        this.query.noData = undefined;
         this.reloadQuestions(1);
     }
 
     get activeFilterCount(): number {
-        return (this.query.categoryId ? 1 : 0) + (this.query.active ? 1 : 0);
+        return (this.query.categoryId ? 1 : 0) + (this.query.active ? 1 : 0) + (this.rateFilterLabel ? 1 : 0);
     }
 
     get hasActiveFilters(): boolean {
-        return !!(this.query.search || this.query.categoryId || this.query.active);
+        return !!(this.query.search || this.query.categoryId || this.query.active || this.rateFilterLabel);
     }
 
     categoryName(id: string | null | undefined): string {

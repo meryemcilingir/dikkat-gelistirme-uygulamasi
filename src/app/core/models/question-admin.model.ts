@@ -36,6 +36,11 @@ export interface AdminQuestionQuery {
     search?: string;
     categoryId?: string;
     active?: '' | 'active' | 'passive' | 'draft';
+    /** "Dikkat Gerektirenler" satırlarından gelen başarı-aralığı filtresi (bkz. QuestionRateFilter). */
+    correctRateMin?: number | null;
+    correctRateMax?: number | null;
+    /** true ise yalnızca hiç cevaplanmamış (answered=0) sorular. */
+    noData?: boolean;
     sortBy?: 'index' | 'correctRate' | 'title';
     sortDirection?: 'asc' | 'desc';
     page?: number;

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild, inject, sign
 import { CommonModule } from '@angular/common';
 import { TeacherService } from '../../../core/services/teacher.service';
 import { AdminService } from '../../../core/services/admin.service';
-import { QuestionStat, QuestionCategoryStat } from '../../../core/models/question-stats.model';
+import { QuestionStat, QuestionCategoryStat, QuestionRateFilter } from '../../../core/models/question-stats.model';
 import { questionTitle } from '../../../core/models/question-titles';
 import { QuestionDetailPanelComponent } from '../question-detail-panel/question-detail-panel.component';
 
@@ -35,6 +35,13 @@ export class QuestionAnalysisComponent implements OnInit {
      * sıralı git" sinyali gönderir — hem admin hem öğretmen tarafında.
      */
     @Output() viewQuestionsSorted = new EventEmitter<'asc' | 'desc'>();
+
+    /**
+     * "Dikkat Gerektirenler" satırına tıklanınca üst component'e (admin-questions /
+     * teacher-questions) "Sorular sekmesine, şu başarı-aralığı filtresiyle git"
+     * sinyali gönderir — hem admin hem öğretmen tarafında.
+     */
+    @Output() viewFilteredQuestions = new EventEmitter<QuestionRateFilter>();
 
     @ViewChild('detailPanel') detailPanel!: QuestionDetailPanelComponent;
 
@@ -82,9 +89,23 @@ export class QuestionAnalysisComponent implements OnInit {
         return this.categories().filter(c => c.totalAnswered > 0);
     }
 
-    /** Cevaplanan tüm sorular, en yüksek yanlış oranından düşüğe sıralı (API zaten bu sırada döner). */
+    /** Cevaplanan tüm sorular, en düşük başarı oranından en yükseğe sıralı. */
     get hardestQuestions(): QuestionStat[] {
-        return this.answeredQuestions;
+        return [...this.answeredQuestions].sort((a, b) => a.correctRate - b.correctRate);
+    }
+
+    /**
+     * "En Çok Zorlanılan Sorular" çubuğunun rengi — başarı oranı aralığına
+     * göre (bkz. görev tanımı: %0–25 kırmızı, %26–50 turuncu, %51–75 mor,
+     * %76–100 yeşil). Mevcut tasarım paletindeki tokenlarla birebir aynı
+     * (bkz. portal-tokens.scss) — TS içinden SCSS değişkenine erişilemediği
+     * için hex değerleri burada tekrar edilir.
+     */
+    rateBarColor(correctRate: number): string {
+        if (correctRate <= 25) return '#dc2626'; // $p-danger
+        if (correctRate <= 50) return '#d97706'; // $p-warning
+        if (correctRate <= 75) return '#4f46e5'; // $p-accent (mor/indigo)
+        return '#16a34a'; // $p-success
     }
 
     get sortedCategories(): QuestionCategoryStat[] {
@@ -140,22 +161,40 @@ export class QuestionAnalysisComponent implements OnInit {
         return Math.max(...this.distributionBuckets.map(b => b.count), 1);
     }
 
-    /** "Dikkat Gerektirenler" — düşük başarı eşikleri ve veri yetersizliği. */
-    get under10Count(): number {
-        return this.answeredQuestions.filter(q => q.correctRate < 10).length;
+    /**
+     * "Dikkat Gerektirenler" — karşılıklı dışlayan (mutually exclusive) üç
+     * grup: aynı soru asla iki satırda birden sayılmaz.
+     *  - Kritik: başarı oranı %10 ve altı
+     *  - Düşük performanslı: başarı oranı %11–25 (kritik hariç)
+     *  - Yeterli veri yok: hiç cevaplanmamış (answered=0) — diğer ikisi zaten
+     *    yalnızca cevaplanmış soruları (answeredQuestions) kapsadığı için
+     *    bu grupla hiçbir zaman kesişmez.
+     */
+    get criticalCount(): number {
+        return this.answeredQuestions.filter(q => q.correctRate <= 10).length;
     }
 
-    get under25Count(): number {
-        return this.answeredQuestions.filter(q => q.correctRate < 25).length;
+    get lowPerformanceCount(): number {
+        return this.answeredQuestions.filter(q => q.correctRate > 10 && q.correctRate <= 25).length;
     }
 
     get noDataCount(): number {
         return this.allQuestions().filter(q => q.answered === 0).length;
     }
 
-    /** "Dikkat Gerektirenler" satırı — "Sorular" sekmesini en düşük başarıdan sıralı açar. */
-    onViewLowScoreQuestions(): void {
-        this.viewQuestionsSorted.emit('asc');
+    /** "Kritik Sorular" satırı — Sorular sekmesini %10 ve altı filtresiyle açar. */
+    onViewCritical(): void {
+        this.viewFilteredQuestions.emit({ correctRateMax: 10 });
+    }
+
+    /** "Düşük Performanslı Sorular" satırı — Sorular sekmesini %11–25 filtresiyle açar. */
+    onViewLowPerformance(): void {
+        this.viewFilteredQuestions.emit({ correctRateMin: 11, correctRateMax: 25 });
+    }
+
+    /** "Yeterli Veri Olmayan Sorular" satırı — Sorular sekmesini yalnızca cevaplanmamışlarla açar. */
+    onViewNoData(): void {
+        this.viewFilteredQuestions.emit({ noData: true });
     }
 
     /**
