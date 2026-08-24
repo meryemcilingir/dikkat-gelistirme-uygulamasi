@@ -1,31 +1,23 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { TeacherService } from '../../../core/services/teacher.service';
 import { AdminService } from '../../../core/services/admin.service';
-import {
-    QuestionDetail,
-    QuestionStat,
-    QuestionStatsQuery,
-    QuestionStatsResult,
-} from '../../../core/models/question-stats.model';
-import { QUESTION_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
+import { QuestionStat, QuestionCategoryStat } from '../../../core/models/question-stats.model';
 import { questionTitle } from '../../../core/models/question-titles';
-import { PaginationComponent } from '../pagination/pagination.component';
-
-const PAGE_SIZE = 25;
+import { QuestionDetailPanelComponent } from '../question-detail-panel/question-detail-panel.component';
 
 /**
  * Soru Analizi — öğretmen kendi öğrencilerinin, yönetici sistem genelinin
- * TAMAMLANMIŞ sınavları üzerinden 150 sorunun istatistiğini görür.
+ * TAMAMLANMIŞ sınavları üzerinden 150 sorunun PERFORMANS analizini gösterir.
+ * Soru YÖNETİMİ (arama/filtre/kategori atama/aktif-pasif) burada yapılmaz —
+ * o iş admin tarafında ayrı "Sorular" sekmesinde; bu ekran salt-okunur analitik.
  * Ayrı bir veri kopyası yok: answers/exam_attempts tablolarından hesaplanan
  * mevcut API (`/api/{teacher,admin}/question-stats`) üzerinden okunur.
  */
 @Component({
     selector: 'app-question-analysis',
     standalone: true,
-    imports: [CommonModule, FormsModule, PaginationComponent],
+    imports: [CommonModule, QuestionDetailPanelComponent],
     templateUrl: './question-analysis.component.html',
     styleUrl: './question-analysis.component.scss',
 })
@@ -36,104 +28,143 @@ export class QuestionAnalysisComponent implements OnInit {
     /** Başka bir sayfanın sekmesi içinde gösteriliyorsa kendi sayfa başlığını çizmez. */
     @Input() embedded = false;
 
+    /**
+     * "Dikkat Gerektirenler" satırlarına veya "Soru Başarı Dağılımı"
+     * çubuklarına tıklanınca üst component'e (admin-questions /
+     * teacher-questions) "Sorular sekmesine, şu yönde başarı oranına göre
+     * sıralı git" sinyali gönderir — hem admin hem öğretmen tarafında.
+     */
+    @Output() viewQuestionsSorted = new EventEmitter<'asc' | 'desc'>();
+
+    @ViewChild('detailPanel') detailPanel!: QuestionDetailPanelComponent;
+
     private teacherApi = inject(TeacherService);
     private adminApi = inject(AdminService);
-    private router = inject(Router);
 
-    readonly sortPresets = QUESTION_SORT_PRESETS;
-    readonly result = signal<QuestionStatsResult | null>(null);
-    readonly loading = signal(false);
+    readonly loading = signal(true);
 
-    readonly selected = signal<QuestionDetail | null>(null);
-    readonly detailLoading = signal(false);
-    readonly detailTab = signal<'wrong' | 'correct'>('wrong');
+    /** Tüm 150 sorunun ham istatistiği (cevaplanmamışlar dahil) — tüm kartlar buradan türetilir. */
+    readonly allQuestions = signal<QuestionStat[]>([]);
+    readonly categories = signal<QuestionCategoryStat[]>([]);
 
-    /** Üstteki "en çok zorlanılan" özeti, ana tablonun sort/sayfa durumundan bağımsız — hep gerçek en kötü 5 soru. */
-    readonly topHardest = signal<QuestionStat[]>([]);
-
-    query: QuestionStatsQuery = {
-        page: 1, pageSize: PAGE_SIZE, sortBy: 'questionIndex', sortDirection: 'asc',
-    };
+    /** "Kategori Bazlı Başarı" listesi: true=düşükten yükseğe, false=yüksekten düşüğe. */
+    readonly categorySortAsc = signal(true);
 
     async ngOnInit(): Promise<void> {
-        const [, hardest] = await Promise.all([
-            this.reload(1),
-            this.api().getQuestionStats({ page: 1, pageSize: 150, sortBy: 'wrongCount', sortDirection: 'desc' }),
-        ]);
-        this.topHardest.set(hardest.items.filter(q => q.answered > 0));
+        this.loading.set(true);
+        try {
+            const res = await this.api().getQuestionStats({ page: 1, pageSize: 150, sortBy: 'wrongCount', sortDirection: 'desc' });
+            this.allQuestions.set(res.items);
+            this.categories.set(res.categories);
+        } finally {
+            this.loading.set(false);
+        }
     }
 
     private api() {
         return this.scope === 'admin' ? this.adminApi : this.teacherApi;
     }
 
-    async reload(page?: number): Promise<void> {
-        if (page) this.query.page = page;
-        this.loading.set(true);
-        try {
-            this.result.set(await this.api().getQuestionStats(this.query));
-        } finally {
-            this.loading.set(false);
-        }
-    }
-
-    get sortIndex(): number {
-        return presetIndexFor(this.sortPresets, this.query.sortBy, this.query.sortDirection);
-    }
-    set sortIndex(i: number) {
-        const preset = this.sortPresets[i];
-        if (!preset) return;
-        this.query.sortBy = preset.sortBy;
-        this.query.sortDirection = preset.sortDirection;
-        this.reload(1);
-    }
-
-    async openDetail(q: QuestionStat): Promise<void> {
-        this.detailLoading.set(true);
-        this.selected.set(null);
-        this.detailTab.set('wrong');
-        try {
-            this.selected.set(await this.api().getQuestionDetail(q.questionId));
-        } finally {
-            this.detailLoading.set(false);
-        }
-    }
-
-    closeDetail(): void {
-        this.selected.set(null);
-    }
-
-    goToStudentReview(studentId: string): void {
-        const base = this.scope === 'admin' ? '/admin/students' : '/teacher/students';
-        this.router.navigate([base, studentId, 'review']);
+    openDetail(q: QuestionStat): void {
+        this.detailPanel.open(q.questionId);
     }
 
     title(questionId: string): string {
         return questionTitle(questionId);
     }
 
-    /** Toplam cevaplanmış soru sayısı — kategori özetleri sayfalamadan bağımsız TÜM soruları kapsar. */
-    get totalAnsweredQuestions(): number {
-        return (this.result()?.categories ?? []).reduce((s, c) => s + c.questionCount, 0);
+    private get answeredQuestions(): QuestionStat[] {
+        return this.allQuestions().filter(q => q.answered > 0);
     }
 
-    /** Kategori bazlı ağırlıklı ortalama başarı (gerçek per-kategori verilerden hesaplanır, uydurma yok). */
+    /** Yalnızca gerçek veriye sahip kategoriler — "veri yok" kategoriler en zor/en başarılı sayılmaz. */
+    private get categoriesWithData(): QuestionCategoryStat[] {
+        return this.categories().filter(c => c.totalAnswered > 0);
+    }
+
+    /** Cevaplanan tüm sorular, en yüksek yanlış oranından düşüğe sıralı (API zaten bu sırada döner). */
+    get hardestQuestions(): QuestionStat[] {
+        return this.answeredQuestions;
+    }
+
+    get sortedCategories(): QuestionCategoryStat[] {
+        const list = this.categories();
+        // Backend avgCorrectRate'e göre azalan (yüksekten düşüğe) sıralı veriyor.
+        return this.categorySortAsc() ? [...list].reverse() : list;
+    }
+
+    toggleCategorySort(): void {
+        this.categorySortAsc.update(v => !v);
+    }
+
+    /** Toplam cevaplanmış soru sayısı — kategori özetleri üzerinden (mevcut backend alanı). */
+    get totalAnsweredQuestions(): number {
+        return this.categories().reduce((s, c) => s + c.questionCount, 0);
+    }
+
+    /** Kategori bazlı ağırlıklı ortalama başarı — "Genel Başarı" kartında gösterilir. */
     get weightedAvgCorrectRate(): number | null {
-        const categories = this.result()?.categories ?? [];
+        const categories = this.categories();
         const totalQ = categories.reduce((s, c) => s + c.questionCount, 0);
         if (!totalQ) return null;
         const sum = categories.reduce((s, c) => s + c.avgCorrectRate * c.questionCount, 0);
         return Math.round(sum / totalQ);
     }
 
-    /** Kategoriler backend'de avgCorrectRate'e göre azalan sıralı geliyor — son eleman en zorlanılan. */
-    get hardestCategory(): { category: string; avgCorrectRate: number } | null {
-        const categories = this.result()?.categories ?? [];
-        return categories.length ? categories[categories.length - 1] : null;
+    get hardestCategory(): QuestionCategoryStat | null {
+        const c = this.categoriesWithData;
+        return c.length ? c[c.length - 1] : null;
     }
 
-    hbarWidth(wrongRate: number): number {
-        const max = Math.max(...this.topHardest().map(q => q.wrongRate), 1);
-        return Math.round((wrongRate / max) * 100);
+    get mostSuccessfulCategory(): QuestionCategoryStat | null {
+        const c = this.categoriesWithData;
+        return c.length ? c[0] : null;
+    }
+
+    /** "Soru Başarı Dağılımı" — cevaplanmış sorular 4 başarı aralığına ayrılır. */
+    get distributionBuckets(): { label: string; min: number; max: number; count: number }[] {
+        const buckets = [
+            { label: '0–25%', min: 0, max: 25, count: 0 },
+            { label: '26–50%', min: 26, max: 50, count: 0 },
+            { label: '51–75%', min: 51, max: 75, count: 0 },
+            { label: '76–100%', min: 76, max: 100, count: 0 },
+        ];
+        for (const q of this.answeredQuestions) {
+            const bucket = buckets.find(b => q.correctRate >= b.min && q.correctRate <= b.max);
+            if (bucket) bucket.count++;
+        }
+        return buckets;
+    }
+
+    get maxDistributionCount(): number {
+        return Math.max(...this.distributionBuckets.map(b => b.count), 1);
+    }
+
+    /** "Dikkat Gerektirenler" — düşük başarı eşikleri ve veri yetersizliği. */
+    get under10Count(): number {
+        return this.answeredQuestions.filter(q => q.correctRate < 10).length;
+    }
+
+    get under25Count(): number {
+        return this.answeredQuestions.filter(q => q.correctRate < 25).length;
+    }
+
+    get noDataCount(): number {
+        return this.allQuestions().filter(q => q.answered === 0).length;
+    }
+
+    /** "Dikkat Gerektirenler" satırı — "Sorular" sekmesini en düşük başarıdan sıralı açar. */
+    onViewLowScoreQuestions(): void {
+        this.viewQuestionsSorted.emit('asc');
+    }
+
+    /**
+     * "Soru Başarı Dağılımı" çubuğu — ilgili sorulara götürür. Düşük başarı
+     * aralıkları (0-50%) en düşükten, yüksek aralıklar (51-100%) en
+     * yüksekten sıralı açılır ki tıklanan çubuğa karşılık gelen sorular
+     * listenin başında görünsün.
+     */
+    onViewBucket(bucket: { max: number }): void {
+        this.viewQuestionsSorted.emit(bucket.max <= 50 ? 'asc' : 'desc');
     }
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -30,7 +30,8 @@ export interface ShellNavSection {
 })
 export class PortalShellComponent {
     private router = inject(Router);
-    private elementRef = inject(ElementRef);
+
+    @ViewChild('userMenu') private userMenuRef?: ElementRef<HTMLElement>;
 
     @Input() brandLabel = 'Panel';
     @Input() sections: ShellNavSection[] = [];
@@ -78,7 +79,11 @@ export class PortalShellComponent {
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {
         if (!this.userMenuOpen()) return;
-        if (!this.elementRef.nativeElement.contains(event.target)) this.closeUserMenu();
+        // Önceden tüm shell'i (sidebar + topbar + tüm sayfa içeriği) referans
+        // alıyordu — bu yüzden neredeyse hiçbir tıklama gerçekten "dışarı"
+        // sayılmıyor, menü kapanmıyordu. Yalnızca kullanıcı menüsünün kendi
+        // alanına bakıyoruz.
+        if (!this.userMenuRef?.nativeElement.contains(event.target as Node)) this.closeUserMenu();
     }
 
     closeUserMenu(): void {

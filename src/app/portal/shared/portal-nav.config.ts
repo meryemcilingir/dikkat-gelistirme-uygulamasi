@@ -45,7 +45,7 @@ export const TEACHER_NAV_SECTIONS: ShellNavSection[] = [
     {
         label: 'Analitik',
         items: [
-            { label: 'Soru Analizi', icon: 'clipboard-check', link: '/teacher/questions' },
+            { label: 'Sorular', icon: 'file-text', link: '/teacher/questions' },
         ],
     },
 ];

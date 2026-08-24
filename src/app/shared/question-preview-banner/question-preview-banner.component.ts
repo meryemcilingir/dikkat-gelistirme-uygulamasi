@@ -4,9 +4,14 @@ import { Router } from '@angular/router';
 import { QuestionPreviewService } from '../../core/services/question-preview.service';
 
 /**
- * "Sınavda Gör" ile açılan soru önizlemesinin üstünde duran tek amaçlı geri
- * dönüş butonu. Sorunun kendi component'ine hiç dokunmaz — yalnızca üstüne
- * sabit konumlu küçük bir kontrol bindirir.
+ * "Sınavda Gör" ile açılan soru önizlemesinde geri dönüş butonu. Sorunun
+ * kendi component'ine hiç dokunmaz. Sabit konumu bilerek EKRANIN ALTINDA:
+ * önizleme sırasında ActionButtonsComponent hiç render edilmiyor (bkz.
+ * action-buttons.component.ts `*ngIf="!preview.active()"`), bu yüzden her
+ * sorunun global page-frame düzenindeki `.frame-bottom` alanı (styles.scss —
+ * sabit ~70-100px, tüm 150 soruda ortak) önizlemede daima boş kalır. Üstte
+ * konumlanırsa dar ekranlarda `.frame-top`'taki soru başlığının üzerine
+ * biniyordu (soru sayısı/yönerge metnini kapatıyordu) — altta bu risk yok.
  */
 @Component({
     selector: 'app-question-preview-banner',
@@ -22,7 +27,7 @@ import { QuestionPreviewService } from '../../core/services/question-preview.ser
 
         .preview-back-btn {
             position: fixed;
-            top: 16px;
+            bottom: 16px;
             left: 16px;
             z-index: 9999;
             display: inline-flex;

@@ -1,20 +1,20 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ExamSessionService } from '../../core/services/exam-session.service';
+import { PortalIconComponent } from '../shared/icon/portal-icon.component';
 
 /**
- * Öğrenci girişten sonra gördüğü basit dashboard: "Sınavlarım" başlığı
- * altında tek bir sınav kartı. Karta tıklayınca doğrudan soruya atlamaz —
- * önce kısa bir bilgi kartı gösterir (kaç soru var, nasıl işliyor), asıl
- * "Başla/Devam Et" o ekrandadır. Mevcut sınav akışına (ExamSessionService,
- * route'lar) hiç dokunmaz — yalnızca bu giriş ekranının kendisi.
+ * Öğrenci girişten sonra gördüğü ana ekran — admin/öğretmen paneliyle aynı
+ * kurumsal tasarım dilini (portal-tokens, .badge, .primary-btn, .metric-strip)
+ * kullanır. Öğrenciye kendi sonucu (puan/yüzde) hiçbir yerde gösterilmez —
+ * sınav tamamlandığında yalnızca "öğretmenine iletildi" bilgisi verilir.
  */
 @Component({
     selector: 'app-student-exam-home',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, PortalIconComponent],
     templateUrl: './student-exam-home.component.html',
     styleUrl: './student-exam-home.component.scss',
 })
@@ -23,11 +23,13 @@ export class StudentExamHomeComponent implements OnInit {
     private examSession = inject(ExamSessionService);
     private router = inject(Router);
 
+    @ViewChild('userMenu') private userMenuRef?: ElementRef<HTMLElement>;
+
+    readonly userMenuOpen = signal(false);
     readonly loading = signal(true);
     readonly currentIndex = signal(0);
     readonly total = signal(150);
     readonly status = signal<'Assigned' | 'InProgress' | 'Completed'>('Assigned');
-    readonly showInfo = signal(false);
     readonly firstName = this.auth.currentUser()?.firstName ?? '';
 
     async ngOnInit(): Promise<void> {
@@ -52,31 +54,38 @@ export class StudentExamHomeComponent implements OnInit {
         }
     }
 
-    /** Sınav kartına tıklanınca: tamamlanmışsa doğrudan sonuç ekranına, değilse önce bilgi kartına gider. */
-    openInfo(): void {
-        if (this.status() === 'Completed') {
-            this.router.navigate(['/end']);
-            return;
-        }
-        this.showInfo.set(true);
+    get actionLabel(): string {
+        return this.status() === 'InProgress' ? 'Devam Et' : 'Sınava Başla';
     }
 
-    closeInfo(): void {
-        this.showInfo.set(false);
-    }
-
+    /** Sıradaki soruya gider (tamamlanmış sınavlar için hiç çağrılmaz — bkz. şablon). */
     start(): void {
         const state = this.examSession.examState();
-        if (!state) return;
-        if (state.attempt.status === 'Completed') {
-            this.router.navigate(['/end']);
-            return;
-        }
+        if (!state || state.attempt.status === 'Completed') return;
         const next = state.questions[state.attempt.currentIndex];
         this.router.navigate([`/${next}`]);
     }
 
     logout(): void {
+        this.closeUserMenu();
         this.auth.requestLogout();
+    }
+
+    get userInitial(): string {
+        return (this.firstName.trim().charAt(0) || '?').toUpperCase();
+    }
+
+    toggleUserMenu(): void {
+        this.userMenuOpen.update(v => !v);
+    }
+
+    closeUserMenu(): void {
+        this.userMenuOpen.set(false);
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        if (!this.userMenuOpen()) return;
+        if (!this.userMenuRef?.nativeElement.contains(event.target as Node)) this.closeUserMenu();
     }
 }

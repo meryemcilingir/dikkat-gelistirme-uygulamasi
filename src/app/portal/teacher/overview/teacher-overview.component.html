@@ -176,7 +176,10 @@
                         <tbody>
                             <tr *ngFor="let s of completedExams()" class="row-clickable" (click)="openStudent(s)">
                                 <td>{{ s.firstName }} {{ s.lastName }}</td>
-                                <td>{{ s.exam.correctCount }} / {{ s.exam.total }}</td>
+                                <td>
+                                    {{ s.exam.correctCount }} / {{ s.exam.total }}
+                                    <span class="muted" *ngIf="s.exam.finalScore !== null && s.exam.finalScore !== undefined"> · Başarı %{{ s.exam.finalScore }}</span>
+                                </td>
                                 <td>{{ formatDuration(s.exam.totalTimeSeconds) }}</td>
                                 <td class="actions-cell">
                                     <button class="link-btn review" (click)="openStudent(s); $event.stopPropagation()">İncele</button>
@@ -191,7 +194,10 @@
                     <div class="entity-card" *ngFor="let s of completedExams()" (click)="openStudent(s)">
                         <div class="entity-card-head">
                             <div class="entity-card-name">{{ s.firstName }} {{ s.lastName }}</div>
-                            <span class="entity-card-username">{{ s.exam.correctCount }} / {{ s.exam.total }}</span>
+                            <span class="entity-card-username">
+                                {{ s.exam.correctCount }} / {{ s.exam.total }}
+                                <ng-container *ngIf="s.exam.finalScore !== null && s.exam.finalScore !== undefined"> · Başarı %{{ s.exam.finalScore }}</ng-container>
+                            </span>
                         </div>
                         <div class="entity-card-stats">
                             <div class="entity-card-stat">

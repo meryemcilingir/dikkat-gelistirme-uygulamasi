@@ -14,6 +14,7 @@ import {
     Category,
 } from '../../../core/models/question-admin.model';
 import { ADMIN_QUESTION_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
+import { catColor } from '../../../core/models/category-color';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { FloatingMenuDirective } from '../../shared/floating-menu.directive';
 import { PortalIconComponent } from '../../shared/icon/portal-icon.component';
@@ -111,6 +112,14 @@ export class AdminQuestionsComponent implements OnInit {
         if (t === 'questions' && !this.questionPage()) this.reloadQuestions(1);
     }
 
+    /** Analiz sekmesindeki "Dikkat Gerektirenler" / "Soru Başarı Dağılımı" — Sorular sekmesini başarı oranına göre sıralı açar. */
+    viewQuestionsSorted(direction: 'asc' | 'desc'): void {
+        this.query.sortBy = 'correctRate';
+        this.query.sortDirection = direction;
+        this.tab.set('questions');
+        this.reloadQuestions(1);
+    }
+
     private async loadOverview(): Promise<void> {
         this.overview.set(await this.adminApi.overview());
         this.overviewLoading.set(false);
@@ -141,21 +150,8 @@ export class AdminQuestionsComponent implements OnInit {
         return Math.round((count / o.studentCount) * 100);
     }
 
-    /**
-     * Kategori adından kararlı bir renk tonu türetir — kategoriler kullanıcı
-     * tarafından oluşturulduğu için sabit bir renk listesi yeterli olmaz.
-     * Yalnızca nokta/rozet gibi küçük vurgu alanlarında kullanılır.
-     */
-    categoryHue(name: string): number {
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 360;
-        return hash;
-    }
-
-    /** Kategori noktası rengi — düşük doygunlukta, kurumsal görünümü bozmayacak tonda. */
-    catColor(name: string): string {
-        return `hsl(${this.categoryHue(name)}, 52%, 56%)`;
-    }
+    /** Kategori noktası rengi — admin/öğretmen "Sorular" ekranlarında ortak (bkz. category-color.ts). */
+    catColor = catColor;
 
     // ── Sorular: liste ───────────────────────────────────────
     async reloadQuestions(page?: number): Promise<void> {

@@ -1,0 +1,48 @@
+<div class="detail-overlay" *ngIf="selected() || loading()" (click)="close()">
+    <div class="detail-panel" (click)="$event.stopPropagation()">
+        <div class="empty" *ngIf="loading()">Yükleniyor...</div>
+
+        <ng-container *ngIf="selected() as d">
+            <div class="detail-header">
+                <h3>Soru {{ (d.questionIndex ?? 0) + 1 }} <span class="muted">({{ title(d.questionId) }})</span></h3>
+                <button class="link-btn" (click)="close()">Kapat ×</button>
+            </div>
+
+            <div class="detail-stats">
+                <div><span class="label">Kategori</span><span class="value">{{ d.category }}</span></div>
+                <div><span class="label">Toplam Cevaplayan</span><span class="value">{{ d.answered }}</span></div>
+                <div><span class="label">Doğru</span><span class="value ok">{{ d.correct }} (%{{ d.correctRate }})</span></div>
+                <div><span class="label">Yanlış</span><span class="value bad">{{ d.wrong }} (%{{ d.wrongRate }})</span></div>
+            </div>
+
+            <button class="primary-btn view-in-exam-btn" (click)="viewInExam()">Sınavda Gör →</button>
+
+            <div class="tabs">
+                <button [class.active]="detailTab() === 'wrong'" (click)="detailTab.set('wrong')" type="button">
+                    Yanlış Yapanlar ({{ d.wrongStudents.length }})
+                </button>
+                <button [class.active]="detailTab() === 'correct'" (click)="detailTab.set('correct')" type="button">
+                    Doğru Yapanlar ({{ d.correctStudents.length }})
+                </button>
+            </div>
+
+            <div class="wrong-students" *ngIf="detailTab() === 'wrong'">
+                <div class="empty" *ngIf="!d.wrongStudents.length">Bu soruyu yanlış yapan öğrenci yok.</div>
+                <ul class="student-link-list" *ngIf="d.wrongStudents.length">
+                    <li *ngFor="let s of d.wrongStudents">
+                        <a class="row-link" (click)="goToStudentReview(s.studentId)">{{ s.firstName }} {{ s.lastName }}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="wrong-students" *ngIf="detailTab() === 'correct'">
+                <div class="empty" *ngIf="!d.correctStudents.length">Bu soruyu doğru yapan öğrenci yok.</div>
+                <ul class="student-link-list" *ngIf="d.correctStudents.length">
+                    <li *ngFor="let s of d.correctStudents">
+                        <a class="row-link" (click)="goToStudentReview(s.studentId)">{{ s.firstName }} {{ s.lastName }}</a>
+                    </li>
+                </ul>
+            </div>
+        </ng-container>
+    </div>
+</div>

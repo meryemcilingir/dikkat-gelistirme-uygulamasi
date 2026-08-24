@@ -1,50 +1,72 @@
-<div class="exam-home">
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-    <div class="bg-blob blob-3"></div>
-
-    <div class="topbar">
-        <div class="topbar-brand">
-            <span class="brand-mark">DG</span>
+<div class="student-home">
+    <header class="student-topbar">
+        <div class="brand-identity">
+            <div class="brand-mark">DG</div>
             <span class="brand-name">Dikkat Geliştirme</span>
         </div>
-        <button class="logout-btn" (click)="logout()">Çıkış Yap</button>
-    </div>
+        <div class="topbar-user">
+            <div class="user-menu" #userMenu>
+                <button class="user-menu-trigger" (click)="toggleUserMenu()">
+                    <span class="user-avatar">{{ userInitial }}</span>
+                    <span class="user-info">
+                        <span class="user-name">{{ firstName }}</span>
+                        <span class="user-role">Öğrenci</span>
+                    </span>
+                    <app-portal-icon name="chevron-down" [size]="14"></app-portal-icon>
+                </button>
 
-    <ng-container *ngIf="!loading()">
-        <!-- ── Dashboard: "Sınavlarım" tek kart ── -->
-        <div class="dashboard-wrap" *ngIf="!showInfo()">
-            <h1 class="greeting">Merhaba {{ firstName }}!</h1>
-            <h2 class="section-title">Sınavlarım</h2>
+                <div class="user-menu-dropdown" *ngIf="userMenuOpen()">
+                    <button class="danger" (click)="logout()">
+                        <app-portal-icon name="logout" [size]="16"></app-portal-icon>
+                        Çıkış Yap
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-            <button class="exam-card" (click)="openInfo()">
-                <span class="exam-card-icon">📝</span>
-                <span class="exam-card-body">
+    <main class="student-content" *ngIf="!loading()">
+        <div class="page-header">
+            <div>
+                <h1>Merhaba, {{ firstName }}</h1>
+                <p class="page-subtitle">Sınavlarını buradan takip edebilirsin.</p>
+            </div>
+        </div>
+
+        <div class="metric-strip">
+            <div class="metric-item">
+                <span class="metric-label">İlerleme</span>
+                <span class="metric-value">{{ currentIndex() }} / {{ total() }} soru</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Durum</span>
+                <span class="metric-value status-value">{{ statusLabel }}</span>
+            </div>
+        </div>
+
+        <div class="section-header"><h2>Sınavlarım</h2></div>
+
+        <div class="exam-card" [class.done]="status() === 'Completed'" (click)="status() !== 'Completed' && start()">
+            <div class="exam-card-main">
+                <div class="exam-card-text">
                     <span class="exam-card-title">Dikkat Geliştirme Testi</span>
-                    <span class="exam-card-status" [class]="status()">{{ statusLabel }}</span>
-                    <div class="progress-wrap" *ngIf="status() === 'InProgress'">
-                        <div class="progress-bar"><div class="progress-fill" [style.width.%]="progressPct"></div></div>
-                        <span class="progress-label">Soru {{ currentIndex() }} / {{ total() }}</span>
-                    </div>
-                </span>
-                <span class="exam-card-arrow">→</span>
+                    <span class="exam-card-sub">{{ total() }} soru</span>
+                </div>
+                <span class="badge" [class]="status()">{{ statusLabel }}</span>
+            </div>
+
+            <div class="exam-card-progress">
+                <div class="progress-bar"><div class="progress-fill" [style.width.%]="progressPct"></div></div>
+                <span class="progress-label">{{ currentIndex() }} / {{ total() }}</span>
+            </div>
+
+            <button class="primary-btn exam-card-action" *ngIf="status() !== 'Completed'" (click)="start(); $event.stopPropagation()">
+                {{ actionLabel }} →
             </button>
         </div>
 
-        <!-- ── Sınava girmeden önce bilgi kartı ── -->
-        <div class="info-card" *ngIf="showInfo()">
-            <button class="back-link" (click)="closeInfo()">← Geri</button>
-            <span class="info-emoji">🧠</span>
-            <h1>Dikkat Geliştirme Testi</h1>
-            <ul class="info-list">
-                <li>Toplam {{ total() }} soru var.</li>
-                <li>Her soruyu dikkatlice oku ve işaretle — cevabın otomatik kaydedilip bir sonrakine geçer.</li>
-                <li>Bir kez işaretledikten sonra geri dönüp değiştiremezsin.</li>
-            </ul>
-            <button class="big-btn" (click)="start()">
-                <span *ngIf="status() === 'Assigned'">Başla</span>
-                <span *ngIf="status() === 'InProgress'">Devam Et</span>
-            </button>
-        </div>
-    </ng-container>
+        <p class="exam-note" *ngIf="status() === 'Completed'">
+            Testi tamamladın. <span>Sonucun öğretmenine iletildi.</span>
+        </p>
+    </main>
 </div>

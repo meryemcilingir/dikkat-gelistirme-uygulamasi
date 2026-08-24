@@ -425,7 +425,7 @@
 
 <!-- ═══════════════════ ANALİZ ═══════════════════ -->
 <ng-container *ngIf="tab() === 'analysis'">
-    <app-question-analysis scope="admin" [embedded]="true"></app-question-analysis>
+    <app-question-analysis scope="admin" [embedded]="true" (viewQuestionsSorted)="viewQuestionsSorted($event)"></app-question-analysis>
 </ng-container>
 
 <!-- ═══════════════════ SORU DETAY DRAWER ═══════════════════ -->

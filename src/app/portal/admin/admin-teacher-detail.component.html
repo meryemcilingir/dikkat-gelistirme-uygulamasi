@@ -46,7 +46,7 @@
                     <div class="hbar-top">
                         <span class="hbar-label">{{ st.firstName }} {{ st.lastName }}</span>
                         <span class="hbar-value" [class.ok]="(st.exam.finalScore ?? 0) >= 50">
-                            {{ st.exam.correctCount }} / {{ st.exam.total }} · doğru %{{ st.exam.correctRate }}
+                            {{ st.exam.correctCount }} / {{ st.exam.total }} · Başarı %{{ st.exam.finalScore }}
                         </span>
                     </div>
                     <div class="hbar-track"><div class="hbar-fill accent" [style.width.%]="rankedBarWidth(st.exam.finalScore)"></div></div>
@@ -122,6 +122,7 @@
                             <td>{{ st.exam.answered }} / {{ st.exam.total }}</td>
                             <td [class]="(st.exam.finalScore ?? 100) < 50 && st.exam.status === 'Completed' ? 'bad' : ''">
                                 {{ st.exam.status === 'Completed' ? (st.exam.correctCount + ' / ' + st.exam.total) : '—' }}
+                                <span class="muted" *ngIf="st.exam.status === 'Completed' && st.exam.finalScore !== null && st.exam.finalScore !== undefined"> · Başarı %{{ st.exam.finalScore }}</span>
                             </td>
                         </tr>
                     </tbody>

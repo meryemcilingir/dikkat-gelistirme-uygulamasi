@@ -7,6 +7,8 @@ export interface QuestionStat {
     wrong: number;
     correctRate: number;
     wrongRate: number;
+    /** Admin'in aktif/pasif ataması — global veri, öğretmene de gösterilir. */
+    active: boolean;
 }
 
 export interface QuestionCategoryStat {

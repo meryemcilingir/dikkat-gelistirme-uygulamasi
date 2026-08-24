@@ -1,0 +1,27 @@
+<div class="page-header">
+    <div>
+        <h1>Sorular</h1>
+        <p class="page-subtitle">150 sorunun soru bankası ve başarı analizi — kendi öğrencilerinin istatistikleriyle.</p>
+    </div>
+</div>
+
+<div class="seg-tabs" role="tablist">
+    <button role="tab" [attr.aria-selected]="tab() === 'questions'" [class.active]="tab() === 'questions'" (click)="setTab('questions')" type="button">
+        Sorular
+    </button>
+    <button role="tab" [attr.aria-selected]="tab() === 'analysis'" [class.active]="tab() === 'analysis'" (click)="setTab('analysis')" type="button">
+        Analiz
+    </button>
+</div>
+
+<app-teacher-question-list
+    *ngIf="tab() === 'questions'"
+    [initialSortBy]="questionsSortBy()"
+    [initialSortDirection]="questionsSortDirection()"
+></app-teacher-question-list>
+<app-question-analysis
+    *ngIf="tab() === 'analysis'"
+    scope="teacher"
+    [embedded]="true"
+    (viewQuestionsSorted)="viewQuestionsSorted($event)"
+></app-question-analysis>

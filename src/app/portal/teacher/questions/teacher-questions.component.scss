@@ -1,0 +1,41 @@
+@use '../../shared/portal' as *;
+@use '../../shared/portal-tokens' as *;
+
+// ── Segmented sekme çubuğu — admin'in Sorular ekranıyla aynı stil ──
+.seg-tabs {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    margin-bottom: $p-space-5;
+    background: $p-surface-muted;
+    border: 1px solid $p-border;
+    border-radius: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+        background: transparent;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 16px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $p-text-secondary;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+
+        &:hover:not(.active) { color: $p-text; }
+
+        &.active {
+            background: $p-surface;
+            color: $p-accent;
+            box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+        }
+    }
+}

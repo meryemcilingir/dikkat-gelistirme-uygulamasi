@@ -194,7 +194,7 @@
                                 <th>Öğrenci</th>
                                 <th>Tamamlayan</th>
                                 <th>Devam Eden</th>
-                                <th>Ort. Sonuç</th>
+                                <th>Ort. Başarı</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -225,7 +225,10 @@
                             <span class="activity-feed-title"><strong>{{ a.firstName }} {{ a.lastName }}</strong> sınavı tamamladı</span>
                             <span class="activity-feed-time">{{ timeAgo(a.completedAt) }}</span>
                         </span>
-                        <span class="activity-feed-score">{{ a.correctCount }} / {{ a.totalQuestions }}</span>
+                        <span class="activity-feed-score">
+                            {{ a.correctCount }} / {{ a.totalQuestions }}
+                            <ng-container *ngIf="a.finalScore !== null && a.finalScore !== undefined"> · Başarı %{{ a.finalScore }}</ng-container>
+                        </span>
                     </div>
                 </div>
             </div>

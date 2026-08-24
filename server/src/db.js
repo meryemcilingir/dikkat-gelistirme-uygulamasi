@@ -743,7 +743,39 @@ async function fetchQuestionAggregates(teacherId) {
  * TÜM sorular üzerinden hesaplanır.
  */
 async function getQuestionStats({ teacherId, sortBy, sortDirection, page, pageSize }) {
-    const items = await fetchQuestionAggregates(teacherId || null);
+    const answered = await fetchQuestionAggregates(teacherId || null);
+    const answeredByQuestionId = new Map(answered.map(a => [a.questionId, a]));
+
+    // "Sorular"/"Analiz" ekranları TÜM 150 soruyu görebilmeli — fetchQuestionAggregates
+    // yalnızca en az 1 cevabı olan soruları döner (ör. hiç tamamlanmış sınavı
+    // olmayan bir öğretmen için bomboş dönerdi). Eksik olanları 0 istatistikle
+    // tamamlıyoruz; fetchQuestionAggregates'in KENDİSİNE dokunmuyoruz çünkü
+    // diğer üç çağıranı (getQuestionDetail/listCategories/listQuestionsAdmin)
+    // "veri yok" ile "%0" farkını (null vs 0) bu fonksiyonun dönüşüne göre ayırt ediyor.
+    //
+    // active/kategori: question_meta'daki admin ataması varsa onu kullanır —
+    // öğretmen tarafındaki "Sorular" ekranı admin'inkiyle aynı kategori/durum
+    // bilgisini göstersin diye (active/isDraft global veridir, öğrenci gizliliği
+    // yok, öğretmene göstermek güvenli).
+    const metaMap = await getQuestionMetaMap();
+    const items = EXAM_QUESTIONS.map((questionId, index) => {
+        const base = answeredByQuestionId.get(questionId) || {
+            questionId,
+            questionIndex: index,
+            category: categorize(questionId),
+            answered: 0,
+            correct: 0,
+            wrong: 0,
+            correctRate: 0,
+            wrongRate: 0,
+        };
+        const meta = metaMap.get(questionId);
+        return {
+            ...base,
+            category: meta?.categoryName || base.category,
+            active: meta?.active !== false,
+        };
+    });
 
     const categoryMap = new Map();
     for (const it of items) {

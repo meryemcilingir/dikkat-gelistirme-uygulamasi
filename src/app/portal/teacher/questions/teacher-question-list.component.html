@@ -1,0 +1,88 @@
+<div class="toolbar-compact">
+    <div class="toolbar-search">
+        <app-portal-icon class="search-icon" name="search" [size]="15"></app-portal-icon>
+        <input
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchInput()"
+            placeholder="Soru veya kategori ara..."
+            maxlength="100"
+        />
+    </div>
+    <div class="toolbar-controls">
+        <label class="toolbar-select">
+            <span>Sırala</span>
+            <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
+                <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<div class="table-scroll skeleton-table" *ngIf="loading()">
+    <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]"></div>
+</div>
+
+<div class="empty-state" *ngIf="!loading() && total === 0">
+    <p class="empty-title">{{ search ? 'Bu aramayla eşleşen soru yok' : 'Henüz soru yok' }}</p>
+    <p class="empty-subtitle" *ngIf="search">Aramayı değiştirip tekrar deneyin.</p>
+</div>
+
+<div class="table-scroll" *ngIf="!loading() && total > 0">
+    <table class="premium-table q-table">
+        <thead>
+            <tr>
+                <th class="col-no">#</th>
+                <th>Soru</th>
+                <th>Kategori</th>
+                <th class="col-type">Soru Tipi</th>
+                <th class="col-rate">Başarı</th>
+                <th>Durum</th>
+                <th class="col-actions"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let q of pagedItems" class="row-clickable" (click)="openDetail(q)">
+                <td class="col-no">
+                    <span class="q-index">{{ (q.questionIndex ?? 0) + 1 }}</span>
+                </td>
+                <td>
+                    <div class="cell-primary">
+                        <span class="cell-name">{{ title(q.questionId) }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="cat-chip">
+                        <span class="cat-dot" [style.background]="catColor(q.category)"></span>{{ q.category }}
+                    </span>
+                </td>
+                <td class="col-type muted">{{ q.category }}</td>
+                <td class="col-rate">
+                    <div class="rate-cell">
+                        <span>%{{ q.correctRate }}</span>
+                        <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="q.correctRate"></div></div>
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill" [class]="statusKind(q)">
+                        <span class="status-dot"></span>{{ statusLabel(q) }}
+                    </span>
+                </td>
+                <td class="actions-cell col-actions">
+                    <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<app-pagination
+    *ngIf="total > 0"
+    [page]="page()"
+    [totalPages]="totalPages"
+    [total]="total"
+    [pageSize]="pageSize()"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+></app-pagination>
+
+<app-question-detail-panel #detailPanel scope="teacher"></app-question-detail-panel>

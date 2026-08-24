@@ -130,7 +130,7 @@
                 <th class="sortable" (click)="sortBy('username')">Kullanıcı Adı {{ sortIcon('username') }}</th>
                 <th class="sortable" (click)="sortBy('studentCount')">Öğrenci {{ sortIcon('studentCount') }}</th>
                 <th class="sortable col-secondary" (click)="sortBy('completedExams')">Tamamlanan {{ sortIcon('completedExams') }}</th>
-                <th class="sortable col-score" (click)="sortBy('avgScore')">Ort. Sonuç {{ sortIcon('avgScore') }}</th>
+                <th class="sortable col-score" (click)="sortBy('avgScore')">Ort. Başarı {{ sortIcon('avgScore') }}</th>
                 <th>Durum</th>
                 <th class="col-actions"></th>
             </tr>
@@ -141,7 +141,7 @@
                 <td class="muted">{{ t.username }}</td>
                 <td>{{ t.studentCount }}</td>
                 <td class="col-secondary">{{ t.completedExams }}</td>
-                <td class="col-score">{{ t.avgScore ?? '—' }}</td>
+                <td class="col-score">{{ t.avgScore !== null && t.avgScore !== undefined ? ('%' + t.avgScore) : '—' }}</td>
                 <td>
                     <span class="badge" [class.Completed]="t.active" [class.Assigned]="!t.active">
                         {{ t.active ? 'Aktif' : 'Pasif' }}
@@ -193,8 +193,8 @@
                 <span class="value">{{ t.completedExams }}</span>
             </div>
             <div>
-                <span class="label">Ort. Sonuç</span>
-                <span class="value">{{ t.avgScore ?? '—' }}</span>
+                <span class="label">Ort. Başarı</span>
+                <span class="value">{{ t.avgScore !== null && t.avgScore !== undefined ? ('%' + t.avgScore) : '—' }}</span>
             </div>
         </div>
 
