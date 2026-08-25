@@ -1579,6 +1579,12 @@
 
             &:hover { background: $p-danger-soft; }
         }
+
+        &.success {
+            color: $p-success;
+
+            &:hover { background: $p-success-soft; }
+        }
     }
 }
 

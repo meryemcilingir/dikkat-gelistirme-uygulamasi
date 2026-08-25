@@ -114,6 +114,9 @@ export class LetterMatchingComponent implements OnInit {
         } else {
             this.feedbackState = 'wrong';
             this.hintService.registerError(ID);
+            // Öğretmen incelemesinde öğrencinin işaretlediği (yanlış) seçim
+            // görünsün diye, seçim sıfırlanmadan ÖNCE kaydedilir.
+            this.persist();
 
             // Unselect and shake the wrongly selected option
             this.selectedId = null;
@@ -121,6 +124,7 @@ export class LetterMatchingComponent implements OnInit {
             setTimeout(() => (selected.isShaking = false), 500);
 
             this.fb.showFeedback('error', 'Tekrar Denemelisin');
+            return;
         }
         this.persist();
     }

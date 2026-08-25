@@ -36,13 +36,30 @@ export class GameStateService {
 
     // ── Yazma ─────────────────────────────────────────────
 
-    /** Anlık durum (data) + tamamlanma bayrağını kaydeder */
+    /**
+     * Anlık durum (data) + tamamlanma bayrağını kaydeder.
+     *
+     * `data` derin kopyalanır: birçok etkinlik yanlış cevap sonrası aynı
+     * nesneyi (ör. seçenek dizisini) persist() çağrısından HEMEN SONRA
+     * senkron olarak mutasyona uğratıp görsel state'i sıfırlıyor (shake/clear
+     * animasyonu). Referans kopyalamadan saklarsak, bu sonraki mutasyon
+     * "kaydedilmiş" veriyi de sessizce değiştiriyor — öğretmen incelemesinde
+     * öğrencinin işaretlediği (yanlış) cevap kayboluyordu. Derin kopya bu
+     * sınıfın dışındaki hiçbir mutasyondan etkilenmez.
+     */
     save(id: string, data: unknown, isCompleted = false): void {
         const prev = this.store.get(id);
         this.store.set(id, {
             isCompleted: isCompleted || (prev?.isCompleted ?? false),
-            data,
+            data: this.clone(data),
         });
+    }
+
+    private clone<T>(data: T): T {
+        if (data === null || typeof data !== 'object') return data;
+        return typeof structuredClone === 'function'
+            ? structuredClone(data)
+            : JSON.parse(JSON.stringify(data));
     }
 
     /** Etkinliği tamamlandı olarak işaretler (data aynı kalır) */

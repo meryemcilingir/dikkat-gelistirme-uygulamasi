@@ -103,10 +103,15 @@ export class LiquidSelectionComponent implements OnInit {
         } else {
             this.feedbackState = 'wrong';
             this.hintService.registerError(ID);
+            // Öğretmen incelemesinde öğrencinin işaretlediği (yanlış) seçim
+            // görünsün diye, seçim sıfırlanmadan ÖNCE kaydedilir.
+            this.persist();
+
             this.selectedId = null; // Yanlış seçimi anında sil
             selected.isShaking = true;
             this.fb.showFeedback('error', 'Tekrar Denemelisin');
             setTimeout(() => (selected.isShaking = false), 500);
+            return;
         }
         this.persist();
     }

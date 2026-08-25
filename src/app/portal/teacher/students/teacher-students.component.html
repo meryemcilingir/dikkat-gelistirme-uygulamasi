@@ -153,7 +153,7 @@
                         <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
                             <button (click)="startEdit(s); closeMenu()">Düzenle</button>
                             <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
-                            <button class="danger" (click)="toggleActive(s)">
+                            <button [class.danger]="s.active" [class.success]="!s.active" (click)="toggleActive(s)">
                                 {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
                             </button>
                         </div>
@@ -183,7 +183,7 @@
         <div class="sheet-actions">
             <button type="button" (click)="closeStudentSheet(); startEdit(s)">Düzenle</button>
             <button type="button" (click)="closeStudentSheet(); startResetPassword(s)">Şifre Sıfırla</button>
-            <button type="button" class="danger" (click)="toggleActive(s); closeStudentSheet()">
+            <button type="button" [class.danger]="s.active" [class.success]="!s.active" (click)="toggleActive(s); closeStudentSheet()">
                 {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
             </button>
         </div>

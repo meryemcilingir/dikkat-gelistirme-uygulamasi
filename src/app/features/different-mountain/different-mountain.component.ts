@@ -97,10 +97,15 @@ export class DifferentMountainComponent implements OnInit {
         } else {
             this.feedbackState = 'wrong';
             this.hintService.registerError(ID);
+            // Öğretmen incelemesinde öğrencinin işaretlediği (yanlış) seçim
+            // görünsün diye, seçim sıfırlanmadan ÖNCE kaydedilir.
+            this.persist();
+
             this.selectedId = null;
             selected.isShaking = true;
             this.fb.showFeedback('error', 'Yanlış seçim. Dağları dikkatlice karşılaştır.');
             setTimeout(() => (selected.isShaking = false), 500);
+            return;
         }
         this.persist();
     }

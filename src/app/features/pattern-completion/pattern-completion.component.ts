@@ -124,12 +124,16 @@ export class PatternCompletionComponent implements OnInit {
         } else {
             this.feedbackState = 'wrong';
             this.hintService.registerError(ID);
+            // Öğretmen incelemesinde öğrencinin işaretlediği (yanlış) seçim
+            // görünsün diye, seçim sıfırlanmadan ÖNCE kaydedilir.
+            this.persist();
 
             this.selectedId = null;
             selected.isShaking = true;
             setTimeout(() => (selected.isShaking = false), 500);
 
             this.fb.showFeedback('error', 'Yanlış seçim, tekrar dene.');
+            return;
         }
         this.persist();
     }

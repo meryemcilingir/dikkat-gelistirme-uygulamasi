@@ -181,6 +181,15 @@
                     background: $p-danger-soft;
                 }
             }
+
+            &.success {
+                color: $p-success;
+                border-color: rgba(22, 163, 74, 0.3);
+
+                &:hover {
+                    background: $p-success-soft;
+                }
+            }
         }
     }
 
