@@ -9,6 +9,10 @@ export interface Category {
     id: string;
     name: string;
     questionCount: number;
+    /** Kategoriye ait sorulara verilen toplam cevap sayısı (tüm tamamlanmış sınavlar üzerinden). */
+    totalAnswered: number;
+    /** Bunların içindeki doğru cevap sayısı — avgCorrectRate = totalCorrect/totalAnswered. */
+    totalCorrect: number;
     avgCorrectRate: number | null;
 }
 

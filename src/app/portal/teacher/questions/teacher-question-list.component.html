@@ -74,8 +74,10 @@
                         <span class="status-dot"></span>{{ statusLabel(q) }}
                     </span>
                 </td>
-                <td class="actions-cell col-actions">
-                    <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
+                <td class="col-actions">
+                    <div class="actions-cell">
+                        <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
+                    </div>
                 </td>
             </tr>
         </tbody>

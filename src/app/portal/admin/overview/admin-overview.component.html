@@ -78,9 +78,9 @@
         <div class="col-6 panel-card dash-card" *ngIf="!hasAttentionItems">
             <div class="panel-title">Dikkat Gerektirenler</div>
             <div class="panel-card-body">
-                <div class="insight-block info" style="margin-bottom: 0;">
-                    <span>✓</span>
-                    <span>Şu anda dikkat gerektiren bir durum yok.</span>
+                <div class="empty-state empty-state-subtle">
+                    <p class="empty-title">Şu anda dikkat gerektiren bir durum yok</p>
+                    <p class="empty-subtitle">Düşük başarılı, yarım kalmış, hiç başlamamış öğrenciler veya tamamlanmış sınavı olmayan öğretmenler burada listelenecek.</p>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <!-- D — Başarı Dağılımı / E — En Çok Zorlanılan Alanlar -->
+    <!-- D — Başarı Dağılımı / E — En Çok Zorlanılan Kategoriler -->
     <div class="dash-row">
         <div class="col-6 panel-card dash-card">
             <div class="panel-title">Başarı Dağılımı</div>
@@ -123,22 +123,22 @@
                     <div class="column-chart">
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(0, 25)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range0_25 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
+                            <div class="column-chart-bar range-red" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
                             <span class="column-chart-label">0–25</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(26, 50)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range26_50 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
+                            <div class="column-chart-bar range-orange" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
                             <span class="column-chart-label">26–50</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(51, 75)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range51_75 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
+                            <div class="column-chart-bar range-blue" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
                             <span class="column-chart-label">51–75</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(76, 100)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range76_100 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
+                            <div class="column-chart-bar range-green" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
                             <span class="column-chart-label">76–100</span>
                         </div>
                     </div>
@@ -154,7 +154,7 @@
 
         <div class="col-6 panel-card dash-card">
             <div class="panel-title panel-title-row">
-                <span>En Çok Zorlanılan Alanlar</span>
+                <span>En Çok Zorlanılan Kategoriler</span>
                 <button class="link-btn" (click)="openQuestion()">Tüm Analizi Gör →</button>
             </div>
             <div class="panel-card-body">

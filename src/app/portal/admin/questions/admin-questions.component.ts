@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService, AdminOverview } from '../../../core/services/admin.service';
@@ -48,6 +48,7 @@ type Tab = 'overview' | 'questions' | 'categories' | 'analysis';
 export class AdminQuestionsComponent implements OnInit {
     private adminApi = inject(AdminService);
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
     private preview = inject(QuestionPreviewService);
 
     readonly tab = signal<Tab>('overview');
@@ -108,6 +109,12 @@ export class AdminQuestionsComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         await Promise.all([this.loadOverview(), this.loadCategories()]);
+        /** Öğretmen Detayı'ndaki "Zorlanılan Kategoriler" satırından kategori adıyla gelindiyse Sorular sekmesi o kategoriye filtrelenir. */
+        const requestedCategory = this.route.snapshot.queryParamMap.get('category');
+        if (requestedCategory) {
+            const match = this.categories().find(c => c.name === requestedCategory);
+            if (match) this.viewCategoryQuestions(match);
+        }
     }
 
     setTab(t: Tab): void {

@@ -274,6 +274,6 @@
         background: $p-accent;
         color: #fff;
 
-        &:hover { background: color.adjust($p-accent, $lightness: -6%); }
+        &:hover { background: $p-accent-hover; }
     }
 }

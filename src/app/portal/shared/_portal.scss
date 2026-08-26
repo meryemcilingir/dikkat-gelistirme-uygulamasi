@@ -544,7 +544,7 @@
     transition: background-color .12s, transform .08s;
 
     &:hover {
-        background: color.adjust($p-accent, $lightness: -6%);
+        background: $p-accent-hover;
     }
 
     &:active {
@@ -870,10 +870,10 @@
 // ── Segmentli durum çubuğu (tek bar, orantılı renkli dilimler) ──
 .segmented-bar {
     display: flex;
-    height: 14px;
-    border-radius: $p-radius-sm;
+    height: 7px;
+    border-radius: 999px;
     overflow: hidden;
-    background: $p-surface-muted;
+    background: $p-track-bg;
     margin-bottom: $p-space-3;
 
     .segment {
@@ -924,6 +924,8 @@
     .legend-value {
         font-weight: 700;
         color: $p-text;
+        min-width: 20px;
+        text-align: right;
     }
 }
 
@@ -959,6 +961,13 @@
         border-radius: 4px 4px 0 0;
         min-height: 3px;
         transition: height .2s ease;
+
+        // Başarı dağılımı gibi 4 sabit aralıklı grafiklerde: en düşükten en
+        // yükseğe kırmızı → turuncu → mavi (indigo) → yeşil.
+        &.range-red { background: $p-danger; }
+        &.range-orange { background: $p-warning; }
+        &.range-blue { background: $p-accent; }
+        &.range-green { background: $p-success; }
     }
 
     .column-chart-label {
@@ -1013,7 +1022,7 @@
     padding: 6px 0;
 
     .hbar-top { margin-bottom: 3px; font-size: 0.8rem; }
-    .hbar-track { height: 5px; }
+    .hbar-track { height: 6px; }
 }
 
 .hbar-row {
@@ -1049,14 +1058,14 @@
 
     .hbar-track {
         height: 6px;
-        border-radius: 3px;
-        background: $p-surface-muted;
+        border-radius: 999px;
+        background: $p-track-bg;
         overflow: hidden;
     }
 
     .hbar-fill {
         height: 100%;
-        border-radius: 3px;
+        border-radius: 999px;
         background: $p-danger;
 
         &.accent { background: $p-accent; }
@@ -1115,9 +1124,9 @@
     color: $p-text-secondary;
     margin-bottom: $p-space-4;
 
-    &.warning { border-left-color: $p-warning; background: $p-warning-soft; color: color.adjust($p-warning, $lightness: -12%); }
-    &.danger { border-left-color: $p-danger; background: $p-danger-soft; color: color.adjust($p-danger, $lightness: -8%); }
-    &.info { border-left-color: $p-info; background: $p-info-soft; color: color.adjust($p-info, $lightness: -8%); }
+    &.warning { border-left-color: $p-warning; background: $p-warning-soft; color: $p-warning-text; }
+    &.danger { border-left-color: $p-danger; background: $p-danger-soft; color: $p-danger-text; }
+    &.info { border-left-color: $p-info; background: $p-info-soft; color: $p-info-text; }
 
     strong { font-weight: 700; }
 }
@@ -1139,6 +1148,19 @@
         font-size: 0.82rem;
         margin: 0;
     }
+}
+
+// "Dikkat Gerektiren Öğrenciler" gibi bilinçli tasarlanmış boş durumlar için
+// isteğe bağlı, hafif bir çerçeve — mesaj grubunu kartın tamamı yerine
+// yalnızca kendi etrafında sarar. Yalnızca bu sınıfı da alan .empty-state'ler
+// etkilenir; diğer onlarca .empty-state kullanımı değişmez.
+.empty-state.empty-state-subtle {
+    background: $p-surface-muted;
+    border: 1px dashed $p-border;
+    border-radius: 11px;
+    padding: $p-space-5 $p-space-4;
+    max-width: 380px;
+    margin: 0 auto;
 }
 
 // ── Yükleniyor iskeleti (skeleton) ──────────────────────────
@@ -1423,6 +1445,23 @@
             opacity: 0.75;
         }
     }
+
+    // D/Y ve Puan sayısal değerler — sağa yaslanır ki table-layout:auto'nun
+    // bu sütunlara (özellikle başlıksız col-actions'a) dağıttığı fazla
+    // boşlukta veri sola, buton sağa yapışıp aradaki boşluk "kopuk/kaymış"
+    // görünmesin. col-actions'a da sabit bir genişlik verilip bu sütunun
+    // aşırı büyümesi (ve Puan'dan görsel olarak kopması) önlenir.
+    th.col-dy,
+    td.col-dy,
+    th.col-score,
+    td.col-score {
+        text-align: right;
+    }
+
+    th.col-actions,
+    td.col-actions {
+        width: 132px;
+    }
 }
 
 .muted {
@@ -1432,6 +1471,7 @@
 .score-cell {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 4px;
     min-width: 70px;
 }
@@ -1623,7 +1663,7 @@
         color: #fff;
 
         &:hover {
-            background: color.adjust($p-accent, $lightness: -6%);
+            background: $p-accent-hover;
         }
     }
 

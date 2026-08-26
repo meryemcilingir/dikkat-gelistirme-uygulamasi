@@ -20,71 +20,35 @@
             <span class="kpi-value">{{ s.studentCount }}</span>
         </div>
         <div class="kpi-card">
-            <span class="kpi-label">Tamamlayan</span>
+            <span class="kpi-label">Sınavı Tamamlayan</span>
             <span class="kpi-value">{{ s.completedExams }}</span>
         </div>
         <div class="kpi-card">
-            <span class="kpi-label">Ort. Öğrenci Başarısı</span>
-            <span class="kpi-value">{{ s.avgScore !== null ? (s.avgScore + '%') : '—' }}</span>
+            <span class="kpi-label">Ortalama Başarı</span>
+            <span class="kpi-value">{{ s.avgScore !== null ? ('%' + s.avgScore) : '—' }}</span>
         </div>
         <div class="kpi-card">
-            <span class="kpi-label">Ort. Doğru Oranı</span>
-            <span class="kpi-value">{{ s.correctRate !== null ? (s.correctRate + '%') : '—' }}</span>
+            <span class="kpi-label">Dikkat Gerektiren</span>
+            <span class="kpi-value">{{ attentionTotal() }}</span>
         </div>
     </div>
 
-    <div class="grid-12" *ngIf="stats() as s">
-        <div class="span-8 panel-card">
-            <div class="panel-title">Öğrenci Performansı</div>
-            <div class="panel-subtitle">En düşük performanslı öğrenciler — başarı ve doğru oranı karşılaştırması</div>
-            <div class="empty-state" *ngIf="!rankedStudents().length">
-                <p class="empty-title">Henüz tamamlanmış sınav bulunmuyor</p>
-                <p class="empty-subtitle">Öğrenciler sınavı tamamladıkça performans karşılaştırması burada görünecek.</p>
-            </div>
-            <div class="hbar-list" *ngIf="rankedStudents().length">
-                <div class="hbar-row" *ngFor="let st of rankedStudents()" (click)="openStudent(st)">
-                    <div class="hbar-top">
-                        <span class="hbar-label">{{ st.firstName }} {{ st.lastName }}</span>
-                        <span class="hbar-value" [class.ok]="(st.exam.finalScore ?? 0) >= 50">
-                            {{ st.exam.correctCount }} / {{ st.exam.total }} · Başarı %{{ st.exam.finalScore }}
-                        </span>
-                    </div>
-                    <div class="hbar-track"><div class="hbar-fill accent" [style.width.%]="rankedBarWidth(st.exam.finalScore)"></div></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="span-4 panel-card">
-            <div class="panel-title">Sınav Durumu</div>
-            <div class="panel-subtitle">Öğrencilerin ilerleme dağılımı</div>
-            <div class="bar-chart-row">
-                <span class="bar-chart-label">Tamamladı</span>
-                <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.completedExams / s.studentCount * 100) : 0"></div></div>
-                <span class="bar-chart-value">{{ s.completedExams }}</span>
-            </div>
-            <div class="bar-chart-row">
-                <span class="bar-chart-label">Devam Ediyor</span>
-                <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.inProgressExams / s.studentCount * 100) : 0"></div></div>
-                <span class="bar-chart-value">{{ s.inProgressExams }}</span>
-            </div>
-            <div class="bar-chart-row">
-                <span class="bar-chart-label">Başlamadı</span>
-                <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.notStartedExams / s.studentCount * 100) : 0"></div></div>
-                <span class="bar-chart-value">{{ s.notStartedExams }}</span>
-            </div>
-        </div>
+    <!-- Ana içerik: Öğrenci Performansı — kendi arama/sıralama/sayfalamasıyla,
+         100+ öğrencide de kullanılabilir tek liste (bkz. app-teacher-detail-students). -->
+    <div class="panel-card primary-panel">
+        <app-teacher-detail-students [teacherId]="teacherId"></app-teacher-detail-students>
     </div>
 
     <div class="grid-12">
-        <div class="span-6 panel-card">
-            <div class="panel-title">Öğrencilerinin En Çok Zorlandığı Alanlar</div>
-            <div class="panel-subtitle">Kategori bazında en düşük başarı oranları</div>
+        <div class="span-7 panel-card">
+            <div class="panel-title">Zorlanılan Kategoriler</div>
+            <div class="panel-subtitle">Öğrencilerin kategori bazlı başarı oranları</div>
             <div class="empty-state" *ngIf="!categories().length">
                 <p class="empty-title">Henüz veri yok</p>
                 <p class="empty-subtitle">İlk sınavlar tamamlandığında kategori analizi burada görünecek.</p>
             </div>
-            <div class="hbar-list scroll-list" *ngIf="categories().length">
-                <div class="hbar-row" *ngFor="let c of categories()" style="cursor:default;">
+            <div class="hbar-list" *ngIf="categories().length">
+                <div class="hbar-row" *ngFor="let c of categories()" (click)="viewCategory(c)">
                     <div class="hbar-top">
                         <span class="hbar-label">{{ c.category }}</span>
                         <span class="hbar-value neutral">
@@ -98,38 +62,44 @@
             </div>
         </div>
 
-        <div class="span-6 panel-card">
-            <div class="panel-title">Dikkat Gerektiren Öğrenciler</div>
-            <div class="panel-subtitle">Başlamayan, yarım kalan veya düşük başarılı (%50 altı) öğrenciler</div>
-            <div class="empty-state" *ngIf="!attentionStudents().length">
-                <p class="empty-title">Şu anda dikkat gerektiren öğrenci yok</p>
-                <p class="empty-subtitle">Düşük başarılı, yarım kalmış veya hiç başlamamış öğrenciler burada listelenecek.</p>
+        <div class="span-5 stacked-col">
+            <div class="panel-card">
+                <div class="panel-title">Sınav Durumu</div>
+                <div class="panel-subtitle">Öğrencilerin ilerleme dağılımı</div>
+                <div class="bar-chart-row clickable" *ngIf="stats() as s" (click)="viewByStatus('Completed')">
+                    <span class="bar-chart-label">Tamamladı</span>
+                    <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.completedExams / s.studentCount * 100) : 0"></div></div>
+                    <span class="bar-chart-value">{{ s.completedExams }}</span>
+                </div>
+                <div class="bar-chart-row clickable" *ngIf="stats() as s" (click)="viewByStatus('InProgress')">
+                    <span class="bar-chart-label">Devam Ediyor</span>
+                    <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.inProgressExams / s.studentCount * 100) : 0"></div></div>
+                    <span class="bar-chart-value">{{ s.inProgressExams }}</span>
+                </div>
+                <div class="bar-chart-row clickable" *ngIf="stats() as s" (click)="viewByStatus('Assigned')">
+                    <span class="bar-chart-label">Başlamadı</span>
+                    <div class="bar-chart-track"><div class="bar-chart-fill" [style.width.%]="s.studentCount ? (s.notStartedExams / s.studentCount * 100) : 0"></div></div>
+                    <span class="bar-chart-value">{{ s.notStartedExams }}</span>
+                </div>
             </div>
-            <div class="scroll-list" *ngIf="attentionStudents().length">
-                <table class="mini-table">
-                    <thead>
-                        <tr>
-                            <th>Öğrenci</th>
-                            <th>Durum</th>
-                            <th>İlerleme</th>
-                            <th>Sonuç</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let st of attentionStudents()" class="row-clickable" (click)="openStudent(st)">
-                            <td>{{ st.firstName }} {{ st.lastName }}</td>
-                            <td><span class="badge" [class]="st.exam.status">{{ statusLabel(st) }}</span></td>
-                            <td>{{ st.exam.answered }} / {{ st.exam.total }}</td>
-                            <td [class]="(st.exam.finalScore ?? 100) < 50 && st.exam.status === 'Completed' ? 'bad' : ''">
-                                {{ st.exam.status === 'Completed' ? (st.exam.correctCount + ' / ' + st.exam.total) : '—' }}
-                                <span class="muted" *ngIf="st.exam.status === 'Completed' && st.exam.finalScore !== null && st.exam.finalScore !== undefined"> · Başarı %{{ st.exam.finalScore }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <div class="panel-card">
+                <div class="panel-title panel-title-row">
+                    <span>Dikkat Gerektiren Öğrencileri{{ attentionTotal() ? ' (' + attentionTotal() + ')' : '' }}</span>
+                    <button class="link-btn" type="button" *ngIf="attentionTotal() > attentionStudents().length" (click)="viewAttentionStudents()">Tümünü Gör →</button>
+                </div>
+                <div class="empty-state compact" *ngIf="!attentionStudents().length">
+                    <p class="empty-title">✓ Dikkat gerektiren öğrenci bulunmuyor.</p>
+                </div>
+                <div class="action-list" *ngIf="attentionStudents().length">
+                    <button class="action-item" [class]="attentionSeverity(st)" *ngFor="let st of attentionStudents()" (click)="openStudent(st)">
+                        <span class="action-icon">{{ st.exam.status === 'Assigned' ? '!' : (st.exam.status === 'InProgress' ? '⏱' : '↓') }}</span>
+                        <span class="action-text">{{ st.firstName }} {{ st.lastName }}</span>
+                        <span class="action-count" style="font-size:0.82rem;">{{ attentionReason(st) }}</span>
+                        <span class="action-chevron">→</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
-    <app-teacher-detail-students [teacherId]="teacherId"></app-teacher-detail-students>
 </ng-container>

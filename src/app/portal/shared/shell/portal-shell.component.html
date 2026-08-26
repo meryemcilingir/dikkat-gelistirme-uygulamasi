@@ -58,6 +58,16 @@
                 </div>
 
                 <div class="topbar-actions">
+                    <button
+                        class="theme-toggle"
+                        type="button"
+                        (click)="theme.toggle()"
+                        [attr.aria-label]="theme.isDark ? 'Açık moda geç' : 'Koyu moda geç'"
+                        [title]="theme.isDark ? 'Açık moda geç' : 'Koyu moda geç'"
+                    >
+                        <app-portal-icon [name]="theme.isDark ? 'sun' : 'moon'" [size]="17"></app-portal-icon>
+                    </button>
+
                     <div class="user-menu" #userMenu>
                         <button class="user-menu-trigger" (click)="toggleUserMenu()">
                             <span class="user-avatar">{{ userInitial }}</span>

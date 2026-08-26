@@ -35,6 +35,13 @@ CREATE TABLE IF NOT EXISTS exam_attempts (
     wrong_count INT
 );
 
+-- status: öğrenci listesi filtresi ve "Sınav Durumu" dağılımında sık WHERE/
+-- FILTER hedefi. completed_at: "Son Aktiviteler" ORDER BY ... DESC LIMIT ve
+-- tarih aralığı filtrelerinde kullanılıyor — büyük tablo boyutunda ikisi de
+-- sıralı/koşullu tarama yerine index taramasına ihtiyaç duyar.
+CREATE INDEX IF NOT EXISTS idx_exam_attempts_status ON exam_attempts(status);
+CREATE INDEX IF NOT EXISTS idx_exam_attempts_completed_at ON exam_attempts(completed_at);
+
 CREATE TABLE IF NOT EXISTS answers (
     id UUID PRIMARY KEY,
     exam_attempt_id UUID NOT NULL REFERENCES exam_attempts(id),
@@ -54,6 +61,10 @@ CREATE TABLE IF NOT EXISTS answers (
 ALTER TABLE answers ADD COLUMN IF NOT EXISTS time_spent_seconds INT;
 
 CREATE INDEX IF NOT EXISTS idx_answers_attempt ON answers(exam_attempt_id);
+-- Kategori/soru bazlı toplulaştırma (fetchQuestionAggregates) question_id
+-- üzerinden GROUP BY yapıyor — cevap sayısı büyüdükçe bu index olmadan tam
+-- tablo taraması gerekir.
+CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers(question_id);
 
 -- Öğrencinin kişisel soru sırası — oluşturulduğu andaki aktif sorulardan
 -- hesaplanıp burada donar (bkz. db.js createExamAttemptForStudent). NULL ise

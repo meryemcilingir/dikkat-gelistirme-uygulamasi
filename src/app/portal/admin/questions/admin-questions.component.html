@@ -72,12 +72,12 @@
         </div>
 
         <div class="dash-row">
-            <div class="col-7 panel-card dash-card card-animate-in">
+            <div class="col-7 panel-card dash-card card-animate-in cat-perf-card">
                 <div class="panel-title panel-title-row">
-                    <span>Kategori Bazlı Soru Dağılımı</span>
+                    <span>Kategori Bazlı Performans</span>
                     <button class="link-btn" type="button" (click)="setTab('categories')">Kategorileri Yönet →</button>
                 </div>
-                <div class="panel-subtitle">Soru sayısı ve tamamlanmış sınavlar üzerinden başarı oranı</div>
+                <div class="panel-subtitle">{{ o.examSummary.completed }} tamamlanmış sınav üzerinden hesaplanmıştır.</div>
 
                 <div class="empty-state" *ngIf="!categories().length">
                     <p class="empty-title">Henüz kategori yok</p>
@@ -85,14 +85,21 @@
                 </div>
 
                 <div class="hbar-list compact" *ngIf="categories().length">
+                    <div class="cat-perf-header">
+                        <span class="cat-perf-header-spacer">Kategori</span>
+                        <span class="cat-perf-col cat-perf-col-soru">Soru</span>
+                        <span class="cat-perf-col cat-perf-col-ratio">Doğru/Toplam</span>
+                        <span class="cat-perf-col cat-perf-col-rate">Başarı</span>
+                    </div>
                     <div class="hbar-row" *ngFor="let c of categoriesByRate" (click)="viewCategoryQuestions(c)">
                         <div class="hbar-top">
                             <span class="hbar-label">
                                 <span class="cat-dot" [style.background]="catColor(c.name)"></span>{{ c.name }}
                             </span>
-                            <span class="hbar-value neutral">
-                                {{ c.questionCount }} soru
-                                <span class="dist-rate">{{ c.avgCorrectRate !== null ? ('%' + c.avgCorrectRate) : 'veri yok' }}</span>
+                            <span class="cat-perf-metrics">
+                                <span class="cat-perf-col cat-perf-col-soru">{{ c.questionCount }}</span>
+                                <span class="cat-perf-col cat-perf-col-ratio">{{ c.totalAnswered ? (c.totalCorrect + '/' + c.totalAnswered) : '—' }}</span>
+                                <span class="cat-perf-col cat-perf-col-rate">{{ c.avgCorrectRate !== null ? ('%' + c.avgCorrectRate) : 'veri yok' }}</span>
                             </span>
                         </div>
                         <div class="hbar-track" *ngIf="c.avgCorrectRate !== null">
@@ -282,17 +289,19 @@
                                 <span class="status-dot"></span>{{ statusLabel(q) }}
                             </span>
                         </td>
-                        <td class="actions-cell col-actions">
-                            <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
-                            <div class="action-menu">
-                                <button class="action-menu-trigger" (click)="toggleMenu(q.questionId, $event)" aria-label="Diğer işlemler">⋯</button>
-                                <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === q.questionId" (click)="$event.stopPropagation()">
-                                    <button (click)="openDetailForEdit(q); closeMenus()">Düzenle</button>
-                                    <button *ngIf="!q.isDraft" (click)="toggleActive(q)">
-                                        {{ q.active ? 'Pasif Yap' : 'Aktif Yap' }}
-                                    </button>
-                                    <button *ngIf="!q.isDraft" (click)="openLiveView(q.questionId); closeMenus()">Gerçek Görünümü Aç</button>
-                                    <button class="danger" *ngIf="q.isDraft" (click)="deleteDraft(q)">Sil</button>
+                        <td class="col-actions">
+                            <div class="actions-cell">
+                                <button class="link-btn review" (click)="openDetail(q); $event.stopPropagation()">Görüntüle</button>
+                                <div class="action-menu">
+                                    <button class="action-menu-trigger" (click)="toggleMenu(q.questionId, $event)" aria-label="Diğer işlemler">⋯</button>
+                                    <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === q.questionId" (click)="$event.stopPropagation()">
+                                        <button (click)="openDetailForEdit(q); closeMenus()">Düzenle</button>
+                                        <button *ngIf="!q.isDraft" (click)="toggleActive(q)">
+                                            {{ q.active ? 'Pasif Yap' : 'Aktif Yap' }}
+                                        </button>
+                                        <button *ngIf="!q.isDraft" (click)="openLiveView(q.questionId); closeMenus()">Gerçek Görünümü Aç</button>
+                                        <button class="danger" *ngIf="q.isDraft" (click)="deleteDraft(q)">Sil</button>
+                                    </div>
                                 </div>
                             </div>
                         </td>

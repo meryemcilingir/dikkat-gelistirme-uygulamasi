@@ -909,6 +909,8 @@ async function listCategories() {
             id: c.id,
             name: c.name,
             questionCount: countByCategoryId.get(c.id) || 0,
+            totalAnswered: answered,
+            totalCorrect: correct,
             avgCorrectRate: answered ? Math.round((correct / answered) * 100) : null,
         };
     });

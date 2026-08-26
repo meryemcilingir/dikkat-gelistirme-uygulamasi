@@ -6,6 +6,7 @@ import { TeacherService } from '../../core/services/teacher.service';
 import { AdminService } from '../../core/services/admin.service';
 import { ReviewModeService } from '../../core/services/review-mode.service';
 import { TeacherExamReview, ExamAnswer } from '../../core/models/exam.model';
+import { questionTitle } from '../../core/models/question-titles';
 
 /**
  * Sınav kağıdı inceleme ekranı. Hem öğretmen (/teacher/students/:id/review) hem de
@@ -88,6 +89,10 @@ export class TeacherReviewComponent implements OnInit {
         const secs = seconds % 60;
         if (mins === 0) return `${secs} sn`;
         return `${mins} dk ${secs} sn`;
+    }
+
+    title(questionId: string): string {
+        return questionTitle(questionId);
     }
 
     cellClass(index: number): string {

@@ -1,15 +1,53 @@
 @use '../shared/portal' as *;
+@use '../shared/portal-tokens' as *;
+@use '../shared/dash-grid' as *;
 
-// "Öğrencilerinin En Çok Zorlandığı Alanlar" / "Dikkat Gerektiren Öğrenciler"
-// veri arttıkça sınırsız uzamasın diye sabit yükseklikte, kendi scrollbar'ında.
-.scroll-list {
-    max-height: 340px;
-    overflow-y: auto;
+// Ana içerik: "Öğrenci Performansı" (app-teacher-detail-students) sayfanın
+// birincil bölümü — diğer özet kartlardan görsel olarak biraz daha güçlü
+// (kalın üst kenarlık) ama yeni bir renk/gölge eklemiyor.
+.primary-panel {
+    border-top: 2px solid $p-accent;
+    margin-bottom: $p-space-5;
+}
 
-    thead th {
-        position: sticky;
-        top: 0;
-        background: #fff;
-        z-index: 1;
+// Sağ kolon: "Sınav Durumu" ve "Dikkat Gerektiren Öğrencileri" iki ayrı
+// panel-card olarak dikey sıralanır (kart içinde kart değil — grid'in bir
+// sütununa iki bağımsız kart yerleştirir). .grid-12'nin varsayılan
+// align-items:stretch'i sayesinde bu kolon sol karta ("Zorlanılan
+// Kategoriler") tam eşit yükseklikte olur; alttaki kart (flex:1) kalan boşluğu
+// doldurup ikisi tam aynı çizgide biter — üstteki "Sınav Durumu" kendi doğal
+// boyutunda kalır, zorla uzamaz.
+.stacked-col {
+    display: flex;
+    flex-direction: column;
+    gap: $p-space-4;
+    height: 100%;
+
+    > .panel-card:last-child {
+        flex: 1;
+    }
+}
+
+// "Sınav Durumu" satırları bu ekranda tıklanabilir (ilgili duruma filtrelenmiş
+// Öğrenciler'e gider) — teacher-overview'daki aynı sınıf tıklanabilir DEĞİL,
+// bu yüzden global .bar-chart-row'a değil yalnızca bu modifiera dokunuyoruz.
+.bar-chart-row.clickable {
+    cursor: pointer;
+    border-radius: $p-radius-sm;
+    transition: background-color .12s;
+
+    &:hover { background: $p-surface-muted; }
+}
+
+// Tek satırlık "dikkat gerektiren yok" mesajı — varsayılan .empty-state'in
+// büyük dikey padding'i (48px) burada gereksiz beyaz alan bırakıyordu.
+.empty-state.compact {
+    padding: $p-space-4 0 0;
+    text-align: left;
+
+    .empty-title {
+        margin: 0;
+        font-weight: 600;
+        color: $p-text-secondary;
     }
 }

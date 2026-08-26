@@ -1,5 +1,26 @@
 @use '../../shared/portal' as *;
+@use '../../shared/dash-grid' as *;
 @use '../../shared/mobile-sheet' as *;
 
 @include p-responsive-row-list;
 @include p-mobile-sheet;
+
+// Başlık ile sağdaki "Sırala: Başarı" butonu arasında space-between'in
+// kart genişliğine göre garanti etmediği minimum bir boşluk bırak.
+.panel-title-row {
+    gap: 16px;
+}
+
+// Başarı yüzdesinin yanında ince (4px) bir gösterge — dev progress bar değil.
+.rate-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 56px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+
+    .rate-bar { width: 56px; }
+}

@@ -27,7 +27,83 @@
 .dash-card .hbar-list {
     max-height: 320px;
     overflow-y: auto;
-    padding-right: 4px;
+    // Sağda BAŞARI kolonu ile scrollbar arasında görünür bir boşluk kalsın.
+    padding-right: 14px;
+}
+
+// Kategori Bazlı Performans — başlık/açıklama/kolon başlıkları arasındaki
+// varsayılan dash-card boşluğu (panel-title-row'un 14+16px'lik alt boşluğu +
+// panel-subtitle'ın 12px'i) bu kart için fazla geldiğinden yalnızca burada
+// (.cat-perf-card altında) sıkıştırılıyor — diğer dash-card'lara dokunmuyor.
+.cat-perf-card {
+    > .panel-title-row {
+        padding-bottom: 6px;
+        margin-bottom: 2px;
+    }
+
+    > .panel-subtitle {
+        margin-bottom: 6px;
+    }
+}
+
+// Kategori Bazlı Performans — KATEGORİ/SORU/DOĞRU-TOPLAM/BAŞARI kolonları
+// gerçek bir CSS grid ile hizalanır: başlık satırı ve her veri satırı AYNI
+// grid-template-columns'u kullanır, bu yüzden kolonlar rastgele eşleşen
+// sabit genişlikler yerine yapısal olarak hizalı kalır. "|" ayraç yok.
+// Başlık .hbar-list'in İÇİNDE, sticky: satırlarla aynı scrollbar gutter'ını
+// paylaşır (kolonlar tam hizalanır) ama liste kayarken üstte sabit kalır.
+$cat-perf-grid-columns: 1fr 30px 92px 64px;
+$cat-perf-grid-gap: 16px;
+
+.cat-perf-header {
+    display: grid;
+    grid-template-columns: $cat-perf-grid-columns;
+    column-gap: $cat-perf-grid-gap;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: $p-surface;
+    padding: 0 0 4px;
+    margin-bottom: 2px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: $p-text-muted;
+}
+
+.cat-perf-card .hbar-row .hbar-top {
+    display: grid;
+    grid-template-columns: $cat-perf-grid-columns;
+    column-gap: $cat-perf-grid-gap;
+}
+
+// .cat-perf-metrics yalnızca şablonda 3 kolonu gruplamak için var; grid'i
+// bozmaması için kendi çocuklarını doğrudan grid item'a çeviriyoruz.
+.cat-perf-metrics {
+    display: contents;
+}
+
+.cat-perf-col {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.cat-perf-col-soru {
+    color: $p-text-muted;
+    font-weight: 500;
+}
+
+.cat-perf-col-ratio {
+    color: $p-text-secondary;
+    font-weight: 600;
+}
+
+.cat-perf-col-rate {
+    color: $p-text;
+    font-weight: 700;
 }
 
 .mobile-only {
@@ -148,7 +224,7 @@
 
     &.draft {
         background: $p-warning-soft;
-        border-color: color.adjust($p-warning, $alpha: -0.75);
+        border-color: $p-warning-border-soft;
         color: $p-warning;
     }
 
@@ -364,7 +440,7 @@
     &.danger:hover {
         background: $p-danger-soft;
         color: $p-danger;
-        border-color: color.adjust($p-danger, $alpha: -0.7);
+        border-color: $p-danger-border;
     }
 }
 
@@ -634,7 +710,7 @@
 
 .secondary-btn.danger {
     color: $p-danger;
-    border-color: color.adjust($p-danger, $alpha: -0.75);
+    border-color: $p-danger-border-soft;
 
     &:hover {
         background: $p-danger-soft;
@@ -745,7 +821,7 @@
             background: $p-danger;
             color: #fff;
 
-            &:hover { background: color.adjust($p-danger, $lightness: -6%); }
+            &:hover { background: $p-danger-hover; }
         }
     }
 }

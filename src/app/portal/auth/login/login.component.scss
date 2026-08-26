@@ -113,7 +113,7 @@ input {
     transition: background-color 150ms ease;
 
     &:hover:not(:disabled) {
-        background: color.adjust($p-accent, $lightness: -6%);
+        background: $p-accent-hover;
     }
 
     &:disabled {

@@ -126,11 +126,11 @@
     <table class="teacher-table teacher-table-responsive">
         <thead>
             <tr>
-                <th class="sortable" (click)="sortBy('name')">Ad Soyad {{ sortIcon('name') }}</th>
+                <th class="sortable" (click)="sortBy('name')">Öğretmen {{ sortIcon('name') }}</th>
                 <th class="sortable" (click)="sortBy('username')">Kullanıcı Adı {{ sortIcon('username') }}</th>
-                <th class="sortable" (click)="sortBy('studentCount')">Öğrenci {{ sortIcon('studentCount') }}</th>
-                <th class="sortable col-secondary" (click)="sortBy('completedExams')">Tamamlanan {{ sortIcon('completedExams') }}</th>
-                <th class="sortable col-score" (click)="sortBy('avgScore')">Ort. Başarı {{ sortIcon('avgScore') }}</th>
+                <th class="sortable" (click)="sortBy('studentCount')">Öğrenci Sayısı {{ sortIcon('studentCount') }}</th>
+                <th class="sortable col-secondary" (click)="sortBy('completedExams')">Sınavı Tamamlayan {{ sortIcon('completedExams') }}</th>
+                <th class="sortable col-score" title="Öğretmene bağlı öğrencilerin tamamlanmış sınavlarındaki ortalama başarı oranı." (click)="sortBy('avgScore')">Öğrenci Başarısı {{ sortIcon('avgScore') }}</th>
                 <th>Durum</th>
                 <th class="col-actions"></th>
             </tr>
@@ -147,16 +147,18 @@
                         {{ t.active ? 'Aktif' : 'Pasif' }}
                     </span>
                 </td>
-                <td class="actions-cell col-actions">
-                    <button class="link-btn review" (click)="openDetail(t); $event.stopPropagation()">Detay</button>
-                    <div class="action-menu">
-                        <button class="action-menu-trigger" (click)="toggleMenu(t.id, $event)" aria-label="Diğer işlemler">⋯</button>
-                        <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === t.id" (click)="$event.stopPropagation()">
-                            <button (click)="startEdit(t); closeMenu()">Düzenle</button>
-                            <button (click)="startResetPassword(t); closeMenu()">Şifre Sıfırla</button>
-                            <button [class.danger]="t.active" [class.success]="!t.active" (click)="toggleActive(t); closeMenu()">
-                                {{ t.active ? 'Pasifleştir' : 'Aktifleştir' }}
-                            </button>
+                <td class="col-actions">
+                    <div class="actions-cell">
+                        <button class="link-btn review" (click)="openDetail(t); $event.stopPropagation()">Detay</button>
+                        <div class="action-menu">
+                            <button class="action-menu-trigger" (click)="toggleMenu(t.id, $event)" aria-label="Diğer işlemler">⋯</button>
+                            <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === t.id" (click)="$event.stopPropagation()">
+                                <button (click)="startEdit(t); closeMenu()">Düzenle</button>
+                                <button (click)="startResetPassword(t); closeMenu()">Şifre Sıfırla</button>
+                                <button [class.danger]="t.active" [class.success]="!t.active" (click)="toggleActive(t); closeMenu()">
+                                    {{ t.active ? 'Pasifleştir' : 'Aktifleştir' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </td>
@@ -193,15 +195,15 @@
 
         <div class="summary-grid sheet-grid">
             <div>
-                <span class="label">Öğrenci</span>
+                <span class="label">Öğrenci Sayısı</span>
                 <span class="value">{{ t.studentCount }}</span>
             </div>
             <div>
-                <span class="label">Tamamlanan Sınav</span>
+                <span class="label">Sınavı Tamamlayan</span>
                 <span class="value">{{ t.completedExams }}</span>
             </div>
             <div>
-                <span class="label">Ort. Başarı</span>
+                <span class="label" title="Öğretmene bağlı öğrencilerin tamamlanmış sınavlarındaki ortalama başarı oranı.">Öğrenci Başarısı</span>
                 <span class="value">{{ t.avgScore !== null && t.avgScore !== undefined ? ('%' + t.avgScore) : '—' }}</span>
             </div>
         </div>

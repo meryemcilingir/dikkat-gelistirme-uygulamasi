@@ -71,7 +71,9 @@ export class TeacherStudentsComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        /** Genel Bakış'taki başarı dağılımı grafiğinden bir sütuna tıklanıp gelindiyse, o puan aralığı URL'den okunur. */
+        /** Genel Bakış'taki "Son Tamamlanan Sınavlar" / "Dikkat Gerektiren" gibi bir karta tıklanıp gelindiyse, o filtre URL'den okunur. */
+        const requestedStatus = this.route.snapshot.queryParamMap.get('status') as StudentQuery['status'] | null;
+        if (requestedStatus) this.query.status = requestedStatus;
         const requestedScoreMin = this.route.snapshot.queryParamMap.get('scoreMin');
         const requestedScoreMax = this.route.snapshot.queryParamMap.get('scoreMax');
         if (requestedScoreMin || requestedScoreMax) {

@@ -1,8 +1,10 @@
-<div class="page-header">
-    <div>
-        <h1 style="font-size: 1.1rem;">Sorumlu Olduğu Öğrenciler</h1>
-    </div>
+<div class="panel-title panel-title-row">
+    <span>Öğrenci Performansı</span>
+    <button class="link-btn" type="button" *ngIf="studentPage()?.total" (click)="sortBy('score')">
+        Sırala: Başarı ({{ query.sortBy === 'score' && query.sortDirection === 'desc' ? 'Yüksekten Düşüğe' : 'Düşükten Yükseğe' }})
+    </button>
 </div>
+<div class="panel-subtitle">Öğretmene bağlı öğrencilerin sınav sonuçları</div>
 
 <div class="list-toolbar">
     <input
@@ -15,12 +17,6 @@
     <button class="filter-toggle-btn" [class.active]="showFilters()" (click)="toggleFilters()">
         Filtreler{{ filterChips.length ? ' (' + filterChips.length + ')' : '' }}
     </button>
-    <label class="toolbar-select">
-        <span>Sırala</span>
-        <select [ngModel]="sortIndex" (ngModelChange)="sortIndex = $event">
-            <option *ngFor="let p of sortPresets; let i = index" [ngValue]="i">{{ p.label }}</option>
-        </select>
-    </label>
 </div>
 
 <div class="filter-panel" *ngIf="showFilters()">
@@ -42,12 +38,6 @@
         </select>
     </label>
     <div class="range-field">
-        <span>Puan</span>
-        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMin" (change)="reload(1)" placeholder="Min" />
-        <span class="dash">–</span>
-        <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.scoreMax" (change)="reload(1)" placeholder="Max" />
-    </div>
-    <div class="range-field">
         <span>Başarı %</span>
         <input type="number" min="0" max="100" maxlength="3" [(ngModel)]="query.correctRateMin" (change)="reload(1)" placeholder="Min" />
         <span class="dash">–</span>
@@ -64,39 +54,37 @@
 </div>
 
 <div class="empty" *ngIf="loading()">Yükleniyor...</div>
-<div class="empty" *ngIf="!loading() && studentPage()?.total === 0">Kayıt bulunamadı.</div>
+<div class="empty-state" *ngIf="!loading() && studentPage()?.total === 0">
+    <p class="empty-title">Bu kriterlere uygun öğrenci bulunamadı.</p>
+</div>
 
 <div class="table-scroll" *ngIf="!loading() && (studentPage()?.total ?? 0) > 0">
     <table class="student-table student-table-responsive">
         <thead>
             <tr>
-                <th class="sortable" (click)="sortBy('name')">Ad Soyad {{ sortIcon('name') }}</th>
-                <th class="sortable" (click)="sortBy('username')">Kullanıcı Adı {{ sortIcon('username') }}</th>
-                <th class="sortable" (click)="sortBy('progress')">İlerleme {{ sortIcon('progress') }}</th>
+                <th class="sortable" (click)="sortBy('name')">Öğrenci {{ sortIcon('name') }}</th>
+                <th class="col-score">Puan</th>
+                <th class="col-score">Başarı</th>
                 <th>Sınav Durumu</th>
-                <th class="sortable col-dy" (click)="sortBy('correctRate')">D / Y {{ sortIcon('correctRate') }}</th>
-                <th class="sortable col-score" (click)="sortBy('score')">Puan {{ sortIcon('score') }}</th>
                 <th class="col-actions"></th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let s of studentPage()!.items" class="student-row" [class.inactive]="!s.active" (click)="openStudentSheet(s)">
                 <td>{{ s.firstName }} {{ s.lastName }}</td>
-                <td class="muted">{{ s.username }}</td>
-                <td>{{ s.exam.answered }} / {{ s.exam.total }}</td>
-                <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
-                <td class="col-dy">
-                    <span class="ok">{{ s.exam.correctCount ?? 0 }}</span> /
-                    <span class="bad">{{ s.exam.wrongCount ?? 0 }}</span>
-                </td>
+                <td class="col-score">{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</td>
                 <td class="col-score">
-                    <div class="score-cell">
-                        <span>{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</span>
-                        <span class="score-secondary" *ngIf="s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined">Başarı %{{ s.exam.finalScore }}</span>
+                    <div class="rate-cell" *ngIf="s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined; else noRate">
+                        <span>%{{ s.exam.finalScore }}</span>
+                        <div class="rate-bar"><div class="rate-bar-fill" [style.width.%]="s.exam.finalScore"></div></div>
                     </div>
+                    <ng-template #noRate><span class="muted">—</span></ng-template>
                 </td>
-                <td class="actions-cell col-actions">
-                    <button class="link-btn review" (click)="openReview(s); $event.stopPropagation()" [disabled]="s.exam.answered === 0">İncele</button>
+                <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
+                <td class="col-actions">
+                    <div class="actions-cell">
+                        <button class="link-btn review" (click)="openReview(s); $event.stopPropagation()" [disabled]="s.exam.answered === 0">İncele</button>
+                    </div>
                 </td>
             </tr>
         </tbody>

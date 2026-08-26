@@ -2,35 +2,58 @@
 // PORTAL TASARIM TOKEN'LARI — admin/öğretmen paneli (profesyonel SaaS).
 // src/styles/_design-tokens.scss (öğrenci/oyun ekranları, pastel/oyuncu dil)
 // ile KARIŞTIRILMAZ — bu dosya yalnızca src/app/portal/** altında kullanılır.
+//
+// Renkler CSS custom property'lere (var(--p-*)) yönlendirilir — gerçek açık/koyu
+// mod değerleri src/app/portal/shared/_portal-theme.scss'te (:root / [data-theme])
+// tanımlıdır. Böylece bu dosyadaki $p-* isimleri DEĞİŞMEDEN, tema anahtarı
+// çalışma zamanında (build'de değil) devreye girer.
 // ══════════════════════════════════════════════════════════
 
 // ── Yüzeyler ───────────────────────────────────────────────
-$p-bg: #f6f7f9;           // Sayfa arka planı — nötr açık gri
-$p-surface: #ffffff;      // Kart/panel/tablo yüzeyi
-$p-surface-muted: #fafbfc; // Hover/alternate satır
+$p-bg: var(--p-bg);
+$p-surface: var(--p-surface);
+$p-surface-muted: var(--p-surface-muted);
 
 // ── Kenarlık ───────────────────────────────────────────────
-$p-border: #e5e7eb;
-$p-border-strong: #d1d5db;
+$p-border: var(--p-border);
+$p-border-strong: var(--p-border-strong);
 
 // ── Metin ──────────────────────────────────────────────────
-$p-text: #111827;         // Ana metin
-$p-text-secondary: #4b5563; // İkincil metin
-$p-text-muted: #9ca3af;   // Etiket/placeholder
+$p-text: var(--p-text);
+$p-text-secondary: var(--p-text-secondary);
+$p-text-muted: var(--p-text-muted);
 
 // ── Vurgu rengi (tek kontrollü accent) ─────────────────────
-$p-accent: #4f46e5;       // Indigo — birincil eylem, aktif sekme, linkler
-$p-accent-soft: #eef2ff;  // Açık indigo — hover/aktif zemin
+$p-accent: var(--p-accent);
+$p-accent-soft: var(--p-accent-soft);
+// Aşağıdaki iki token, önceden color.adjust($p-accent[-soft], $lightness: ...)
+// ile ANLIK hesaplanıyordu — bu artık $p-accent bir Sass rengi değil (CSS
+// custom property) olduğu için derleme zamanında hesaplanamaz. Hover/active
+// tonları bu yüzden ayrı, temaya duyarlı token'lar olarak tutulur.
+$p-accent-hover: var(--p-accent-hover);
+$p-accent-soft-hover: var(--p-accent-soft-hover);
 
 // ── Durum renkleri (yalnızca anlamlı yerlerde) ─────────────
-$p-success: #16a34a;
-$p-success-soft: #f0fdf4;
-$p-warning: #d97706;
-$p-warning-soft: #fffbeb;
-$p-danger: #dc2626;
-$p-danger-soft: #fef2f2;
-$p-info: #0284c7;
-$p-info-soft: #f0f9ff;
+$p-success: var(--p-success);
+$p-success-soft: var(--p-success-soft);
+$p-warning: var(--p-warning);
+$p-warning-soft: var(--p-warning-soft);
+$p-danger: var(--p-danger);
+$p-danger-soft: var(--p-danger-soft);
+$p-info: var(--p-info);
+$p-info-soft: var(--p-info-soft);
+
+// Soft zemin üstünde okunabilir, koyulaştırılmış durum metni (eskiden
+// color.adjust($p-warning/$p-danger/$p-info, $lightness: -8/-12%)).
+$p-warning-text: var(--p-warning-text);
+$p-danger-text: var(--p-danger-text);
+$p-info-text: var(--p-info-text);
+// Yarı saydam durum kenarlıkları (eskiden color.adjust(..., $alpha: ...)).
+$p-warning-border-soft: var(--p-warning-border-soft);
+$p-danger-border: var(--p-danger-border);
+$p-danger-border-soft: var(--p-danger-border-soft);
+// Danger buton hover tonu (eskiden color.adjust($p-danger, $lightness: -6%)).
+$p-danger-hover: var(--p-danger-hover);
 
 // ── Spacing (4/8px taban) ────────────────────────────────────
 $p-space-1: 4px;
@@ -45,6 +68,16 @@ $p-space-7: 48px;
 $p-radius-sm: 6px;
 $p-radius-md: 8px;
 $p-radius-lg: 12px;
+$p-radius-xl: 16px; // Dashboard kartları (panel-card.dash-card, kpi-strip) için
+
+// ── Dashboard kartlarına özel ince tonlar ────────────────────
+// $p-border'dan bir tık daha soluk — dashboard kartlarının kenarlığı "zarif"
+// dursun diye; $p-border'ın diğer onlarca kullanımını (form, tablo, dropdown
+// vb.) etkilememesi için ayrı bir token.
+$p-border-soft: var(--p-border-soft);
+// Progress/track zeminleri (segmented-bar, hbar-track) için — $p-surface-muted
+// beyaz kart üstünde neredeyse görünmüyordu, bu ton biraz daha belirgin.
+$p-track-bg: var(--p-track-bg);
 
 // ── Tipografi ────────────────────────────────────────────────
 $p-font: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;

@@ -35,8 +35,16 @@ export class AdminStudentsComponent implements OnInit {
     readonly sortPresets = STUDENT_SORT_PRESETS;
 
     readonly studentPage = signal<PagedResult<StudentWithExam> | null>(null);
-    readonly teacherOptions = signal<TeacherWithCount[]>([]);
     readonly summary = signal<AdminOverview | null>(null);
+
+    // ── Öğretmen filtresi: yüzlerce öğretmende tümünü tek dropdown'a
+    // yüklemek yerine, yazdıkça (debounce 300ms) API'den arayan, en fazla
+    // 20 sonuç gösteren basit bir autocomplete.
+    teacherSearchTerm = '';
+    readonly teacherSearchResults = signal<TeacherWithCount[]>([]);
+    readonly teacherSearchOpen = signal(false);
+    readonly selectedTeacherLabel = signal('');
+    private readonly teacherSearch$ = new Subject<string>();
     readonly loading = signal(false);
     readonly showFilters = signal(false);
     readonly error = signal<string | null>(null);
@@ -64,10 +72,13 @@ export class AdminStudentsComponent implements OnInit {
     constructor() {
         this.search$.pipe(debounceTime(300), takeUntilDestroyed())
             .subscribe(() => this.reload(1));
+
+        this.teacherSearch$.pipe(debounceTime(300), takeUntilDestroyed())
+            .subscribe(term => this.runTeacherSearch(term));
     }
 
     async ngOnInit(): Promise<void> {
-        /** Genel Bakış'tan "Tamamlanan Sınav" veya "düşük başarı" gibi bir karta tıklanıp gelindiyse, o filtre URL'den okunur. */
+        /** Genel Bakış'tan veya Öğretmen Detayı'ndan bir karta tıklanıp gelindiyse, o filtre URL'den okunur. */
         const requestedStatus = this.route.snapshot.queryParamMap.get('status') as StudentQuery['status'] | null;
         if (requestedStatus) this.query.status = requestedStatus;
         const requestedScoreMin = this.route.snapshot.queryParamMap.get('scoreMin');
@@ -77,16 +88,68 @@ export class AdminStudentsComponent implements OnInit {
             if (requestedScoreMax) this.query.scoreMax = Number(requestedScoreMax);
             this.query.status = 'Completed';
         }
-        await Promise.all([this.reload(1), this.loadTeacherOptions(), this.loadSummary()]);
+        const requestedTeacherId = this.route.snapshot.queryParamMap.get('teacherId');
+        const tasks: Promise<unknown>[] = [];
+        if (requestedTeacherId) {
+            this.query.teacherId = requestedTeacherId;
+            tasks.push(this.presetTeacherFilter(requestedTeacherId));
+        }
+        tasks.push(this.reload(1), this.loadSummary());
+        await Promise.all(tasks);
+    }
+
+    /** Öğretmen Detayı'ndan "teacherId" ile gelindiğinde autocomplete kutusunda öğretmenin adı görünsün. */
+    private async presetTeacherFilter(teacherId: string): Promise<void> {
+        try {
+            const res = await this.adminApi.getTeacher(teacherId);
+            const label = `${res.teacher.firstName} ${res.teacher.lastName}`;
+            this.selectedTeacherLabel.set(label);
+            this.teacherSearchTerm = label;
+        } catch {
+            // Öğretmen bulunamadıysa filtre id ile sessizce kalır — liste yine doğru filtrelenir.
+        }
     }
 
     private async loadSummary(): Promise<void> {
         this.summary.set(await this.adminApi.overview());
     }
 
-    private async loadTeacherOptions(): Promise<void> {
-        const res = await this.adminApi.listTeachers({ page: 1, pageSize: 100, sortBy: 'name' });
-        this.teacherOptions.set(res.items);
+    onTeacherSearchInput(): void {
+        this.teacherSearchOpen.set(true);
+        if (this.query.teacherId) {
+            // Kullanıcı seçili öğretmenin adını değiştirmeye başladı — filtre geçersiz sayılır.
+            this.query.teacherId = '';
+            this.selectedTeacherLabel.set('');
+        }
+        this.teacherSearch$.next(this.teacherSearchTerm.trim());
+    }
+
+    private async runTeacherSearch(term: string): Promise<void> {
+        if (!term) { this.teacherSearchResults.set([]); return; }
+        const res = await this.adminApi.listTeachers({ search: term, page: 1, pageSize: 20, sortBy: 'name' });
+        this.teacherSearchResults.set(res.items);
+    }
+
+    openTeacherSearch(): void {
+        this.teacherSearchOpen.set(true);
+        if (this.teacherSearchTerm.trim()) this.teacherSearch$.next(this.teacherSearchTerm.trim());
+    }
+
+    selectTeacher(t: TeacherWithCount): void {
+        this.query.teacherId = t.id;
+        this.selectedTeacherLabel.set(`${t.firstName} ${t.lastName}`);
+        this.teacherSearchTerm = `${t.firstName} ${t.lastName}`;
+        this.teacherSearchOpen.set(false);
+        this.teacherSearchResults.set([]);
+        this.reload(1);
+    }
+
+    clearTeacherFilter(): void {
+        this.query.teacherId = '';
+        this.selectedTeacherLabel.set('');
+        this.teacherSearchTerm = '';
+        this.teacherSearchResults.set([]);
+        this.reload(1);
     }
 
     async reload(page?: number): Promise<void> {
@@ -130,14 +193,19 @@ export class AdminStudentsComponent implements OnInit {
     }
 
     get filterChips(): FilterChip[] {
-        const teacher = this.teacherOptions().find(t => t.id === this.query.teacherId);
-        const teacherLabel = teacher ? `${teacher.firstName} ${teacher.lastName}` : null;
-        return studentFilterChips(this.query, () => this.reload(1), teacherLabel);
+        const teacherLabel = this.query.teacherId ? this.selectedTeacherLabel() || null : null;
+        const chips = studentFilterChips(this.query, () => this.reload(1), teacherLabel);
+        // Öğretmen çipi kapatılınca autocomplete input'u da (isim metni, arama
+        // sonuçları) sıfırlansın — yalnızca query.teacherId temizlenmesi yetmez.
+        return chips.map(c => c.label.startsWith('Öğretmen:') ? { ...c, clear: () => this.clearTeacherFilter() } : c);
     }
 
     clearFilters(): void {
         this.query.search = '';
         this.query.teacherId = '';
+        this.selectedTeacherLabel.set('');
+        this.teacherSearchTerm = '';
+        this.teacherSearchResults.set([]);
         this.query.status = '';
         this.query.active = '';
         this.query.scoreMin = null;

@@ -8,6 +8,9 @@ import { PortalIconComponent } from '../../shared/icon/portal-icon.component';
 
 /** Genel Bakış'ta gösterilen en zorlanılan kategori sayısı — kalanı Soru Analizi'nde. */
 const TOP_CATEGORY_COUNT = 5;
+/** Dashboard = özet + top N + "Tümünü Gör" — dashboard'da hiçbir liste kontrolsüz uzamasın. */
+const ATTENTION_DISPLAY_COUNT = 5;
+const COMPLETED_DISPLAY_COUNT = 5;
 
 /**
  * Öğretmen paneli — Genel Bakış sayfası (/teacher/overview). "Benim
@@ -30,15 +33,19 @@ export class TeacherOverviewComponent implements OnInit {
     readonly overview = signal<TeacherOverview | null>(null);
     readonly categories = signal<QuestionCategoryStat[]>([]);
     readonly completedExams = signal<StudentWithExam[]>([]);
+    readonly completedExamsTotal = signal(0);
     readonly attentionStudents = signal<StudentWithExam[]>([]);
+    readonly attentionTotal = signal(0);
     readonly loading = signal(true);
 
     async ngOnInit(): Promise<void> {
         const [overview, questionStats, completed, lowScore, inProgress, notStarted] = await Promise.all([
             this.teacherApi.overview(),
             this.teacherApi.getQuestionStats({ page: 1, pageSize: 1 }),
-            this.teacherApi.listStudents({ page: 1, pageSize: 6, status: 'Completed' }),
-            this.teacherApi.listStudents({ page: 1, pageSize: 4, status: 'Completed', sortBy: 'score', sortDirection: 'asc' }),
+            this.teacherApi.listStudents({ page: 1, pageSize: COMPLETED_DISPLAY_COUNT, status: 'Completed' }),
+            // scoreMax:49 sunucu tarafında filtrelenir — hem gösterilen 4 öğrenci hem de
+            // "toplam düşük başarılı" sayısı (lowScore.total) buna göre doğru gelir.
+            this.teacherApi.listStudents({ page: 1, pageSize: 4, status: 'Completed', scoreMax: 49, sortBy: 'score', sortDirection: 'asc' }),
             this.teacherApi.listStudents({ page: 1, pageSize: 3, status: 'InProgress', sortBy: 'progress', sortDirection: 'asc' }),
             this.teacherApi.listStudents({ page: 1, pageSize: 3, status: 'Assigned' }),
         ]);
@@ -46,16 +53,20 @@ export class TeacherOverviewComponent implements OnInit {
         // Kategoriler backend'de avgCorrectRate'e göre azalan geliyor — en zorlanılan (en düşük) üstte olsun diye ters çevirip ilk 5'i alıyoruz.
         this.categories.set([...questionStats.categories].reverse().slice(0, TOP_CATEGORY_COUNT));
         this.completedExams.set(completed.items);
+        this.completedExamsTotal.set(completed.total);
 
         // Müdahale gereken öğrenciler: düşük başarı + yarım kalan + hiç başlamamış — tek listede, öncelik sırasına göre.
         const seen = new Set<string>();
         const merged: StudentWithExam[] = [];
-        for (const s of [...lowScore.items.filter(s => (s.exam.finalScore ?? 100) < 50), ...inProgress.items, ...notStarted.items]) {
+        for (const s of [...lowScore.items, ...inProgress.items, ...notStarted.items]) {
             if (seen.has(s.id)) continue;
             seen.add(s.id);
             merged.push(s);
         }
-        this.attentionStudents.set(merged.slice(0, 6));
+        this.attentionStudents.set(merged.slice(0, ATTENTION_DISPLAY_COUNT));
+        // Üç durum (Completed düşük puan / InProgress / Assigned) birbirini dışlar,
+        // bu yüzden toplamları basitçe toplamak çakışma yaratmaz.
+        this.attentionTotal.set(lowScore.total + inProgress.total + notStarted.total);
 
         this.loading.set(false);
     }
@@ -104,8 +115,12 @@ export class TeacherOverviewComponent implements OnInit {
         return `${mins} dk ${secs} sn`;
     }
 
-    viewStudents(): void {
-        this.router.navigate(['/teacher/students']);
+    viewStudents(status?: 'Completed' | 'InProgress' | 'Assigned'): void {
+        this.router.navigate(['/teacher/students'], status ? { queryParams: { status } } : {});
+    }
+
+    viewCompletedExams(): void {
+        this.router.navigate(['/teacher/students'], { queryParams: { status: 'Completed' } });
     }
 
     /** Başarı dağılımı grafiğindeki bir sütuna tıklanınca o puan aralığındaki öğrencilere gider. */

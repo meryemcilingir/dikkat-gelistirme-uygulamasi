@@ -146,16 +146,18 @@
                         <span class="score-secondary" *ngIf="s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined">Başarı %{{ s.exam.finalScore }}</span>
                     </div>
                 </td>
-                <td class="actions-cell col-actions">
-                    <button class="link-btn review" (click)="openReview(s.id); $event.stopPropagation()">İncele</button>
-                    <div class="action-menu">
-                        <button class="action-menu-trigger" (click)="toggleMenu(s.id, $event)" aria-label="Diğer işlemler">⋯</button>
-                        <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
-                            <button (click)="startEdit(s); closeMenu()">Düzenle</button>
-                            <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
-                            <button [class.danger]="s.active" [class.success]="!s.active" (click)="toggleActive(s)">
-                                {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
-                            </button>
+                <td class="col-actions">
+                    <div class="actions-cell">
+                        <button class="link-btn review" (click)="openReview(s.id); $event.stopPropagation()">İncele</button>
+                        <div class="action-menu">
+                            <button class="action-menu-trigger" (click)="toggleMenu(s.id, $event)" aria-label="Diğer işlemler">⋯</button>
+                            <div class="action-menu-dropdown" appFloatingMenu *ngIf="openMenuId() === s.id" (click)="$event.stopPropagation()">
+                                <button (click)="startEdit(s); closeMenu()">Düzenle</button>
+                                <button (click)="startResetPassword(s); closeMenu()">Şifre Sıfırla</button>
+                                <button [class.danger]="s.active" [class.success]="!s.active" (click)="toggleActive(s)">
+                                    {{ s.active ? 'Pasifleştir' : 'Aktifleştir' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </td>

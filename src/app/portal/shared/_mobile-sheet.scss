@@ -23,9 +23,27 @@
             th,
             td {
                 white-space: normal;
-                word-break: break-word;
+                // word-break:break-word, kelimenin ortasından da bölüyordu (ör.
+                // "KULLANICI ADI" başlığı "KULLANIC" + "I ADI" diye ikiye
+                // ayrılıyordu). overflow-wrap:break-word yalnızca kelime tek
+                // başına sığmadığında böler — önce boşluktan sarmayı dener.
+                word-break: normal;
+                overflow-wrap: break-word;
                 padding: $p-space-2 $p-space-2;
+            }
+
+            td {
                 font-size: 0.8rem;
+            }
+
+            th {
+                // Başlık burada büyütülünce (eskiden td ile aynı 0.8rem) dar
+                // sütunlarda "KULLANICI" tek kelimesi bile sığmıyor, kelime
+                // yine ortadan bölünüyordu. Masaüstündeki küçük başlık
+                // boyutunu (0.68rem) koruyunca "KULLANICI" / "ADI" diye
+                // düzgün iki satıra sarıyor.
+                font-size: 0.64rem;
+                line-height: 1.3;
             }
 
             .col-dy,

@@ -17,21 +17,21 @@
                 <span class="kpi-context">{{ o.activeStudentCount }} aktif</span>
             </div>
         </div>
-        <div class="kpi-cell">
+        <div class="kpi-cell clickable" (click)="viewStudents('Completed')">
             <div class="kpi-icon"><app-portal-icon name="clipboard-check" [size]="16"></app-portal-icon></div>
             <div class="kpi-body">
                 <span class="kpi-label">Tamamlayan</span>
                 <span class="kpi-value">{{ o.examSummary.completed }}</span>
             </div>
         </div>
-        <div class="kpi-cell">
+        <div class="kpi-cell clickable" (click)="viewStudents('InProgress')">
             <div class="kpi-icon"><app-portal-icon name="trend-up" [size]="16"></app-portal-icon></div>
             <div class="kpi-body">
                 <span class="kpi-label">Devam Eden</span>
                 <span class="kpi-value">{{ o.examSummary.inProgress }}</span>
             </div>
         </div>
-        <div class="kpi-cell">
+        <div class="kpi-cell clickable" (click)="viewStudents('Completed')">
             <div class="kpi-icon"><app-portal-icon name="chart" [size]="16"></app-portal-icon></div>
             <div class="kpi-body">
                 <span class="kpi-label">Ortalama Başarı</span>
@@ -43,9 +43,12 @@
     <!-- Dikkat Gerektiren Öğrenciler (%65) / Sınav Durumu (%35) -->
     <div class="dash-row">
         <div class="col-6 panel-card dash-card card-animate-in">
-            <div class="panel-title">Dikkat Gerektiren Öğrenciler</div>
+            <div class="panel-title panel-title-row">
+                <span>Dikkat Gerektiren Öğrenciler{{ attentionTotal() ? ' (' + attentionTotal() + ')' : '' }}</span>
+                <button class="link-btn" type="button" *ngIf="attentionTotal() > attentionStudents().length" (click)="viewStudents()">Tümünü Gör →</button>
+            </div>
             <div class="panel-card-body">
-                <div class="empty-state" *ngIf="!attentionStudents().length">
+                <div class="empty-state empty-state-subtle" *ngIf="!attentionStudents().length">
                     <p class="empty-title">Şu anda dikkat gerektiren öğrenci yok</p>
                     <p class="empty-subtitle">Düşük başarılı, yarım kalmış veya hiç başlamamış öğrenciler burada listelenecek.</p>
                 </div>
@@ -98,22 +101,22 @@
                     <div class="column-chart">
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(0, 25)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range0_25 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
+                            <div class="column-chart-bar range-red" [style.height.%]="barWidth(o.scoreDistribution.range0_25)"></div>
                             <span class="column-chart-label">0–25</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(26, 50)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range26_50 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
+                            <div class="column-chart-bar range-orange" [style.height.%]="barWidth(o.scoreDistribution.range26_50)"></div>
                             <span class="column-chart-label">26–50</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(51, 75)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range51_75 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
+                            <div class="column-chart-bar range-blue" [style.height.%]="barWidth(o.scoreDistribution.range51_75)"></div>
                             <span class="column-chart-label">51–75</span>
                         </div>
                         <div class="column-chart-col clickable" (click)="viewStudentsByScore(76, 100)">
                             <span class="column-chart-count">{{ o.scoreDistribution.range76_100 }}</span>
-                            <div class="column-chart-bar" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
+                            <div class="column-chart-bar range-green" [style.height.%]="barWidth(o.scoreDistribution.range76_100)"></div>
                             <span class="column-chart-label">76–100</span>
                         </div>
                     </div>
@@ -154,7 +157,10 @@
 
     <!-- Son Tamamlanan Sınavlar -->
     <div class="panel-card dash-card card-animate-in">
-        <div class="panel-title">Son Tamamlanan Sınavlar</div>
+        <div class="panel-title panel-title-row">
+            <span>Son Tamamlanan Sınavlar{{ completedExamsTotal() ? ' (' + completedExamsTotal() + ')' : '' }}</span>
+            <button class="link-btn" type="button" *ngIf="completedExamsTotal() > completedExams().length" (click)="viewCompletedExams()">Tümünü Gör →</button>
+        </div>
         <div class="panel-card-body">
             <div class="empty-state" *ngIf="!completedExams().length">
                 <p class="empty-title">Henüz tamamlanan sınav yok</p>
@@ -181,8 +187,10 @@
                                     <span class="muted" *ngIf="s.exam.finalScore !== null && s.exam.finalScore !== undefined"> · Başarı %{{ s.exam.finalScore }}</span>
                                 </td>
                                 <td>{{ formatDuration(s.exam.totalTimeSeconds) }}</td>
-                                <td class="actions-cell">
-                                    <button class="link-btn review" (click)="openStudent(s); $event.stopPropagation()">İncele</button>
+                                <td>
+                                    <div class="actions-cell">
+                                        <button class="link-btn review" (click)="openStudent(s); $event.stopPropagation()">İncele</button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

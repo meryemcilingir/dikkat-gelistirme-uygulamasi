@@ -100,6 +100,9 @@ export class OddDirectionComponent implements OnInit {
             this.fb.showFeedback('success', 'Tebrikler! Doğru kediyi buldun!');
         } else {
             this.hintService.registerError(ID);
+            // Öğretmen incelemesinde öğrencinin işaretlediği (yanlış) seçim
+            // görünsün diye, seçim sıfırlanmadan ÖNCE kaydedilir.
+            this.persist();
 
             const selectedCat = this.cats.find(c => c.id === this.selectedId);
             if (selectedCat) {
@@ -111,6 +114,7 @@ export class OddDirectionComponent implements OnInit {
 
             this.selectedId = -1;
             this.fb.showFeedback('error', 'Tekrar Denemelisin');
+            return;
         }
         this.persist();
     }

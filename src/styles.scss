@@ -2,6 +2,10 @@
 @use './styles/design-tokens' as *;
 @use './styles/responsive' as *;
 @use './styles/global-states';
+// Portal (admin/öğretmen) açık/koyu mod CSS custom property'leri — component
+// ViewEncapsulation'ı yüzünden `:root` yalnızca burada, global stil
+// dosyasında tanımlanabilir (bkz. app/portal/shared/_portal-theme.scss).
+@use './app/portal/shared/portal-theme';
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
 
 *,

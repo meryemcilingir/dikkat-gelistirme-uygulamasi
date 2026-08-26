@@ -103,6 +103,20 @@ import { CommonModule } from '@angular/common';
                 <path d="M9.5 4v16"></path>
                 <path d="M13.5 10l2 2-2 2"></path>
             </ng-container>
+            <ng-container *ngSwitchCase="'sun'">
+                <circle cx="12" cy="12" r="4.2"></circle>
+                <path d="M12 2.5v2.4"></path>
+                <path d="M12 19.1v2.4"></path>
+                <path d="M4.6 4.6l1.7 1.7"></path>
+                <path d="M17.7 17.7l1.7 1.7"></path>
+                <path d="M2.5 12h2.4"></path>
+                <path d="M19.1 12h2.4"></path>
+                <path d="M4.6 19.4l1.7-1.7"></path>
+                <path d="M17.7 6.3l1.7-1.7"></path>
+            </ng-container>
+            <ng-container *ngSwitchCase="'moon'">
+                <path d="M20.5 14.2A8.5 8.5 0 019.8 3.5a8.5 8.5 0 1010.7 10.7z"></path>
+            </ng-container>
         </ng-container>
     </svg>
   `,

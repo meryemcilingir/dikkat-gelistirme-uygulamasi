@@ -36,6 +36,12 @@
         color: $p-text-muted;
         text-transform: uppercase;
         letter-spacing: 0.03em;
+        // "Ortalama Soru Süresi" gibi uzun etiketler 2 satıra sarabiliyor; sabit
+        // bir yükseklik (2 satırlık) ayırarak tek satırlık etiketlerle aynı
+        // hizada başlasınlar — böylece altlarındaki değer de her zaman aynı
+        // satırda durur. Dar ekranlarda (responsive) da aynı mantık geçerli.
+        line-height: 1.35;
+        min-height: calc(1.35em * 2);
     }
 
     .value {

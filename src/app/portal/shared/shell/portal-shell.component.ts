@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { PortalIconComponent } from '../icon/portal-icon.component';
+import { ThemeService } from '../../../core/services/theme.service';
 
 export interface ShellNavItem {
     label: string;
@@ -30,6 +31,7 @@ export interface ShellNavSection {
 })
 export class PortalShellComponent {
     private router = inject(Router);
+    readonly theme = inject(ThemeService);
 
     @ViewChild('userMenu') private userMenuRef?: ElementRef<HTMLElement>;
 

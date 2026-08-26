@@ -1,0 +1,101 @@
+// ══════════════════════════════════════════════════════════
+// PORTAL TEMA DEĞERLERİ — açık (varsayılan) ve koyu mod için gerçek renkler.
+// _portal-tokens.scss'teki $p-* isimleri buradaki --p-* CSS custom
+// property'lerine yönlenir; bu dosya tek başına src/styles.scss'ten
+// @use edilir (ViewEncapsulation'lı component CSS'i içinden `:root`
+// hiçbir zaman <html>'i hedefleyemeyeceği için burada, GLOBAL stil
+// dosyasında tanımlanmalı).
+//
+// Öncelik: açık kullanıcı seçimi ([data-theme]) > sistem tercihi
+// (prefers-color-scheme) > açık mod (varsayılan :root).
+// ══════════════════════════════════════════════════════════
+
+:root {
+    --p-bg: #f6f7f9;
+    --p-surface: #ffffff;
+    --p-surface-muted: #fafbfc;
+
+    --p-border: #e5e7eb;
+    --p-border-strong: #d1d5db;
+    --p-border-soft: #edeef1;
+    --p-track-bg: #f1f3f5;
+
+    --p-text: #111827;
+    --p-text-secondary: #4b5563;
+    --p-text-muted: #9ca3af;
+
+    --p-accent: #4f46e5;
+    --p-accent-soft: #eef2ff;
+    --p-accent-hover: #352be1;
+    --p-accent-soft-hover: #dfe6ff;
+
+    --p-success: #16a34a;
+    --p-success-soft: #f0fdf4;
+
+    --p-warning: #d97706;
+    --p-warning-soft: #fffbeb;
+    --p-warning-text: #9d5604;
+    --p-warning-border-soft: rgba(217, 119, 6, 0.25);
+
+    --p-danger: #dc2626;
+    --p-danger-soft: #fef2f2;
+    --p-danger-hover: #c42020;
+    --p-danger-text: #bb1e1e;
+    --p-danger-border: rgba(220, 38, 38, 0.3);
+    --p-danger-border-soft: rgba(220, 38, 38, 0.25);
+
+    --p-info: #0284c7;
+    --p-info-soft: #f0f9ff;
+    --p-info-text: #02699f;
+}
+
+@mixin p-dark-theme {
+    --p-bg: #101216;
+    --p-surface: #1a1d23;
+    --p-surface-muted: #23262d;
+
+    --p-border: #2e323b;
+    --p-border-strong: #3c4149;
+    --p-border-soft: #262a31;
+    --p-track-bg: #262a31;
+
+    --p-text: #e5e7eb;
+    --p-text-secondary: #9ca3af;
+    --p-text-muted: #6b7280;
+
+    --p-accent: #818cf8;
+    --p-accent-soft: #2b2a4a;
+    --p-accent-hover: #6d76f0;
+    --p-accent-soft-hover: #383570;
+
+    --p-success: #22c55e;
+    --p-success-soft: #122b1c;
+
+    --p-warning: #f59e0b;
+    --p-warning-soft: #302509;
+    --p-warning-text: #fbbf24;
+    --p-warning-border-soft: rgba(245, 158, 11, 0.35);
+
+    --p-danger: #f87171;
+    --p-danger-soft: #35181a;
+    --p-danger-hover: #f45c5c;
+    --p-danger-text: #fca5a5;
+    --p-danger-border: rgba(248, 113, 113, 0.4);
+    --p-danger-border-soft: rgba(248, 113, 113, 0.32);
+
+    --p-info: #38bdf8;
+    --p-info-soft: #0b2836;
+    --p-info-text: #7dd3fc;
+}
+
+// Sistem koyu tercihi — kullanıcı elle "açık"a sabitlemediyse.
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        @include p-dark-theme;
+    }
+}
+
+// Kullanıcının elle seçtiği koyu mod — sistem ayarından bağımsız her zaman kazanır.
+:root[data-theme="dark"] {
+    @include p-dark-theme;
+}

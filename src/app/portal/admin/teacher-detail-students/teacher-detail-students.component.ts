@@ -6,7 +6,6 @@ import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../../../core/services/admin.service';
 import { PagedResult, StudentQuery, StudentWithExam } from '../../../core/models/user.model';
-import { STUDENT_SORT_PRESETS, presetIndexFor } from '../../../core/models/sort-presets';
 import { studentFilterChips, FilterChip } from '../../../core/models/list-filters';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 
@@ -31,12 +30,12 @@ export class TeacherDetailStudentsComponent implements OnChanges {
     readonly studentPage = signal<PagedResult<StudentWithExam> | null>(null);
     readonly loading = signal(false);
     readonly showFilters = signal(false);
-    readonly sortPresets = STUDENT_SORT_PRESETS;
 
+    /** Bu kart bir performans sıralaması olduğu için varsayılan sıralama başarıya göre (düşükten yükseğe). */
     query: StudentQuery = {
         page: 1, pageSize: 25, search: '', status: '', active: '',
         scoreMin: null, scoreMax: null, correctRateMin: null, correctRateMax: null,
-        sortBy: 'name', sortDirection: 'asc',
+        sortBy: 'score', sortDirection: 'asc',
     };
 
     private readonly search$ = new Subject<void>();
@@ -81,17 +80,6 @@ export class TeacherDetailStudentsComponent implements OnChanges {
     }
 
     toggleFilters(): void { this.showFilters.update(v => !v); }
-
-    get sortIndex(): number {
-        return presetIndexFor(this.sortPresets, this.query.sortBy, this.query.sortDirection);
-    }
-    set sortIndex(i: number) {
-        const preset = this.sortPresets[i];
-        if (!preset) return;
-        this.query.sortBy = preset.sortBy;
-        this.query.sortDirection = preset.sortDirection;
-        this.reload(1);
-    }
 
     get filterChips(): FilterChip[] {
         return studentFilterChips(this.query, () => this.reload(1));

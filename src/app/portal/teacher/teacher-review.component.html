@@ -33,7 +33,7 @@
                 [class]="cellClass(i)"
                 [disabled]="!answerFor(i)"
                 (click)="openQuestion(i)"
-                [title]="q"
+                [title]="title(q)"
             >
                 {{ i + 1 }}
             </button>

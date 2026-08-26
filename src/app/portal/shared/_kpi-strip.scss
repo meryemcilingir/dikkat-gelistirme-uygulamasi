@@ -11,8 +11,9 @@
 .kpi-strip {
     display: flex;
     background: $p-surface;
-    border: 1px solid $p-border;
-    border-radius: $p-radius-lg;
+    border: 1px solid $p-border-soft;
+    border-radius: $p-radius-xl;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03), 0 1px 3px rgba(16, 24, 40, 0.04);
     margin-bottom: 22px;
     overflow: hidden;
 }
@@ -24,26 +25,30 @@
     align-items: flex-start;
     gap: 12px;
     padding: 20px 22px;
-    border-right: 1px solid $p-border;
+    border-right: 1px solid $p-border-soft;
     cursor: default;
 
     &:last-child { border-right: none; }
 
     &.clickable {
         cursor: pointer;
-        transition: background-color 160ms ease;
+        transition: background-color 160ms ease, transform 160ms ease;
 
-        &:hover { background: $p-surface-muted; }
+        &:hover {
+            background: $p-surface-muted;
+            transform: translateY(-1px);
+        }
     }
 }
 
 .kpi-icon {
     flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: $p-radius-md;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     background: $p-accent-soft;
     color: $p-accent;
+    border: 1px solid rgba(79, 70, 229, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -52,7 +57,7 @@
 .kpi-body {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
 }
 
@@ -63,7 +68,7 @@
 }
 
 .kpi-value {
-    font-size: 1.55rem;
+    font-size: 1.7rem;
     font-weight: 700;
     color: $p-text;
     line-height: 1.2;
@@ -82,7 +87,7 @@
 
     .kpi-cell {
         flex: 1 1 50%;
-        border-bottom: 1px solid $p-border;
+        border-bottom: 1px solid $p-border-soft;
 
         &:nth-child(2n) { border-right: none; }
         &:nth-last-child(-n+2) { border-bottom: none; }

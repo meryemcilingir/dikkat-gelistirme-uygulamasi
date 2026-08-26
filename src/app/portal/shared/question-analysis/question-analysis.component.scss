@@ -10,7 +10,7 @@
     thead th {
         position: sticky;
         top: 0;
-        background: #fff;
+        background: $p-surface;
         z-index: 1;
     }
 }
@@ -20,7 +20,7 @@
 .hbar-category {
     display: block;
     font-size: 0.72rem;
-    color: #9ca3af;
+    color: $p-text-muted;
     margin-bottom: 4px;
 }
 
@@ -28,7 +28,7 @@
 .hbar-meta {
     font-size: 0.72rem;
     font-weight: 500;
-    color: #9ca3af;
+    color: $p-text-muted;
     margin-left: 4px;
 }
 
