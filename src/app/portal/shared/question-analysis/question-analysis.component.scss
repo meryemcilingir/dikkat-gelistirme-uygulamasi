@@ -1,5 +1,6 @@
 @use '../portal' as *;
 @use '../portal-tokens' as *;
+@use '../dash-grid' as *;
 
 // "En Çok Zorlanılan Sorular" / "Kategori Bazlı Başarı" listeleri veri
 // arttıkça sınırsız uzamasın diye sabit yükseklikte, kendi scrollbar'ında.

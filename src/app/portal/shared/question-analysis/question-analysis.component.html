@@ -8,7 +8,7 @@
 <div class="empty" *ngIf="loading()">Yükleniyor...</div>
 
 <ng-container *ngIf="!loading()">
-    <div class="metric-strip" *ngIf="categories().length">
+    <div class="metric-strip card-animate-in" *ngIf="categories().length">
         <div class="metric-item">
             <span class="metric-label">Cevaplanan Soru</span>
             <span class="metric-value">{{ totalAnsweredQuestions }}</span>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="grid-12">
-        <div class="span-6 panel-card">
+        <div class="span-6 panel-card card-animate-in">
             <div class="panel-title">En Çok Zorlanılan Sorular</div>
             <div class="panel-subtitle">Başarı oranına göre artan sırada</div>
             <div class="empty-state" *ngIf="!hardestQuestions.length">
@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div class="span-6 panel-card" *ngIf="categories().length">
+        <div class="span-6 panel-card card-animate-in" *ngIf="categories().length">
             <div class="panel-title-row">
                 <div>
                     <div class="panel-title">Kategori Bazlı Başarı</div>
@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    <div class="panel-card">
+    <div class="panel-card card-animate-in">
         <div class="panel-title">Soru Başarı Dağılımı</div>
         <div class="panel-subtitle">Cevaplanan sorular başarı oranına göre 4 grupta</div>
         <div class="empty-state" *ngIf="!hardestQuestions.length">
@@ -101,15 +101,15 @@
             <p class="empty-subtitle">İlk sınavlar tamamlandığında başarı dağılımı burada görünecek.</p>
         </div>
         <div class="column-chart" *ngIf="hardestQuestions.length">
-            <div class="column-chart-col" *ngFor="let b of distributionBuckets" (click)="onViewBucket(b)">
+            <div class="column-chart-col" *ngFor="let b of distributionBuckets; let i = index" (click)="onViewBucket(b)">
                 <span class="column-chart-count">{{ b.count }}</span>
-                <div class="column-chart-bar" [style.height.%]="(b.count / maxDistributionCount) * 100"></div>
+                <div class="column-chart-bar" [class]="bucketRangeClass(i)" [style.height.%]="(b.count / maxDistributionCount) * 100"></div>
                 <span class="column-chart-label">{{ b.label }}</span>
             </div>
         </div>
     </div>
 
-    <div class="panel-card" *ngIf="criticalCount || lowPerformanceCount || noDataCount">
+    <div class="panel-card card-animate-in" *ngIf="criticalCount || lowPerformanceCount || noDataCount">
         <div class="panel-title">Dikkat Gerektirenler</div>
         <div class="action-list">
             <button class="action-item danger" *ngIf="criticalCount > 0" (click)="onViewCritical()" title="Başarı oranı %10 ve altında olan sorular">

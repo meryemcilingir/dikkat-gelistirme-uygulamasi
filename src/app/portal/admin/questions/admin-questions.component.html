@@ -248,7 +248,7 @@
 
     <ng-container *ngIf="!questionsLoading() && (questionPage()?.total ?? 0) > 0">
         <!-- Masaüstü: premium tablo -->
-        <div class="table-scroll desktop-only">
+        <div class="table-scroll desktop-only card-animate-in">
             <table class="premium-table q-table">
                 <thead>
                     <tr>
@@ -312,7 +312,7 @@
 
         <!-- Mobil: kart listesi -->
         <div class="entity-card-list mobile-only">
-            <div class="entity-card" *ngFor="let q of questionPage()!.items" (click)="openDetail(q)">
+            <div class="entity-card card-animate-in" *ngFor="let q of questionPage()!.items" (click)="openDetail(q)">
                 <div class="entity-card-head">
                     <div class="q-card-title">
                         <span class="q-index" [class.draft]="q.isDraft">{{ q.questionIndex !== null ? (q.questionIndex + 1) : '—' }}</span>

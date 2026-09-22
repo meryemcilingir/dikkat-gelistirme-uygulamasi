@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, roleGuard, studentExamGuard } from './core/guards/auth.guard';
+import { authGuard, homeRedirectGuard, roleGuard, studentExamGuard } from './core/guards/auth.guard';
 
 // `.map(...)` her satırı preload=true olarak işaretler — bkz. ExamPreloadStrategy:
 // bu 150+ küçük soru chunk'ı uygulama açılır açılmaz arkaplanda indirilir, böylece
@@ -164,7 +164,8 @@ export const routes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        loadComponent: () => import('./features/start-page/start-page.component').then(m => m.StartPageComponent),
+        canActivate: [homeRedirectGuard],
+        children: [],
     },
     {
         path: 'login',

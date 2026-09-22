@@ -11,16 +11,41 @@
     gap: 16px;
 }
 
-// Başarı yüzdesinin yanında ince (4px) bir gösterge — dev progress bar değil.
+// "Öğrenci Performansı" tablosu — kolonlar içerik genişliğine göre otomatik
+// dağılmak yerine (Öğrenci gereğinden geniş, Puan/Başarı/Durum sağda sıkışık
+// kalıyordu) sabit oranlarla dengeleniyor. table-layout:fixed + yüzdelik
+// genişlikler; Aksiyon kolonu için genişlik verilmez, kalan alanı otomatik alır
+// (paylaşılan .student-table'daki sabit 132px yalnızca burada geçersiz kılınır).
+.perf-table {
+    table-layout: fixed;
+
+    th.col-student, td.col-student { width: 35%; }
+    th.col-score, td.col-score { width: 18%; text-align: left; }
+    th.col-status, td.col-status { width: 20%; }
+    // Aksiyon: kalan alanı alsın — paylaşılan .student-table kuralındaki sabit
+    // 132px'i burada geçersiz kılmak için aynı özgüllükte (th/td + sınıf) yazılır.
+    th.col-actions, td.col-actions { width: auto; }
+
+    // Puan ile Başarı birbirine yapışık görünmesin diye Başarı kolonuna
+    // (3. sütun) sol tarafta ekstra boşluk.
+    th:nth-child(3),
+    td:nth-child(3) {
+        padding-left: 24px;
+    }
+}
+
+// Başarı yüzdesinin altında ince (4px) bir gösterge — dev progress bar değil.
+// Kolonun kendi genişliğini kullanır (100%), komşu sütuna taşmaz.
 .rate-cell {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 4px;
-    min-width: 56px;
+    width: 100%;
+    max-width: 110px;
     font-size: 0.85rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
 
-    .rate-bar { width: 56px; }
+    .rate-bar { width: 100%; }
 }

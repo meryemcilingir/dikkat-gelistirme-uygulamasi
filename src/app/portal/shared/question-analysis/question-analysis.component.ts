@@ -161,6 +161,12 @@ export class QuestionAnalysisComponent implements OnInit {
         return Math.max(...this.distributionBuckets.map(b => b.count), 1);
     }
 
+    /** Genel Bakış'taki başarı dağılımı grafiğiyle aynı renk sırası: kırmızı → turuncu → mavi → yeşil. */
+    private readonly distributionRangeClasses = ['range-red', 'range-orange', 'range-blue', 'range-green'];
+    bucketRangeClass(index: number): string {
+        return this.distributionRangeClasses[index] ?? '';
+    }
+
     /**
      * "Dikkat Gerektirenler" — karşılıklı dışlayan (mutually exclusive) üç
      * grup: aynı soru asla iki satırda birden sayılmaz.

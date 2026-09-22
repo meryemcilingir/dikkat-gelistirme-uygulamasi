@@ -11,6 +11,18 @@ export const authGuard: CanActivateFn = () => {
     return router.createUrlTree(['/login']);
 };
 
+/**
+ * Kök rota ('') için — eskiden StartPageComponent burada kısa bir an
+ * "Yükleniyor..." göstermeden önce ngOnInit'te yönlendirme yapıyordu; bu
+ * component hiç render edilmeden (dolayısıyla flaş olmadan) doğrudan
+ * yönlendirir.
+ */
+export const homeRedirectGuard: CanActivateFn = () => {
+    const auth = inject(AuthService);
+    const router = inject(Router);
+    return router.createUrlTree([auth.homePathFor(auth.currentUser())]);
+};
+
 export function roleGuard(...roles: Role[]): CanActivateFn {
     return () => {
         const auth = inject(AuthService);

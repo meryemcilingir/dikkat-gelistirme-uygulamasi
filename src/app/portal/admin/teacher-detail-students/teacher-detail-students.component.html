@@ -59,19 +59,19 @@
 </div>
 
 <div class="table-scroll" *ngIf="!loading() && (studentPage()?.total ?? 0) > 0">
-    <table class="student-table student-table-responsive">
+    <table class="student-table student-table-responsive perf-table">
         <thead>
             <tr>
-                <th class="sortable" (click)="sortBy('name')">Öğrenci {{ sortIcon('name') }}</th>
+                <th class="col-student sortable" (click)="sortBy('name')">Öğrenci {{ sortIcon('name') }}</th>
                 <th class="col-score">Puan</th>
                 <th class="col-score">Başarı</th>
-                <th>Sınav Durumu</th>
+                <th class="col-status">Sınav Durumu</th>
                 <th class="col-actions"></th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let s of studentPage()!.items" class="student-row" [class.inactive]="!s.active" (click)="openStudentSheet(s)">
-                <td>{{ s.firstName }} {{ s.lastName }}</td>
+                <td class="col-student">{{ s.firstName }} {{ s.lastName }}</td>
                 <td class="col-score">{{ s.exam.status === 'Completed' ? (s.exam.correctCount + ' / ' + s.exam.total) : '—' }}</td>
                 <td class="col-score">
                     <div class="rate-cell" *ngIf="s.exam.status === 'Completed' && s.exam.finalScore !== null && s.exam.finalScore !== undefined; else noRate">
@@ -80,7 +80,7 @@
                     </div>
                     <ng-template #noRate><span class="muted">—</span></ng-template>
                 </td>
-                <td><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
+                <td class="col-status"><span class="badge" [class]="s.exam.status">{{ statusLabel(s.exam.status) }}</span></td>
                 <td class="col-actions">
                     <div class="actions-cell">
                         <button class="link-btn review" (click)="openReview(s); $event.stopPropagation()" [disabled]="s.exam.answered === 0">İncele</button>
